@@ -281,6 +281,10 @@ class DualPlayerEngine @Inject constructor(
                 
                 val sink = DefaultAudioSink.Builder(context)
                     .setEnableFloatOutput(false) // Disable Float output to fix CCodec/Hardware errors on some devices
+                    .setAudioProcessorChain(
+                        // Custom downmix processor for 6 channel or 8 channel to 2 channel (stereo)
+                        DefaultAudioSink.DefaultAudioProcessorChain(SurroundDownmixProcessor())
+                    )
                     .build()
 
                 out.add(object : MediaCodecAudioRenderer(
@@ -361,7 +365,7 @@ class DualPlayerEngine @Inject constructor(
                     .setAudioOffloadPreferences(offloadDisabledPrefs)
                     .build()
             )
-            setHandleAudioBecomingNoisy(handleAudioFocus)
+            setHandleAudioBecomingNoisy(true) // Force player to pause automatically when audio is rerouted from a headset to device speakers
             setWakeMode(C.WAKE_MODE_LOCAL) // Use CPU lock only. WiFi lock unused as we proxy via localhost. Saves battery.
             // Explicitly keep both players live so they can overlap without affecting each other
             playWhenReady = false
