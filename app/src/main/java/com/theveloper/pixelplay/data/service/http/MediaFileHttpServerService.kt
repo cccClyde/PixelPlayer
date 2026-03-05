@@ -16,7 +16,6 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.repository.MusicRepository
-import com.theveloper.pixelplay.utils.AlbumArtUtils
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -829,7 +828,11 @@ class MediaFileHttpServerService : Service() {
                 val songIdLong = cursor.getLong(idCol)
                 val albumId = cursor.getLong(albumIdCol)
                 val contentUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songIdLong)
-                val albumArtUri = AlbumArtUtils.getCachedAlbumArtUri(this, songIdLong)?.toString()
+                val albumArtUri = if (albumId > 0) {
+                    ContentUris.withAppendedId("content://media/external/audio/albumart".toUri(), albumId).toString()
+                } else {
+                    null
+                }
 
                 Song(
                     id = songIdLong.toString(),

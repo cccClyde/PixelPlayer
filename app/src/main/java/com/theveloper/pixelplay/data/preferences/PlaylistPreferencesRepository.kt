@@ -166,9 +166,12 @@ class PlaylistPreferencesRepository @Inject constructor(
 
     suspend fun replaceAllPlaylists(playlists: List<Playlist>) {
         ensureMigratedIfNeeded()
-        localPlaylistDao.replaceAllPlaylistsTransactional(
-            playlists.map { playlist -> playlist.toEntity() to playlist.songIds }
-        )
+        localPlaylistDao.clearAllPlaylistSongs()
+        localPlaylistDao.clearAllPlaylists()
+        playlists.forEach { playlist ->
+            localPlaylistDao.upsertPlaylist(playlist.toEntity())
+            localPlaylistDao.replacePlaylistSongs(playlist.id, playlist.songIds)
+        }
         userPreferencesRepository.clearLegacyUserPlaylists()
     }
 

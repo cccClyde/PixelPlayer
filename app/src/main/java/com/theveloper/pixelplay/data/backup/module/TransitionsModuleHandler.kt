@@ -32,7 +32,10 @@ class TransitionsModuleHandler @Inject constructor(
     override suspend fun restore(payload: String) = withContext(Dispatchers.IO) {
         val type = TypeToken.getParameterized(List::class.java, TransitionRuleEntity::class.java).type
         val rules: List<TransitionRuleEntity> = gson.fromJson(payload, type)
-        transitionDao.replaceAllRules(rules)
+        transitionDao.clearAllRules()
+        if (rules.isNotEmpty()) {
+            transitionDao.setRules(rules)
+        }
     }
 
     override suspend fun rollback(snapshot: String) = restore(snapshot)

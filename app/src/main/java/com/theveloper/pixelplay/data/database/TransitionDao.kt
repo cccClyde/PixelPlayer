@@ -2,7 +2,6 @@ package com.theveloper.pixelplay.data.database
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -58,10 +57,4 @@ interface TransitionDao {
 
     @Query("DELETE FROM transition_rules")
     suspend fun clearAllRules()
-
-    @Transaction
-    suspend fun replaceAllRules(rules: List<TransitionRuleEntity>) {
-        clearAllRules()
-        if (rules.isNotEmpty()) setRules(rules)
-    }
 }

@@ -61,14 +61,4 @@ interface LocalPlaylistDao {
         }
         upsertPlaylistSongs(rows)
     }
-
-    @Transaction
-    suspend fun replaceAllPlaylistsTransactional(playlists: List<Pair<PlaylistEntity, List<String>>>) {
-        clearAllPlaylistSongs()
-        clearAllPlaylists()
-        playlists.forEach { (entity, songIds) ->
-            upsertPlaylist(entity)
-            replacePlaylistSongs(entity.id, songIds)
-        }
-    }
 }

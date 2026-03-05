@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 
 @Dao
 interface SearchHistoryDao {
@@ -25,10 +24,4 @@ interface SearchHistoryDao {
 
     @Query("SELECT * FROM search_history ORDER BY timestamp DESC")
     suspend fun getAll(): List<SearchHistoryEntity>
-
-    @Transaction
-    suspend fun replaceAll(items: List<SearchHistoryEntity>) {
-        clearAll()
-        if (items.isNotEmpty()) insertAll(items)
-    }
 }

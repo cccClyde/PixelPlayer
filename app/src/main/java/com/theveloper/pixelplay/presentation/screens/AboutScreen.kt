@@ -3,6 +3,7 @@ package com.theveloper.pixelplay.presentation.screens
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -57,6 +58,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -101,8 +103,7 @@ import com.theveloper.pixelplay.data.github.GitHubContributorService
 import com.theveloper.pixelplay.presentation.components.CollapsibleCommonTopBar
 import com.theveloper.pixelplay.presentation.components.MiniPlayerHeight
 import com.theveloper.pixelplay.presentation.components.SmartImage
-import com.theveloper.pixelplay.presentation.navigation.Screen
-import com.theveloper.pixelplay.presentation.navigation.navigateSafely
+import com.theveloper.pixelplay.presentation.components.brickbreaker.BrickBreakerOverlay
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
@@ -339,6 +340,10 @@ fun AboutScreen(
         }
     }
 
+    var showBrickBreaker by remember { mutableStateOf(false) }
+    val stablePlayerState by viewModel.stablePlayerState.collectAsStateWithLifecycle()
+    val currentSong = stablePlayerState.currentSong
+
     Box(
         modifier = Modifier
             .nestedScroll(nestedScrollConnection)
@@ -364,9 +369,7 @@ fun AboutScreen(
             item(key = "hero_card") {
                 AboutHeroCard(
                     versionName = versionName,
-                    onVersionLongPress = {
-                        navController.navigateSafely(Screen.EasterEgg.route)
-                    },
+                    onVersionLongPress = { showBrickBreaker = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -486,6 +489,15 @@ fun AboutScreen(
             expandedTitleStartPadding = 20.dp,
             collapsedTitleStartPadding = 68.dp
         )
+
+        if (showBrickBreaker) {
+            BackHandler { showBrickBreaker = false }
+            BrickBreakerOverlay(
+                isMiniPlayerVisible = currentSong != null,
+                onPlayRandom = { viewModel.playRandomSong() },
+                onClose = { showBrickBreaker = false },
+            )
+        }
     }
 }
 

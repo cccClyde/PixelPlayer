@@ -323,7 +323,7 @@ private fun DailyMixSongList(
     onMoreOptionsClick: (Song) -> Unit
 ) {
     val stablePlayerState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
-    val itemContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    val itemContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
 
     Column(
         modifier = Modifier

@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -35,10 +34,4 @@ interface FavoritesDao {
 
     @Query("DELETE FROM favorites")
     suspend fun clearAll()
-
-    @Transaction
-    suspend fun replaceAll(favorites: List<FavoritesEntity>) {
-        clearAll()
-        if (favorites.isNotEmpty()) insertAll(favorites)
-    }
 }

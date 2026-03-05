@@ -160,15 +160,6 @@ fun Song.toEntity(filePathFromMediaStore: String, parentDirFromMediaStore: Strin
     )
 }
 
-/** Lightweight projection for backup song matching. */
-data class SongSummary(
-    val id: Long,
-    val title: String,
-    @ColumnInfo(name = "artist_name") val artistName: String,
-    @ColumnInfo(name = "album_name") val albumName: String,
-    val duration: Long
-)
-
 // Sobrecarga o alternativa si los paths no están disponibles o no son necesarios al convertir de Modelo a Entidad
 // (menos probable que se use si la entidad siempre requiere los paths)
 fun Song.toEntityWithoutPaths(): SongEntity {

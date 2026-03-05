@@ -53,15 +53,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextGeometricTransform
@@ -71,7 +72,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.theveloper.pixelplay.ui.theme.LocalPixelPlayDarkTheme
-import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
@@ -81,7 +81,6 @@ import androidx.navigation.NavController
 import coil.size.Size
 import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Album
-import com.theveloper.pixelplay.presentation.components.CollapsibleCommonTopBar
 import com.theveloper.pixelplay.presentation.components.ExpressiveScrollBar
 import com.theveloper.pixelplay.presentation.components.MiniPlayerHeight
 import com.theveloper.pixelplay.presentation.components.NavBarContentHeight
@@ -98,7 +97,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-private const val UseSharedCollapsibleTopBarProbe = true
+private const val HeaderVisualOverscan = 1.03f
+private val HeaderGradientLift = 10.dp
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -137,7 +137,6 @@ fun AlbumDetailScreen(
         albumColorSchemePair?.let { pair -> if (isDarkTheme) pair.dark else pair.light }
             ?: baseColorScheme
     }
-    val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -192,16 +191,6 @@ fun AlbumDetailScreen(
 
                 val minTopBarHeightPx = with(density) { minTopBarHeight.toPx() }
                 val maxTopBarHeightPx = with(density) { maxTopBarHeight.toPx() }
-                val headerImageRequestSize = remember(
-                    configuration.screenWidthDp,
-                    density.density,
-                    maxTopBarHeightPx
-                ) {
-                    Size(
-                        width = with(density) { configuration.screenWidthDp.dp.roundToPx() },
-                        height = maxTopBarHeightPx.roundToInt()
-                    )
-                }
 
                 val topBarHeight = remember { Animatable(maxTopBarHeightPx) }
                 val collapseFraction by remember(minTopBarHeightPx, maxTopBarHeightPx) {
@@ -283,33 +272,20 @@ fun AlbumDetailScreen(
                         .nestedScroll(nestedScrollConnection)
                 ) {
                     val currentTopBarHeightDp = with(density) { topBarHeight.value.toDp() }
-                    val showScrollBar =
-                        collapseFraction > 0.95f &&
-                            (lazyListState.canScrollForward || lazyListState.canScrollBackward)
-
                     LazyColumn(
                         state = lazyListState,
                         modifier = Modifier
                             .fillMaxSize()
-                            .offset {
-                                val extraHeight =
-                                    (topBarHeight.value - minTopBarHeightPx).roundToInt()
-                                IntOffset(0, extraHeight)
-                            },
+                            .offset { IntOffset(0, topBarHeight.value.toInt()) },
                         contentPadding = PaddingValues(
-                            top = minTopBarHeight + 8.dp,
                             start = 16.dp,
-                            end = if (showScrollBar) 24.dp else 16.dp,
+                            end = if ((lazyListState.canScrollForward || lazyListState.canScrollBackward) && collapseFraction > 0.95f) 24.dp else 16.dp,
                             bottom = fabBottomPadding + 80.dp // To account for FAB
                         ),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         val displayedSongs = if (isTransitionFinished) songs else songs.take(20)
-                        items(
-                            items = displayedSongs,
-                            key = { song -> "album_song_${song.id}" },
-                            contentType = { "album_song" }
-                        ) { song ->
+                        items(displayedSongs, key = { song -> "album_song_${song.id}" }) { song ->
                             EnhancedSongListItem(
                                 song = song,
                                 isCurrentSong = stablePlayerState.currentSong?.id == song.id,
@@ -324,49 +300,31 @@ fun AlbumDetailScreen(
                         }
                     }
 
-                    if (showScrollBar) {
+                    if (collapseFraction > 0.95f) {
                         ExpressiveScrollBar(
                             listState = lazyListState,
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(
-                                    top = minTopBarHeight + 12.dp,
+                                    top = currentTopBarHeightDp + 12.dp,
                                     bottom = fabBottomPadding + 80.dp
                                 )
                         )
                     }
 
-                    if (UseSharedCollapsibleTopBarProbe) {
-                        SharedAlbumTopBarProbe(
-                            album = album,
-                            songsCount = songs.size,
-                            collapseFraction = collapseFraction,
-                            headerHeight = currentTopBarHeightDp,
-                            headerImageRequestSize = headerImageRequestSize,
-                            onBackPressed = { navController.popBackStack() },
-                            onPlayClick = {
-                                if (songs.isNotEmpty()) {
-                                    val randomSong = songs.random()
-                                    playerViewModel.showAndPlaySong(randomSong, songs)
-                                }
+                    CollapsingAlbumTopBar(
+                        album = album,
+                        songsCount = songs.size,
+                        collapseFraction = collapseFraction,
+                        headerHeight = currentTopBarHeightDp,
+                        onBackPressed = { navController.popBackStack() },
+                        onPlayClick = {
+                            if (songs.isNotEmpty()) {
+                                val randomSong = songs.random()
+                                playerViewModel.showAndPlaySong(randomSong, songs)
                             }
-                        )
-                    } else {
-                        CollapsingAlbumTopBar(
-                            album = album,
-                            songsCount = songs.size,
-                            collapseFraction = collapseFraction,
-                            headerHeight = currentTopBarHeightDp,
-                            headerImageRequestSize = headerImageRequestSize,
-                            onBackPressed = { navController.popBackStack() },
-                            onPlayClick = {
-                                if (songs.isNotEmpty()) {
-                                    val randomSong = songs.random()
-                                    playerViewModel.showAndPlaySong(randomSong, songs)
-                                }
-                            }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
@@ -446,115 +404,6 @@ fun AlbumDetailScreen(
     }
 }
 
-@Composable
-private fun SharedAlbumTopBarProbe(
-    album: Album,
-    songsCount: Int,
-    collapseFraction: Float,
-    headerHeight: Dp,
-    headerImageRequestSize: Size,
-    onBackPressed: () -> Unit,
-    onPlayClick: () -> Unit
-) {
-    val surfaceColor = MaterialTheme.colorScheme.surface
-    val statusBarColor =
-        if (LocalPixelPlayDarkTheme.current) Color.Black.copy(alpha = 0.6f)
-        else Color.White.copy(alpha = 0.4f)
-    val solidAlpha = (collapseFraction * 2f).coerceIn(0f, 1f)
-    val expandedContentAlpha = 1f - solidAlpha
-    val headerOverlayBrush = remember(surfaceColor, expandedContentAlpha) {
-        Brush.verticalGradient(
-            colors = listOf(
-                Color.Transparent,
-                surfaceColor.copy(alpha = 0.22f * expandedContentAlpha),
-                surfaceColor.copy(alpha = 0.82f * expandedContentAlpha),
-                surfaceColor
-            )
-        )
-    }
-    val statusBarBrush = remember(statusBarColor) {
-        Brush.verticalGradient(colors = listOf(statusBarColor, Color.Transparent))
-    }
-    val titleVerticalBias = lerp(1f, -1f, collapseFraction)
-    val shuffleAlignment = BiasAlignment(horizontalBias = 1f, verticalBias = titleVerticalBias)
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(headerHeight)
-            .clipToBounds()
-    ) {
-        if (expandedContentAlpha > 0.01f) {
-            SmartImage(
-                model = album.albumArtUriString,
-                contentDescription = "Cover of ${album.title}",
-                contentScale = ContentScale.Crop,
-                targetSize = headerImageRequestSize,
-                allowHardware = true,
-                crossfadeDurationMillis = 0,
-                alpha = expandedContentAlpha,
-                modifier = Modifier.fillMaxSize()
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(headerOverlayBrush)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .background(statusBarBrush)
-                .align(Alignment.TopCenter)
-        )
-
-        CollapsibleCommonTopBar(
-            title = album.title,
-            subtitle = "${album.artist} • $songsCount songs",
-            collapseFraction = collapseFraction,
-            headerHeight = headerHeight,
-            onBackClick = onBackPressed,
-            containerColor = surfaceColor.copy(alpha = solidAlpha),
-            collapsedTitleStartPadding = 68.dp,
-            expandedTitleStartPadding = 24.dp,
-            collapsedTitleEndPadding = 24.dp,
-            expandedTitleEndPadding = 136.dp,
-            containerHeightRange = 92.dp to 56.dp,
-            titleStyle = MaterialTheme.typography.headlineMedium.copy(
-                fontFamily = GoogleSansRounded,
-                fontWeight = FontWeight.SemiBold,
-                textGeometricTransform = TextGeometricTransform(scaleX = 1.08f)
-            ),
-            titleScaleRange = 1f to 1f,
-            titleFontSizeRange = 30.sp to 18.sp,
-            maxLines = if (collapseFraction < 0.5f) 2 else 1,
-            collapsedSubtitleMaxLines = 1,
-            expandedSubtitleMaxLines = 2,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            subtitleColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            fadeSubtitleOnCollapse = false
-        )
-
-        LargeExtendedFloatingActionButton(
-            onClick = onPlayClick,
-            shape = RoundedStarShape(sides = 8, curve = 0.05, rotation = 0f),
-            modifier = Modifier
-                .align(shuffleAlignment)
-                .statusBarsPadding()
-                .padding(end = 16.dp)
-                .graphicsLayer {
-                    scaleX = expandedContentAlpha
-                    scaleY = expandedContentAlpha
-                    alpha = expandedContentAlpha
-                }
-        ) {
-            Icon(Icons.Rounded.Shuffle, contentDescription = "Shuffle play album")
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CollapsingAlbumTopBar(
@@ -562,7 +411,6 @@ private fun CollapsingAlbumTopBar(
     songsCount: Int,
     collapseFraction: Float,
     headerHeight: Dp,
-    headerImageRequestSize: Size,
     onBackPressed: () -> Unit,
     onPlayClick: () -> Unit
 ) {
@@ -576,25 +424,6 @@ private fun CollapsingAlbumTopBar(
     val fabScale = 1f - collapseFraction
     val backgroundAlpha = collapseFraction
     val headerContentAlpha = 1f - (collapseFraction * 2).coerceAtMost(1f)
-    val showExpandedArtwork = headerContentAlpha > 0.01f
-    val headerOverlayBrush = remember(surfaceColor, headerContentAlpha) {
-        Brush.verticalGradient(
-            colors = listOf(
-                Color.Transparent,
-                surfaceColor.copy(alpha = 0.30f * headerContentAlpha),
-                surfaceColor.copy(alpha = 0.90f * headerContentAlpha),
-                surfaceColor.copy(alpha = headerContentAlpha)
-            )
-        )
-    }
-    val statusBarBrush = remember(statusBarColor) {
-        Brush.verticalGradient(
-            colors = listOf(
-                statusBarColor,
-                Color.Transparent
-            )
-        )
-    }
 
     // Title animation
     val titleScale = lerp(1f, 0.75f, collapseFraction)
@@ -618,30 +447,65 @@ private fun CollapsingAlbumTopBar(
                 .height(headerHeight)
                 .background(surfaceColor.copy(alpha = backgroundAlpha))
         ) {
-            if (showExpandedArtwork) {
-                SmartImage(
-                    model = album.albumArtUriString,
-                    contentDescription = "Cover of ${album.title}",
-                    contentScale = ContentScale.Crop,
-                    targetSize = headerImageRequestSize,
-                    allowHardware = true,
-                    crossfadeDurationMillis = 0,
-                    alpha = headerContentAlpha,
-                    modifier = Modifier.fillMaxSize()
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = HeaderVisualOverscan
+                        scaleY = HeaderVisualOverscan
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    }
+            ) {
+                // Header Content (visible when expanded)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(headerOverlayBrush)
+                        .graphicsLayer { alpha = headerContentAlpha }
+                ) {
+                    SmartImage(
+                        model = album.albumArtUriString,
+                        contentDescription = "Cover of ${album.title}",
+                        contentScale = ContentScale.Crop,
+                        targetSize = Size(1600, 1600),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .drawWithCache {
+                                val liftPx = HeaderGradientLift.toPx()
+                                val brush = Brush.verticalGradient(
+                                    colorStops = arrayOf(
+                                        0.30f to Color.Transparent,
+                                        0.60f to surfaceColor.copy(alpha = 0.30f),
+                                        0.83f to surfaceColor.copy(alpha = 0.90f),
+                                        0.92f to surfaceColor,
+                                        1f to surfaceColor
+                                    ),
+                                    startY = -liftPx,
+                                    endY = size.height - liftPx
+                                )
+                                onDrawBehind { drawRect(brush = brush) }
+                            }
+                    )
+                }
+
+                // Status bar gradient
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    statusBarColor,
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                        .align(Alignment.TopCenter)
                 )
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(statusBarBrush)
-                    .align(Alignment.TopCenter)
-            )
 
             // Top bar content (buttons, title, etc.)
             Box(

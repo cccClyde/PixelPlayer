@@ -36,7 +36,6 @@ import com.theveloper.pixelplay.presentation.screens.ArtistDetailScreen
 import com.theveloper.pixelplay.presentation.screens.ArtistSettingsScreen
 import com.theveloper.pixelplay.presentation.screens.DailyMixScreen
 import com.theveloper.pixelplay.presentation.screens.EditTransitionScreen
-import com.theveloper.pixelplay.presentation.screens.EasterEggScreen
 import com.theveloper.pixelplay.presentation.screens.ExperimentalSettingsScreen
 import com.theveloper.pixelplay.presentation.screens.GenreDetailScreen
 import com.theveloper.pixelplay.presentation.screens.HomeScreen
@@ -455,20 +454,6 @@ fun AppNavigation(
                         navController = navController,
                         viewModel = playerViewModel,
                         onNavigationIconClick = { navController.popBackStack() }
-                    )
-                }
-            }
-            composable(
-                Screen.EasterEgg.route,
-                enterTransition = { enterTransition() },
-                exitTransition = { exitTransition() },
-                popEnterTransition = { popEnterTransition() },
-                popExitTransition = { popExitTransition() },
-            ) {
-                ScreenWrapper(navController = navController, playerViewModel = playerViewModel) {
-                    EasterEggScreen(
-                        viewModel = playerViewModel,
-                        onNavigationIconClick = { navController.popBackStack() },
                     )
                 }
             }

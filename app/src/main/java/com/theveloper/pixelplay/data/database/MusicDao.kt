@@ -876,16 +876,6 @@ interface MusicDao {
     @Query("SELECT * FROM songs")
     suspend fun getAllSongsList(): List<SongEntity>
 
-    @Query("""
-        SELECT id, title, artist_name, album_name, duration
-        FROM songs
-        WHERE content_uri_string NOT LIKE 'telegram://%'
-        AND content_uri_string NOT LIKE 'netease://%'
-        AND content_uri_string NOT LIKE 'gdrive://%'
-        AND content_uri_string NOT LIKE 'qqmusic://%'
-    """)
-    suspend fun getAllLocalSongSummaries(): List<SongSummary>
-
     @Query("SELECT album_art_uri_string FROM songs WHERE id=:id")
     suspend fun getAlbumArtUriById(id: Long) : String?
 

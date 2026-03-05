@@ -32,7 +32,10 @@ class SearchHistoryModuleHandler @Inject constructor(
     override suspend fun restore(payload: String) = withContext(Dispatchers.IO) {
         val type = TypeToken.getParameterized(List::class.java, SearchHistoryEntity::class.java).type
         val history: List<SearchHistoryEntity> = gson.fromJson(payload, type)
-        searchHistoryDao.replaceAll(history)
+        searchHistoryDao.clearAll()
+        if (history.isNotEmpty()) {
+            searchHistoryDao.insertAll(history)
+        }
     }
 
     override suspend fun rollback(snapshot: String) = restore(snapshot)

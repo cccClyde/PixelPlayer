@@ -15,7 +15,6 @@ import com.theveloper.pixelplay.data.model.ArtistRef
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.observer.MediaStoreObserver
 import com.theveloper.pixelplay.data.preferences.UserPreferencesRepository
-import com.theveloper.pixelplay.utils.AlbumArtUtils
 import com.theveloper.pixelplay.utils.DirectoryRuleResolver
 import com.theveloper.pixelplay.utils.DirectoryFilterUtils
 import com.theveloper.pixelplay.utils.LogUtils
@@ -176,22 +175,13 @@ class MediaStoreSongRepository @Inject constructor(
 
                     val id = cursor.getLong(idCol)
                     val albumId = cursor.getLong(albumIdCol)
-
-                    // Album art (individual / cached per song)
-                    val albumArtUriString = AlbumArtUtils
-                        .getCachedAlbumArtUri(context, id)
-                        ?.toString()
-
-                    // Artists parsing (supports multiple artists separated by user delimiters)
                     val rawArtist = cursor.getString(artistCol).normalizeMetadataTextOrEmpty()
                     val splitArtists = rawArtist.splitArtistsByDelimiters(artistDelimiters)
                     val normalizedArtists = if (splitArtists.isNotEmpty()) splitArtists else listOf(rawArtist)
                     val primaryArtistName = normalizedArtists.firstOrNull().orEmpty()
-
                     val artistRefs = normalizedArtists.mapIndexed { index, name ->
                         ArtistRef(
-                            id = if (index == 0) cursor.getLong(artistIdCol)
-                            else (name.hashCode().toLong() * -1L) - 10_000L - index,
+                            id = if (index == 0) cursor.getLong(artistIdCol) else (name.hashCode().toLong() * -1L) - 10_000L - index,
                             name = name,
                             isPrimary = index == 0
                         )
@@ -208,7 +198,10 @@ class MediaStoreSongRepository @Inject constructor(
                         albumArtist = if (albumArtistCol != -1) cursor.getString(albumArtistCol).normalizeMetadataText() else null,
                         path = path,
                         contentUriString = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id).toString(),
-                        albumArtUriString = albumArtUriString,
+                        albumArtUriString = ContentUris.withAppendedId(
+                            android.net.Uri.parse("content://media/external/audio/albumart"),
+                            albumId
+                        ).toString(),
                         duration = cursor.getLong(durationCol),
                         genre = songIdToGenreMap[id],
                         lyrics = null,

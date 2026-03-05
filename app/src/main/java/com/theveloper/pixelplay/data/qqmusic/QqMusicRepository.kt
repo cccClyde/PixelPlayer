@@ -51,9 +51,6 @@ class QqMusicRepository @Inject constructor(
         private const val QQ_MUSIC_PARENT_DIRECTORY = "/Cloud/QQMusic"
         private const val QQ_MUSIC_GENRE = "QQ Music"
         private const val QQ_MUSIC_PLAYLIST_PREFIX = "qqmusic_playlist:"
-        private const val QQ_USER_PLAYLIST_PAGE_SIZE = 100
-        private const val QQ_PLAYLIST_SONG_PAGE_SIZE = 1000
-        private const val QQ_MAX_PLAYLIST_PAGES = 200
     }
 
     data class BulkSyncResult(
@@ -235,75 +232,36 @@ class QqMusicRepository @Inject constructor(
         }
         return withContext(Dispatchers.IO) {
             runCatching {
-                val entitiesById = LinkedHashMap<Long, QqMusicPlaylistEntity>()
-                var start = 0
-                var page = 0
-
-                while (true) {
-                    val raw = api.getUserPlaylists(start = start, count = QQ_USER_PLAYLIST_PAGE_SIZE)
-                    Timber.d("syncUserPlaylists: page=$page start=$start response length=${raw.length}")
-                    val root = JSONObject(raw)
-                    val code = root.optInt("code", -1)
-                    if (code != 0) {
-                        throw Exception("QQ Music API Error: code=$code. Check your login.")
-                    }
-
-                    val data = root.optJSONObject("data") ?: break
-                    val cdlist = data.optJSONArray("cdlist") ?: break
-                    val fetchedCount = cdlist.length()
-                    if (fetchedCount == 0) break
-
-                    var newInPage = 0
-                    for (i in 0 until fetchedCount) {
-                        val pl = cdlist.optJSONObject(i) ?: continue
-                        val songCount = pl.optInt("songnum", 0)
-                        // Skip empty playlists (deleted or not yet populated)
-                        if (songCount == 0) continue
-                        val id = pl.optLong("dissid", 0L)
-                        if (id <= 0L) continue
-                        val name = decodeBase64IfNeeded(pl.optString("dissname", ""))
-                        // Skip playlists with blank names
-                        if (name.isBlank()) continue
-                        val previous = entitiesById.put(
-                            id,
-                            QqMusicPlaylistEntity(
-                                id = id,
-                                name = name,
-                                coverUrl = pl.optString("logo", ""),
-                                songCount = songCount,
-                                lastSyncTime = System.currentTimeMillis()
-                            )
-                        )
-                        if (previous == null) newInPage += 1
-                    }
-
-                    start += fetchedCount
-
-                    val totalCandidates = listOf(
-                        data.optInt("total", -1),
-                        data.optInt("dissnum", -1),
-                        data.optInt("totaldissnum", -1),
-                        data.optInt("cdnum", -1),
-                        data.optInt("dirnum", -1)
-                    )
-                    val total = totalCandidates.firstOrNull { it > 0 } ?: -1
-                    val reachedTotal = total > 0 && start >= total
-                    val hasLikelyMore = fetchedCount >= QQ_USER_PLAYLIST_PAGE_SIZE
-
-                    if (reachedTotal || !hasLikelyMore) break
-                    if (newInPage == 0 && page > 0) {
-                        Timber.w("syncUserPlaylists: pagination returned no new playlists at page=$page, stopping")
-                        break
-                    }
-
-                    page += 1
-                    if (page >= QQ_MAX_PLAYLIST_PAGES) {
-                        Timber.w("syncUserPlaylists: reached max page guard ($QQ_MAX_PLAYLIST_PAGES), stopping pagination")
-                        break
-                    }
+                val raw = api.getUserPlaylists()
+                Timber.d("syncUserPlaylists: response length=${raw.length}")
+                val root = JSONObject(raw)
+                val code = root.optInt("code", -1)
+                if (code != 0) {
+                    throw Exception("QQ Music API Error: code=$code. Check your login.")
                 }
 
-                val entities = entitiesById.values.toList()
+                val data = root.optJSONObject("data") ?: return@runCatching emptyList()
+                val cdlist = data.optJSONArray("cdlist") ?: return@runCatching emptyList()
+
+                val entities = mutableListOf<QqMusicPlaylistEntity>()
+                for (i in 0 until cdlist.length()) {
+                    val pl = cdlist.optJSONObject(i) ?: continue
+                    val songCount = pl.optInt("songnum", 0)
+                    // Skip empty playlists (deleted or not yet populated)
+                    if (songCount == 0) continue
+                    val name = decodeBase64IfNeeded(pl.optString("dissname", ""))
+                    // Skip playlists with blank names
+                    if (name.isBlank()) continue
+                    entities.add(
+                        QqMusicPlaylistEntity(
+                            id = pl.optLong("dissid", 0L),
+                            name = name,
+                            coverUrl = pl.optString("logo", ""),
+                            songCount = songCount,
+                            lastSyncTime = System.currentTimeMillis()
+                        )
+                    )
+                }
 
                 val localPlaylists = dao.getAllPlaylistsList()
                 val remoteIds = entities.map { it.id }.toSet()
@@ -329,65 +287,22 @@ class QqMusicRepository @Inject constructor(
     suspend fun syncPlaylistSongs(playlistId: Long): Result<Int> {
         return withContext(Dispatchers.IO) {
             runCatching {
-                val entitiesById = LinkedHashMap<String, QqMusicSongEntity>()
-                var songBegin = 0
-                var page = 0
-                var expectedSongCount = -1
+                val raw = api.getPlaylistDetail(playlistId)
+                val root = JSONObject(raw)
 
-                while (true) {
-                    val raw = api.getPlaylistDetail(
-                        playlistId = playlistId,
-                        songBegin = songBegin,
-                        songNum = QQ_PLAYLIST_SONG_PAGE_SIZE
-                    )
-                    val root = JSONObject(raw)
-
-                    val code = root.optInt("code", -1)
-                    if (code != 0) {
-                        throw Exception("API error code=$code")
-                    }
-
-                    val cdlist = root.optJSONArray("cdlist") ?: throw Exception("No cdlist")
-                    val firstCd = cdlist.optJSONObject(0) ?: throw Exception("Empty cdlist")
-                    val songlist = firstCd.optJSONArray("songlist") ?: break
-                    val fetchedCount = songlist.length()
-                    if (fetchedCount == 0) break
-
-                    if (expectedSongCount < 0) {
-                        expectedSongCount = firstCd.optInt("songnum", firstCd.optInt("total_song_num", -1))
-                    }
-
-                    var newInPage = 0
-                    for (i in 0 until fetchedCount) {
-                        val track = songlist.optJSONObject(i) ?: continue
-                        val entity = parseTrackToEntity(track, playlistId)
-                        if (entity.songMid.isBlank()) continue
-                        val previous = entitiesById.put(entity.id, entity)
-                        if (previous == null) newInPage += 1
-                    }
-
-                    songBegin += fetchedCount
-                    val reachedExpected = expectedSongCount > 0 && songBegin >= expectedSongCount
-                    val hasLikelyMore = fetchedCount >= QQ_PLAYLIST_SONG_PAGE_SIZE
-
-                    if (reachedExpected || !hasLikelyMore) break
-                    if (newInPage == 0) {
-                        Timber.w("syncPlaylistSongs: pagination returned no new songs for playlistId=$playlistId at page=$page, stopping")
-                        break
-                    }
-
-                    page += 1
-                    if (page >= QQ_MAX_PLAYLIST_PAGES) {
-                        Timber.w("syncPlaylistSongs: reached max page guard ($QQ_MAX_PLAYLIST_PAGES) for playlistId=$playlistId")
-                        break
-                    }
+                val code = root.optInt("code", -1)
+                if (code != 0) {
+                    throw Exception("API error code=$code")
                 }
 
-                val entities = entitiesById.values.toList()
-                if (expectedSongCount > 0 && entities.size < expectedSongCount) {
-                    Timber.w(
-                        "syncPlaylistSongs: playlistId=$playlistId expected=$expectedSongCount synced=${entities.size} (API may still be limiting)"
-                    )
+                val cdlist = root.optJSONArray("cdlist") ?: throw Exception("No cdlist")
+                val firstCd = cdlist.optJSONObject(0) ?: throw Exception("Empty cdlist")
+                val songlist = firstCd.optJSONArray("songlist") ?: return@runCatching 0
+
+                val entities = mutableListOf<QqMusicSongEntity>()
+                for (i in 0 until songlist.length()) {
+                    val track = songlist.optJSONObject(i) ?: continue
+                    entities.add(parseTrackToEntity(track, playlistId))
                 }
 
                 dao.deleteSongsByPlaylist(playlistId)
