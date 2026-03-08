@@ -1687,12 +1687,10 @@ private fun QueueMiniPlayer(
                 brush = Brush.verticalGradient(
                     listOf(
                         colors.primaryContainer,
-                        //colors.primaryContainer,
                         Color.Transparent
                     )
                 )
             ),
-        //shape = shape,
         tonalElevation = 10.dp,
         color = Color.Transparent
     ) {
