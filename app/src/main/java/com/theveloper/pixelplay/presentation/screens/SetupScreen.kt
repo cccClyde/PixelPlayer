@@ -35,7 +35,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -66,8 +65,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -987,26 +984,25 @@ fun ThemeSelectionPage(
     uiState: SetupUiState,
     onModeSelected: (String) -> Unit
 ) {
-    val scrollState = rememberScrollState()
     val themeOptions = remember {
         listOf(
             ThemeOptionItem(
                 mode = AppThemeMode.DARK,
                 title = "Dark",
-                description = "The default Material dark appearance for PixelPlay.",
+                description = "The default Material 3 dark look for PixelPlay.",
                 icon = Icons.Rounded.DarkMode,
                 recommended = true
             ),
             ThemeOptionItem(
                 mode = AppThemeMode.LIGHT,
                 title = "Light",
-                description = "A brighter look across the whole app.",
+                description = "A brighter Material 3 look across the app.",
                 icon = Icons.Outlined.LightMode
             ),
             ThemeOptionItem(
                 mode = AppThemeMode.FOLLOW_SYSTEM,
                 title = "Follow system",
-                description = "Switch automatically with your phone setting.",
+                description = "Match your phone's current appearance setting.",
                 icon = Icons.Rounded.PhoneAndroid
             )
         )
@@ -1014,14 +1010,13 @@ fun ThemeSelectionPage(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(18.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
             .padding(24.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "App Theme",
                 style = MaterialTheme.typography.displayMedium.copy(
@@ -1039,16 +1034,8 @@ fun ThemeSelectionPage(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            ThemeModePreview(selectedMode = uiState.appThemeMode)
-        }
-
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             themeOptions.forEach { option ->
@@ -1066,182 +1053,11 @@ fun ThemeSelectionPage(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
-
-@Composable
-private fun ThemeModePreview(selectedMode: String) {
-    val preview = when (selectedMode) {
-        AppThemeMode.LIGHT -> ThemePreviewPalette(
-            accent = Color(0xFF4A5FA5),
-            background = Color(0xFFF7F5FB),
-            surface = Color(0xFFFFFFFF),
-            surfaceAlt = Color(0xFFEAE5F1),
-            label = "Light"
-        )
-        AppThemeMode.FOLLOW_SYSTEM -> ThemePreviewPalette(
-            accent = Color(0xFF8FA1E1),
-            background = Color(0xFF1A1B21),
-            surface = Color(0xFF23252D),
-            surfaceAlt = Color(0xFFF4F0F8),
-            label = "System"
-        )
-        else -> ThemePreviewPalette(
-            accent = Color(0xFFB8C4FF),
-            background = Color(0xFF121319),
-            surface = Color(0xFF1D1F27),
-            surfaceAlt = Color(0xFF2A2D36),
-            label = "Dark"
-        )
-    }
-
-    Card(
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .height(156.dp)
-    ) {
-        AnimatedContent(
-            targetState = preview,
-            transitionSpec = {
-                (fadeIn(animationSpec = tween(350)) + scaleIn(initialScale = 0.96f))
-                    .togetherWith(fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 0.96f))
-            },
-            label = "ThemePreviewAnim"
-        ) { palette ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                palette.background,
-                                palette.surface
-                            )
-                        )
-                    )
-                    .padding(18.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        color = palette.surfaceAlt.copy(alpha = if (palette.label == "Light") 1f else 0.72f),
-                        shape = RoundedCornerShape(999.dp)
-                    ) {
-                        Text(
-                            text = "${palette.label} preview",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (palette.label == "Light") Color(0xFF17171D) else Color(0xFFF2F1F7),
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
-                        )
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (index == 0) palette.accent else palette.surfaceAlt.copy(alpha = 0.82f)
-                                    )
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                Surface(
-                    color = palette.surface.copy(alpha = if (palette.label == "Light") 0.96f else 0.9f),
-                    shape = RoundedCornerShape(22.dp),
-                    tonalElevation = 0.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(0.42f)
-                                .height(11.dp)
-                                .clip(RoundedCornerShape(100))
-                                .background(palette.accent)
-                        )
-
-                        repeat(2) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(if (index == 0) 0.92f else 0.68f)
-                                    .height(10.dp)
-                                    .clip(RoundedCornerShape(100))
-                                    .background(palette.surfaceAlt)
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Surface(
-                    color = palette.surfaceAlt.copy(alpha = if (palette.label == "Light") 1f else 0.78f),
-                    shape = AbsoluteSmoothCornerShape(
-                        cornerRadiusTL = 22.dp,
-                        cornerRadiusTR = 22.dp,
-                        cornerRadiusBL = 22.dp,
-                        cornerRadiusBR = 22.dp,
-                        smoothnessAsPercentTL = 60,
-                        smoothnessAsPercentTR = 60,
-                        smoothnessAsPercentBL = 60,
-                        smoothnessAsPercentBR = 60
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(42.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(if (index == 1) 18.dp else 12.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (index == 1) palette.accent else palette.surface.copy(alpha = 0.9f)
-                                    )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-private data class ThemePreviewPalette(
-    val accent: Color,
-    val background: Color,
-    val surface: Color,
-    val surfaceAlt: Color,
-    val label: String
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1254,28 +1070,27 @@ private fun ThemeModeOptionCard(
         onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = if (selected) {
-                MaterialTheme.colorScheme.surfaceContainerHigh
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
             } else {
                 MaterialTheme.colorScheme.surfaceContainer
             }
         ),
         shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth(),
-        border = if (selected) {
-            BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.32f))
-        } else {
-            null
-        }
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 18.dp),
+                .padding(horizontal = 18.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Top
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer,
+                color = if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.secondaryContainer
+                },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.size(46.dp)
             ) {
@@ -1283,7 +1098,11 @@ private fun ThemeModeOptionCard(
                     Icon(
                         imageVector = option.icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        tint = if (selected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        }
                     )
                 }
             }
@@ -1299,12 +1118,20 @@ private fun ThemeModeOptionCard(
                 )
                 if (option.recommended) {
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = if (selected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.primaryContainer
+                        },
+                        contentColor = if (selected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        },
                         shape = RoundedCornerShape(999.dp)
                     ) {
                         Text(
-                            text = "(Recommended)",
+                            text = "Recommended",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -1320,36 +1147,35 @@ private fun ThemeModeOptionCard(
 
             Surface(
                 color = if (selected) {
-                    MaterialTheme.colorScheme.primaryContainer
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    Color.Transparent
+                    MaterialTheme.colorScheme.surfaceContainerHighest
                 },
                 contentColor = if (selected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    MaterialTheme.colorScheme.onPrimary
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(
-                    width = 1.5.dp,
-                    color = if (selected) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.32f)
-                    } else {
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
-                    }
-                )
+                shape = CircleShape
             ) {
                 Box(
-                    modifier = Modifier.size(34.dp),
+                    modifier = Modifier.size(28.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (selected) {
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(16.dp)
                         )
-                    } 
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f))
+                        )
+                    }
                 }
             }
         }
@@ -2248,8 +2074,8 @@ fun SetupBottomBar(
     )
 
     val shape = RoundedCornerShape(
-        topEnd = 24.dp,
-        topStart = 24.dp,
+        topEnd = 38.dp,
+        topStart = 38.dp,
         bottomEnd = 0.dp,
         bottomStart = 0.dp
     )
