@@ -80,7 +80,7 @@ fun EnhancedSongListItem(
     isCurrentSong: Boolean = false,
     isLoading: Boolean = false,
     showAlbumArt: Boolean = true,
-    albumArtSize: Dp = 46.dp,
+    albumArtSize: Dp = 50.dp,
     customShape: androidx.compose.ui.graphics.Shape? = null,
     containerColorOverride: Color? = null,
     isSelected: Boolean = false,

@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
+import com.theveloper.pixelplay.presentation.components.ExpressiveScrollBar
 
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -331,7 +332,7 @@ fun LibrarySongsTab(
                                         song = song,
                                         playerViewModel = playerViewModel,
                                         isSelected = isSelected,
-                                        albumArtSize = 46.dp,
+                                        //albumArtSize = 46.dp,
                                         isSelectionMode = isSelectionMode,
                                         selectionIndex = if (isSelectionMode) getSelectionIndex(song.id) else null,
                                         onLongPress = rememberedOnLongPress,
@@ -358,7 +359,7 @@ fun LibrarySongsTab(
                         else 
                             bottomBarHeight + 16.dp
 
-                        com.theveloper.pixelplay.presentation.components.ExpressiveScrollBar(
+                        ExpressiveScrollBar(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(end = 4.dp, top = 16.dp, bottom = bottomPadding),

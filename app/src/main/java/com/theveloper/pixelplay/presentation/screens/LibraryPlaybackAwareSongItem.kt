@@ -26,7 +26,7 @@ internal data class LibrarySongPlaybackUiState(
 internal fun LibraryPlaybackAwareSongItem(
     song: Song,
     playerViewModel: PlayerViewModel,
-    albumArtSize: Dp = 56.dp,
+    albumArtSize: Dp = 50.dp,
     isSelected: Boolean = false,
     selectionIndex: Int? = null,
     isSelectionMode: Boolean = false,
