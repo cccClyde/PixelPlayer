@@ -803,7 +803,8 @@ class MusicService : MediaLibraryService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val forcedForegroundStart =
             intent?.getBooleanExtra(EXTRA_FORCE_FOREGROUND_ON_START, false) == true
-        if (forcedForegroundStart) {
+        val isMediaButtonIntent = intent?.action == Intent.ACTION_MEDIA_BUTTON
+        if (forcedForegroundStart || isMediaButtonIntent) {
             startTemporaryForegroundForCommand()
         }
 
@@ -868,7 +869,7 @@ class MusicService : MediaLibraryService() {
             }
         }
         val startCommandResult = super.onStartCommand(intent, flags, startId)
-        if (forcedForegroundStart) {
+        if (forcedForegroundStart || isMediaButtonIntent) {
             val player = mediaSession?.player
             val isActivelyPlaying = player?.let {
                 it.playWhenReady &&

@@ -2144,6 +2144,7 @@ class PlayerViewModel @Inject constructor(
                     durationMs = resolvedDuration,
                     isPlaying = playerCtrl.isPlaying
                 )
+                loadLyricsForCurrentSong()
                 if (playerCtrl.isPlaying) {
                     _isSheetVisible.value = true
                     startProgressUpdates()
