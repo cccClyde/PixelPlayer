@@ -1,6 +1,7 @@
 package com.theveloper.pixelplay.data.service
 
 object MusicNotificationProvider {
+    const val CUSTOM_COMMAND_CLOSE_PLAYER = "com.theveloper.pixelplay.CLOSE_PLAYER"
     const val CUSTOM_COMMAND_TOGGLE_SHUFFLE = "com.theveloper.pixelplay.TOGGLE_SHUFFLE"
     const val CUSTOM_COMMAND_SHUFFLE_ON = "com.theveloper.pixelplay.SHUFFLE_ON"
     const val CUSTOM_COMMAND_SHUFFLE_OFF = "com.theveloper.pixelplay.SHUFFLE_OFF"
