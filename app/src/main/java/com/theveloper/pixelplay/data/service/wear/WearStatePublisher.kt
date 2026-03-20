@@ -15,6 +15,7 @@ import com.theveloper.pixelplay.data.model.PlayerInfo
 import com.theveloper.pixelplay.shared.WearDataPaths
 import com.theveloper.pixelplay.shared.WearPlayerState
 import com.theveloper.pixelplay.shared.WearThemePalette
+import com.theveloper.pixelplay.utils.AlbumArtUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -141,7 +142,7 @@ class WearStatePublisher @Inject constructor(
     private fun readBytesFromUriCapped(uriString: String, maxBytes: Int): ByteArray? {
         return try {
             val uri = Uri.parse(uriString)
-            contentResolver.openInputStream(uri)?.use { input ->
+            AlbumArtUtils.openArtworkInputStream(application, uri)?.use { input ->
                 val buffer = ByteArray(16 * 1024)
                 val output = ByteArrayOutputStream()
                 var total = 0
@@ -261,7 +262,7 @@ class WearStatePublisher @Inject constructor(
 
     private fun decodeBoundedBitmapFromUri(uri: Uri, maxDimension: Int): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        contentResolver.openInputStream(uri)?.use { stream ->
+        AlbumArtUtils.openArtworkInputStream(application, uri)?.use { stream ->
             BitmapFactory.decodeStream(stream, null, bounds)
         } ?: return null
 
@@ -284,7 +285,7 @@ class WearStatePublisher @Inject constructor(
             inPreferredConfig = Bitmap.Config.ARGB_8888
         }
 
-        val decoded = contentResolver.openInputStream(uri)?.use { stream ->
+        val decoded = AlbumArtUtils.openArtworkInputStream(application, uri)?.use { stream ->
             BitmapFactory.decodeStream(stream, null, decodeOptions)
         } ?: return null
 

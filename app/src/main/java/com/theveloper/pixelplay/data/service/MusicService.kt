@@ -57,6 +57,7 @@ import com.theveloper.pixelplay.ui.glancewidget.ControlWidget4x2
 import com.theveloper.pixelplay.ui.glancewidget.PixelPlayGlanceWidget
 import com.theveloper.pixelplay.ui.glancewidget.PlayerActions
 import com.theveloper.pixelplay.ui.glancewidget.PlayerInfoStateDefinition
+import com.theveloper.pixelplay.utils.AlbumArtUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1886,9 +1887,9 @@ class MusicService : MediaLibraryService() {
     private fun loadArtworkBytesForWidget(uri: Uri): ByteArray? {
         val scheme = uri.scheme?.lowercase()
         return when (scheme) {
-            "content", "file", "android.resource" -> {
+            "content", "file", "android.resource", com.theveloper.pixelplay.utils.LocalArtworkUri.SCHEME -> {
                 runCatching {
-                    applicationContext.contentResolver.openInputStream(uri)?.use { input ->
+                    AlbumArtUtils.openArtworkInputStream(applicationContext, uri)?.use { input ->
                         readBytesCapped(input, MAX_WIDGET_ARTWORK_BYTES)
                     }
                 }.getOrElse { error ->

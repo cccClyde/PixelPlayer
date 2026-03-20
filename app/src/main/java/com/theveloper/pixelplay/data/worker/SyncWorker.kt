@@ -29,6 +29,7 @@ import com.theveloper.pixelplay.utils.AlbumArtCacheManager
 import com.theveloper.pixelplay.utils.AlbumArtUtils
 import com.theveloper.pixelplay.utils.AudioMetaUtils.getAudioMetadata
 import com.theveloper.pixelplay.utils.DirectoryRuleResolver
+import com.theveloper.pixelplay.utils.LocalArtworkUri
 import com.theveloper.pixelplay.utils.normalizeMetadataTextOrEmpty
 import com.theveloper.pixelplay.utils.splitArtistsByDelimiters
 import dagger.assisted.Assisted
@@ -644,15 +645,6 @@ constructor(
 
     private fun isSongUnchanged(raw: RawSongData, existing: SongEntity?): Boolean {
         if (existing == null) return false
-        existing.albumArtUriString?.let { albumArtUriString ->
-            if (!albumArtUriString.contains("song_art_${existing.id}")) {
-                return false
-            }
-
-            if (!AlbumArtUtils.hasCachedAlbumArt(applicationContext, existing.id)) {
-                return false
-            }
-        }
 
         val parentDir = File(raw.filePath).parent ?: ""
         val existingDateModifiedSeconds = TimeUnit.MILLISECONDS.toSeconds(existing.dateAdded)
@@ -976,13 +968,7 @@ constructor(
                         if (meta.year != null) year = meta.year
 
                         meta.artwork?.let { art ->
-                            val uri =
-                                    AlbumArtUtils.saveAlbumArtToCache(
-                                            applicationContext,
-                                            art.bytes,
-                                            raw.id
-                                    )
-                            albumArtUriString = uri.toString()
+                            albumArtUriString = LocalArtworkUri.buildSongUri(raw.id)
                         }
                     }
                 } catch (e: Exception) {

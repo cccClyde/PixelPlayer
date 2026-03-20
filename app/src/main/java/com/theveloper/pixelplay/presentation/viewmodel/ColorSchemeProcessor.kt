@@ -18,6 +18,7 @@ import com.theveloper.pixelplay.data.database.AlbumArtThemeDao
 import com.theveloper.pixelplay.data.database.AlbumArtThemeEntity
 import com.theveloper.pixelplay.data.database.StoredColorSchemeValues
 import com.theveloper.pixelplay.data.database.toComposeColor
+import com.theveloper.pixelplay.utils.LocalArtworkUri
 import com.theveloper.pixelplay.ui.theme.clearExtractedColorCache
 import com.theveloper.pixelplay.ui.theme.extractSeedColor
 import com.theveloper.pixelplay.ui.theme.generateColorSchemeFromSeed
@@ -166,6 +167,7 @@ class ColorSchemeProcessor @Inject constructor(
     private suspend fun loadBitmapForColorExtraction(uri: String, skipCache: Boolean): Bitmap? {
         return try {
             val cachePolicy = if (skipCache) CachePolicy.DISABLED else CachePolicy.ENABLED
+            val diskCachePolicy = if (LocalArtworkUri.isLocalArtworkUri(uri)) CachePolicy.DISABLED else cachePolicy
             
             val request = ImageRequest.Builder(context)
                 .data(uri)
@@ -173,7 +175,7 @@ class ColorSchemeProcessor @Inject constructor(
                 .size(Size(128, 128)) // Small size for fast processing
                 .bitmapConfig(Bitmap.Config.ARGB_8888)
                 .memoryCachePolicy(cachePolicy)
-                .diskCachePolicy(cachePolicy)
+                .diskCachePolicy(diskCachePolicy)
                 .build()
             
             val drawable = context.imageLoader.execute(request).drawable ?: return null

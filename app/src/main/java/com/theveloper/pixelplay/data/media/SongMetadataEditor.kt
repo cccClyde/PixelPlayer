@@ -13,6 +13,7 @@ import com.kyant.taglib.TagLib
 import com.theveloper.pixelplay.data.database.MusicDao
 import com.theveloper.pixelplay.data.database.TelegramDao // Added
 import com.theveloper.pixelplay.data.database.TelegramSongEntity // Added
+import com.theveloper.pixelplay.utils.LocalArtworkUri
 import kotlinx.coroutines.flow.first // Added
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
@@ -246,8 +247,8 @@ class SongMetadataEditor(
                     newTrackNumber
                 )
 
-                coverArtUpdate?.let { update ->
-                    storedCoverArtUri = saveCoverArtPreview(songId, update)
+                coverArtUpdate?.let {
+                    storedCoverArtUri = LocalArtworkUri.buildSongUri(songId)
                     storedCoverArtUri?.let { coverUri ->
                         musicDao.updateSongAlbumArt(songId, coverUri)
                     }

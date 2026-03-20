@@ -7,6 +7,7 @@ import com.theveloper.pixelplay.data.model.FolderSource
 import com.theveloper.pixelplay.data.model.MusicFolder
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.utils.DirectoryRuleResolver
+import com.theveloper.pixelplay.utils.LocalArtworkUri
 import com.theveloper.pixelplay.utils.StorageType
 import com.theveloper.pixelplay.utils.StorageUtils
 import kotlinx.collections.immutable.toImmutableList
@@ -146,6 +147,12 @@ class FolderTreeBuilder @Inject constructor() {
     private fun FolderSongRow.toFolderStubSong(): Song {
         val parentPath = normalizePath(parentDirectoryPath)
         val syntheticPath = if (parentPath.isBlank()) title else "$parentPath/$title"
+        val resolvedAlbumArtUri = when {
+            LocalArtworkUri.isLocalArtworkUri(albumArtUriString) -> albumArtUriString
+            id > 0L && LocalArtworkUri.looksLikeVolatileArtworkUri(albumArtUriString) ->
+                LocalArtworkUri.buildSongUri(id)
+            else -> albumArtUriString
+        }
         return Song(
             id = id.toString(),
             title = title,
@@ -155,7 +162,7 @@ class FolderTreeBuilder @Inject constructor() {
             albumId = -1L,
             path = syntheticPath,
             contentUriString = "",
-            albumArtUriString = albumArtUriString,
+            albumArtUriString = resolvedAlbumArtUri,
             duration = 0L,
             trackNumber = 0,
             year = 0,
