@@ -188,6 +188,9 @@ fun LyricsSheet(
     val lyrics by remember { derivedStateOf { stablePlayerState.lyrics } }
     val isPlaying by remember { derivedStateOf { stablePlayerState.isPlaying } }
     val currentSong by remember { derivedStateOf { stablePlayerState.currentSong } }
+    val hasTranslatedSyncedLyrics = remember(lyrics) {
+        lyrics?.synced?.any { !it.translation.isNullOrBlank() } == true
+    }
 
     val context = LocalContext.current
 
@@ -196,6 +199,10 @@ fun LyricsSheet(
         context.dataStore.data.map { it[stringPreferencesKey("lyrics_alignment")] ?: "left" }
     }
     val lyricsAlignment by lyricsAlignmentFlow.collectAsStateWithLifecycle(initialValue = "left")
+    val showLyricsTranslationFlow = remember(context) {
+        context.dataStore.data.map { it[booleanPreferencesKey("show_lyrics_translation")] ?: true }
+    }
+    val showLyricsTranslation by showLyricsTranslationFlow.collectAsStateWithLifecycle(initialValue = true)
 
     // Read animated lyrics preference internally from DataStore
     val useAnimatedLyricsFlow = remember(context) {
@@ -569,6 +576,7 @@ fun LyricsSheet(
                                 animatedLyricsBlurStrength = animatedLyricsBlurStrength,
                                 immersiveMode = immersiveMode,
                                 lyricsAlignment = lyricsAlignment,
+                                showTranslation = showLyricsTranslation,
                                 footer = {
                                     if (lyrics?.areFromRemote == true) {
                                         item(key = "provider_text") {
@@ -809,6 +817,16 @@ fun LyricsSheet(
                             }
                         }
                     },
+                    hasTranslatedLyrics = hasTranslatedSyncedLyrics,
+                    showTranslation = showLyricsTranslation,
+                    onShowTranslationChange = { enabled ->
+                        resetImmersiveTimer()
+                        coroutineScope.launch {
+                            context.dataStore.edit { preferences ->
+                                preferences[booleanPreferencesKey("show_lyrics_translation")] = enabled
+                            }
+                        }
+                    },
                     isShuffleEnabled = isShuffleEnabled,
                     repeatMode = repeatMode,
                     isFavoriteProvider = isFavoriteProvider,
@@ -916,6 +934,7 @@ fun SyncedLyricsList(
     animatedLyricsBlurStrength: Float = 2.5f,
     immersiveMode: Boolean = false,
     lyricsAlignment: String = "left",
+    showTranslation: Boolean = true,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     footer: LazyListScope.() -> Unit = {}
@@ -1018,6 +1037,7 @@ fun SyncedLyricsList(
                             animatedLyricsBlurStrength = animatedLyricsBlurStrength,
                             immersiveMode = immersiveMode,
                             lyricsAlignment = lyricsAlignment,
+                            showTranslation = showTranslation,
                             accentColor = accentColor,
                             style = textStyle,
                             modifier = parallaxModifier
@@ -1069,6 +1089,7 @@ fun LyricLineRow(
     animatedLyricsBlurStrength: Float = 2.5f,
     immersiveMode: Boolean = false,
     lyricsAlignment: String = "left",
+    showTranslation: Boolean = true,
     accentColor: Color,
     style: TextStyle,
     modifier: Modifier = Modifier,
@@ -1217,7 +1238,7 @@ fun LyricLineRow(
                     textAlign = textAlign
                 )
             }
-            if (!translationText.isNullOrBlank()) {
+            if (showTranslation && !translationText.isNullOrBlank()) {
                 Text(
                     text = translationText,
                     style = translationStyle,
@@ -1267,7 +1288,7 @@ fun LyricLineRow(
                     }
                 }
             }
-            if (!translationText.isNullOrBlank()) {
+            if (showTranslation && !translationText.isNullOrBlank()) {
                 Text(
                     text = translationText,
                     style = translationStyle,
