@@ -657,6 +657,7 @@ class QqMusicRepository @Inject constructor(
                     artistName = primaryArtistName,
                     artistId = primaryArtistId,
                     songCount = 0,
+                    dateAdded = qqSong.dateAdded,
                     year = 0,
                     albumArtUriString = qqSong.albumArtUrl
                 )

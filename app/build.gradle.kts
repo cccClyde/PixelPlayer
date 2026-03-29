@@ -23,6 +23,11 @@ android {
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/DEPENDENCIES"
             excludes += "/META-INF/io.netty.versions.properties"
+            pickFirsts.add("META-INF/LICENSE.md")
+            pickFirsts.add("META-INF/LICENSE.txt")
+            excludes.add("META-INF/CONTRIBUTORS.md")
+            excludes.add("META-INF/NOTICE.txt")
+            excludes.add("META-INF/NOTICE.md")
         }
     }
 
@@ -366,6 +371,12 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    // Kuromoji
+    implementation(libs.kuromoji.ipadic)
+
+    // Pinyin
+    implementation(libs.pinyin4j.core)
 }
 
 tasks.withType<Test> {

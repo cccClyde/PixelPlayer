@@ -71,7 +71,8 @@ fun LibrarySortBottomSheet(
     viewToggleChecked: Boolean = false,
     onViewToggleChange: (Boolean) -> Unit = {},
     viewToggleContent: (@Composable () -> Unit)? = null,
-    sourceToggleContent: (@Composable () -> Unit)? = null
+    sourceToggleContent: (@Composable () -> Unit)? = null,
+    extraContent: (@Composable () -> Unit)? = null
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -254,6 +255,11 @@ fun LibrarySortBottomSheet(
                     modifier = Modifier.padding(start = 2.dp, top = 8.dp, bottom = 8.dp)
                 )
                 sourceToggleContent()
+            }
+
+            if (extraContent != null) {
+                Spacer(modifier = Modifier.height(12.dp))
+                extraContent()
             }
 
             Spacer(modifier = Modifier.height(16.dp))

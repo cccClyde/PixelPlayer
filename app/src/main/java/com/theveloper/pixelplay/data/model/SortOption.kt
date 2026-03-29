@@ -133,6 +133,13 @@ sealed class SortOption(
         methodKey = "album_release_year",
         direction = SortDirection.Ascending
     )
+    object AlbumDateAdded : SortOption(
+        storageKey = "album_date_added",
+        displayName = "Date Added",
+        methodLabel = "Date Added",
+        methodKey = "album_date_added",
+        direction = SortDirection.Descending
+    )
     object AlbumSizeAsc : SortOption(
         storageKey = "album_size_asc",
         displayName = "Fewest Songs",
@@ -163,7 +170,13 @@ sealed class SortOption(
         methodKey = "artist_name",
         direction = SortDirection.Descending
     )
-    // object ArtistNumSongs : SortOption("artist_num_songs", "Number of Songs") // Requires ViewModel change & data
+    object ArtistNumSongs : SortOption(
+        storageKey = "artist_num_songs",
+        displayName = "Number of Songs",
+        methodLabel = "Number of Songs",
+        methodKey = "artist_num_songs",
+        direction = SortDirection.Descending
+    )
 
     // Playlist Sort Options
     object PlaylistNameAZ : SortOption(
@@ -194,7 +207,6 @@ sealed class SortOption(
         methodKey = "playlist_date_created",
         direction = SortDirection.Ascending
     )
-    // object PlaylistNumSongs : SortOption("playlist_num_songs", "Number of Songs") // Requires ViewModel change & data
 
     // Liked Sort Options (similar to Songs)
     object LikedSongTitleAZ : SortOption(
@@ -322,7 +334,7 @@ sealed class SortOption(
     companion object {
 
         val SONGS: List<SortOption> by lazy {
-             listOf(
+            listOf(
                 SongDefaultOrder,
                 SongTitleAZ,
                 SongTitleZA,
@@ -336,6 +348,7 @@ sealed class SortOption(
                 SongDurationAsc
             )
         }
+
         val ALBUMS: List<SortOption> by lazy {
             listOf(
                 AlbumTitleAZ,
@@ -344,16 +357,20 @@ sealed class SortOption(
                 AlbumArtistDesc,
                 AlbumReleaseYear,
                 AlbumReleaseYearAsc,
+                AlbumDateAdded,
                 AlbumSizeAsc,
                 AlbumSizeDesc
             )
         }
+
         val ARTISTS: List<SortOption> by lazy {
             listOf(
                 ArtistNameAZ,
-                ArtistNameZA
+                ArtistNameZA,
+                ArtistNumSongs
             )
         }
+
         val PLAYLISTS: List<SortOption> by lazy {
             listOf(
                 PlaylistNameAZ,
@@ -362,6 +379,7 @@ sealed class SortOption(
                 PlaylistDateCreatedAsc
             )
         }
+
         val FOLDERS: List<SortOption> by lazy {
             listOf(
                 FolderNameAZ,
@@ -372,6 +390,7 @@ sealed class SortOption(
                 FolderSubdirCountDesc
             )
         }
+
         val LIKED: List<SortOption> by lazy {
             listOf(
                 LikedSongTitleAZ,

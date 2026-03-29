@@ -82,7 +82,7 @@ class LibraryStateHolder @Inject constructor(
     }
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val songsPagingFlow: kotlinx.coroutines.flow.Flow<androidx.paging.PagingData<Song>> = 
+    val songsPagingFlow: kotlinx.coroutines.flow.Flow<androidx.paging.PagingData<Song>> =
         kotlinx.coroutines.flow.combine(_currentSongSortOption, _currentStorageFilter) { sort, filter ->
             sort to filter
         }.flatMapLatest { (sortOption, filter) ->
@@ -182,9 +182,11 @@ class LibraryStateHolder @Inject constructor(
             val folderSortKey = userPreferencesRepository.foldersSortOptionFlow.first()
             _currentFolderSortOption.value = SortOption.FOLDERS.find { it.storageKey == folderSortKey } ?: SortOption.FolderNameAZ
 
-
             val likedSortKey = userPreferencesRepository.likedSongsSortOptionFlow.first()
             _currentFavoriteSortOption.value = SortOption.LIKED.find { it.storageKey == likedSortKey } ?: SortOption.LikedSongDateLiked
+
+            // Restore last storage filter (All / Cloud / Local)
+            _currentStorageFilter.value = userPreferencesRepository.lastStorageFilterFlow.first()
         }
     }
 
@@ -215,10 +217,10 @@ class LibraryStateHolder @Inject constructor(
                 // Process heavy list conversions on Default dispatcher to avoid blocking UI
                 val immutableSongs = withContext(Dispatchers.Default) { songs.toImmutableList() }
                 val songsMap = withContext(Dispatchers.Default) { songs.associateBy { it.id } }
-                
+
                 _allSongs.value = immutableSongs
                 _allSongsById.value = songsMap
-                
+
                 // When the repository emits a new list (triggered by directory changes),
                 // we update our state and re-apply current sorting.
                 // Apply sort to the new data
@@ -354,6 +356,11 @@ class LibraryStateHolder @Inject constructor(
                         .thenBy { it.title.lowercase() }
                         .thenBy { it.id }
                 )
+                SortOption.AlbumDateAdded -> _albums.value.sortedWith(
+                    compareByDescending<Album> { it.dateAdded }
+                        .thenBy { it.title.lowercase() }
+                        .thenBy { it.id }
+                )
                 SortOption.AlbumSizeAsc -> _albums.value.sortedWith(
                     compareBy<Album> { it.songCount }
                         .thenBy { it.title.lowercase() }
@@ -387,6 +394,11 @@ class LibraryStateHolder @Inject constructor(
                 )
                 SortOption.ArtistNameZA -> _artists.value.sortedWith(
                     compareByDescending<Artist> { it.name.lowercase() }
+                        .thenBy { it.id }
+                )
+                SortOption.ArtistNumSongs -> _artists.value.sortedWith(
+                    compareByDescending<Artist> { it.songCount }
+                        .thenBy { it.name.lowercase() }
                         .thenBy { it.id }
                 )
                 else -> _artists.value
@@ -471,6 +483,9 @@ class LibraryStateHolder @Inject constructor(
 
     fun setStorageFilter(filter: com.theveloper.pixelplay.data.model.StorageFilter) {
         _currentStorageFilter.value = filter
+        scope?.launch {
+            userPreferencesRepository.saveLastStorageFilter(filter)
+        }
     }
 }
 
