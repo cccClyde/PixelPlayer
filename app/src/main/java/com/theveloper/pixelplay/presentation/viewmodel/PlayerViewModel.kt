@@ -558,6 +558,91 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun showAndPlaySongFromLibrary(
+        song: Song,
+        queueName: String = "Library",
+        isVoluntaryPlay: Boolean = true
+    ) {
+        viewModelScope.launch {
+            runCatching {
+                val sortOption = playerUiState.value.currentSongSortOption
+                val storageFilter = playerUiState.value.currentStorageFilter
+                val sortedIds = musicRepository.getSongIdsSorted(sortOption, storageFilter)
+                val fullQueue = resolvePlaybackQueueFromSortedIds(sortedIds)
+                showAndPlaySong(
+                    song = song,
+                    contextSongs = fullQueue.ifEmpty { listOf(song) },
+                    queueName = queueName,
+                    isVoluntaryPlay = isVoluntaryPlay
+                )
+            }.onFailure { error ->
+                Timber.e(error, "Failed to build full library queue for songId=%s", song.id)
+                showAndPlaySong(song, listOf(song), queueName, isVoluntaryPlay)
+            }
+        }
+    }
+
+    fun showAndPlaySongFromFavorites(
+        song: Song,
+        queueName: String = "Liked Songs",
+        isVoluntaryPlay: Boolean = true
+    ) {
+        viewModelScope.launch {
+            runCatching {
+                val sortOption = playerUiState.value.currentFavoriteSortOption
+                val storageFilter = playerUiState.value.currentStorageFilter
+                val sortedIds = musicRepository.getFavoriteSongIdsSorted(sortOption, storageFilter)
+                val fullQueue = resolvePlaybackQueueFromSortedIds(sortedIds)
+                showAndPlaySong(
+                    song = song,
+                    contextSongs = fullQueue.ifEmpty { listOf(song) },
+                    queueName = queueName,
+                    isVoluntaryPlay = isVoluntaryPlay
+                )
+            }.onFailure { error ->
+                Timber.e(error, "Failed to build favorites queue for songId=%s", song.id)
+                showAndPlaySong(song, listOf(song), queueName, isVoluntaryPlay)
+            }
+        }
+    }
+
+    private suspend fun resolvePlaybackQueueFromSortedIds(sortedIds: List<Long>): List<Song> {
+        if (sortedIds.isEmpty()) return emptyList()
+
+        val orderedIds = sortedIds.map(Long::toString)
+        val cachedSongsById = libraryStateHolder.allSongsById.value
+        val missingIds = ArrayList<String>()
+
+        val cachedQueue = withContext(Dispatchers.Default) {
+            buildList(orderedIds.size) {
+                orderedIds.forEach { songId ->
+                    val cachedSong = cachedSongsById[songId]
+                    if (cachedSong != null) {
+                        add(cachedSong)
+                    } else {
+                        missingIds.add(songId)
+                    }
+                }
+            }
+        }
+
+        if (missingIds.isEmpty()) {
+            return cachedQueue
+        }
+
+        val missingSongsById = musicRepository.getSongsByIds(missingIds).first().associateBy { it.id }
+        return withContext(Dispatchers.Default) {
+            buildList(orderedIds.size) {
+                orderedIds.forEach { songId ->
+                    val resolvedSong = cachedSongsById[songId] ?: missingSongsById[songId]
+                    if (resolvedSong != null) {
+                        add(resolvedSong)
+                    }
+                }
+            }
+        }
+    }
+
     val castRoutes: StateFlow<List<MediaRouter.RouteInfo>> = castStateHolder.castRoutes
     val selectedRoute: StateFlow<MediaRouter.RouteInfo?> = castStateHolder.selectedRoute
     /** Pre-mapped so UI composables don't create a new Flow on every recomposition. */
