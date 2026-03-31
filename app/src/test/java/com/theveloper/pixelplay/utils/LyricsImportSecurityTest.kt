@@ -183,4 +183,20 @@ class LyricsImportSecurityTest {
             LyricsImportValidationResult.Invalid(LyricsImportFailureReason.INVALID_LYRICS_CONTENT)
         )
     }
+
+    @Test
+    fun validateImportedLyricsFile_acceptsTtmlExtensionWithLrcPayload() {
+        val disguisedLrc = "[00:01.00]v1: <00:01.00>Hello <00:01.50>world"
+
+        val result = LyricsImportSecurity.validateImportedLyricsFile(
+            fileName = "track.ttml",
+            mimeType = "text/plain",
+            inputStream = disguisedLrc.byteInputStream()
+        )
+
+        assertThat(result).isInstanceOf(LyricsImportValidationResult.Valid::class.java)
+        val valid = result as LyricsImportValidationResult.Valid
+        assertThat(valid.value.parsedLyrics.synced).hasSize(1)
+        assertThat(valid.value.parsedLyrics.synced!!.first().line).isEqualTo("v1: Hello world")
+    }
 }

@@ -164,21 +164,32 @@ object LyricsImportSecurity {
         val decoded = decodeText(payload)
             ?: return LyricsImportValidationResult.Invalid(LyricsImportFailureReason.INVALID_ENCODING)
 
-        val normalized = normalizeDecodedLyrics(decoded, format)
-            ?: return LyricsImportValidationResult.Invalid(LyricsImportFailureReason.INVALID_LYRICS_CONTENT)
+        for (normalized in normalizationCandidates(decoded, format)) {
+            val validation = validateImportedLrcContent(normalized)
+            if (validation is LyricsImportValidationResult.Valid) {
+                return validation
+            }
+        }
 
-        return validateImportedLrcContent(normalized)
+        return LyricsImportValidationResult.Invalid(LyricsImportFailureReason.INVALID_LYRICS_CONTENT)
     }
 
-    private fun normalizeDecodedLyrics(
+    private fun normalizationCandidates(
         decoded: String,
         format: LyricsDocumentFormat
-    ): String? {
-        return when (format) {
-            LyricsDocumentFormat.LRC -> sanitizeImportedLyrics(decoded)
-            LyricsDocumentFormat.TTML -> TtmlLyricsParser.parseToEnhancedLrc(decoded)
-                ?.let(::sanitizeImportedLyrics)
+    ): List<String> {
+        val candidates = when (format) {
+            LyricsDocumentFormat.LRC -> listOfNotNull(
+                sanitizeImportedLyrics(decoded),
+                TtmlLyricsParser.parseToEnhancedLrc(decoded)?.let(::sanitizeImportedLyrics)
+            )
+            LyricsDocumentFormat.TTML -> listOfNotNull(
+                TtmlLyricsParser.parseToEnhancedLrc(decoded)?.let(::sanitizeImportedLyrics),
+                sanitizeImportedLyrics(decoded)
+            )
         }
+
+        return candidates.distinct().filter { it.isNotBlank() }
     }
 
     private fun resolveDocumentFormat(fileName: String?): LyricsDocumentFormat? {
