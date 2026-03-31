@@ -453,8 +453,7 @@ object AppModule {
             // Use modern TLS connection spec
             .connectionSpecs(listOf(
                 okhttp3.ConnectionSpec.MODERN_TLS,
-                okhttp3.ConnectionSpec.COMPATIBLE_TLS,
-                okhttp3.ConnectionSpec.CLEARTEXT
+                okhttp3.ConnectionSpec.COMPATIBLE_TLS
             ))
             .connectTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
