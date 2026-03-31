@@ -107,6 +107,7 @@ class MusicRepositoryImpl @Inject constructor(
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     // Tracks the active prefetch job so a new flow emission cancels the previous one.
     @Volatile private var prefetchJob: Job? = null
+    @Volatile private var telegramDownloadSyncObserverStarted = false
     private val telegramCacheManager: com.theveloper.pixelplay.data.telegram.TelegramCacheManager
         get() = telegramCacheManagerProvider.get()
     override val telegramRepository: com.theveloper.pixelplay.data.telegram.TelegramRepository
@@ -114,6 +115,19 @@ class MusicRepositoryImpl @Inject constructor(
 
     private fun normalizePath(path: String): String =
         runCatching { File(path).canonicalPath }.getOrElse { File(path).absolutePath }
+
+    private fun ensureTelegramDownloadSyncObserverStarted() {
+        if (telegramDownloadSyncObserverStarted) return
+        telegramDownloadSyncObserverStarted = true
+
+        repositoryScope.launch {
+            telegramRepository.songFileUpdated.collect {
+                androidx.work.WorkManager.getInstance(context).enqueue(
+                    com.theveloper.pixelplay.data.worker.SyncWorker.incrementalSyncWork()
+                )
+            }
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAudioFiles(): Flow<List<Song>> {
@@ -172,7 +186,9 @@ class MusicRepositoryImpl @Inject constructor(
     override suspend fun saveTelegramSongs(songs: List<Song>) {
         val entities = songs.mapNotNull { it.toTelegramEntity() }
         if (entities.isNotEmpty()) {
+            ensureTelegramDownloadSyncObserverStarted()
             telegramDao.insertSongs(entities)
+            telegramRepository.warmUpArtworkForSongs(entities)
             // Trigger sync to update main DB
             androidx.work.WorkManager.getInstance(context).enqueue(
                 com.theveloper.pixelplay.data.worker.SyncWorker.incrementalSyncWork()
@@ -182,9 +198,11 @@ class MusicRepositoryImpl @Inject constructor(
 
     override suspend fun replaceTelegramSongsForChannel(chatId: Long, songs: List<Song>) {
         val entities = songs.mapNotNull { it.toTelegramEntity() }.filter { it.chatId == chatId }
+        ensureTelegramDownloadSyncObserverStarted()
         telegramDao.deleteSongsByChatId(chatId)
         if (entities.isNotEmpty()) {
             telegramDao.insertSongs(entities)
+            telegramRepository.warmUpArtworkForSongs(entities)
         }
         // Trigger sync to update main DB (and remove deleted songs)
         androidx.work.WorkManager.getInstance(context).enqueue(
@@ -770,9 +788,11 @@ class MusicRepositoryImpl @Inject constructor(
         val entities = songs.mapNotNull { it.toTelegramEntityWithThread(threadId) }
             .filter { it.chatId == chatId }
 
+        ensureTelegramDownloadSyncObserverStarted()
         telegramDao.deleteSongsByTopicId(chatId, threadId)
         if (entities.isNotEmpty()) {
             telegramDao.insertSongs(entities)
+            telegramRepository.warmUpArtworkForSongs(entities)
         }
 
         // Create/update the per-topic app playlist
