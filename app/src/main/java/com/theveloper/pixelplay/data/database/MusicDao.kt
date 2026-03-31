@@ -35,7 +35,8 @@ private const val SONG_DETAIL_PROJECTION = """
     songs.bitrate AS bitrate,
     songs.sample_rate AS sample_rate,
     songs.telegram_chat_id AS telegram_chat_id,
-    songs.telegram_file_id AS telegram_file_id
+    songs.telegram_file_id AS telegram_file_id,
+    songs.artists_json AS artists_json
 """
 
 @Dao
