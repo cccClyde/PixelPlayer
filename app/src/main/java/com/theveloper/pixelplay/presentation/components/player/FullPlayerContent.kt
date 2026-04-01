@@ -49,7 +49,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -57,12 +56,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 // import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults // Removed
 // import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState // Removed
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -958,43 +955,18 @@ fun FullPlayerContent(
         )
     }
 
-    val artistPickerSheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val artistPickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (showArtistPicker && currentSongArtists.isNotEmpty()) {
-        ModalBottomSheet(
-            onDismissRequest = { showArtistPicker = false },
-            sheetState = artistPickerSheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.artist_picker_title), // short label; keep UI minimal
-                    style = MaterialTheme.typography.titleMedium,
-                    color = LocalMaterialTheme.current.onPrimaryContainer,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                currentSongArtists.forEachIndexed { index, artistItem ->
-                    Text(
-                        text = artistItem.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = LocalMaterialTheme.current.onPrimaryContainer,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp)
-                            .clickable {
-                                playerViewModel.triggerArtistNavigationFromPlayer(artistItem.id)
-                                showArtistPicker = false
-                            }
-                    )
-                    if (index != currentSongArtists.lastIndex) {
-                        HorizontalDivider(color = LocalMaterialTheme.current.outlineVariant)
-                    }
-                }
+        PlayerArtistPickerBottomSheet(
+            song = song,
+            artists = currentSongArtists,
+            sheetState = artistPickerSheetState,
+            onDismiss = { showArtistPicker = false },
+            onArtistClick = { artist ->
+                playerViewModel.triggerArtistNavigationFromPlayer(artist.id)
+                showArtistPicker = false
             }
-        }
+        )
     }
 }
 
@@ -1878,11 +1850,13 @@ private fun EfficientTimeLabels(
             Text(
                 posStr,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                fontWeight = FontWeight.SemiBold,
                 color = textColor
             )
             Text(
                 durStr,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                fontWeight = FontWeight.SemiBold,
                 color = textColor
             )
         }
