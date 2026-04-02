@@ -415,7 +415,8 @@ class PlayerViewModel @Inject constructor(
             "DEEPSEEK" -> deepseekKey.isNotBlank()
             else -> geminiKey.isNotBlank()
         }
-    }.stateIn(
+    }.distinctUntilChanged()
+        .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = false
@@ -1005,7 +1006,8 @@ class PlayerViewModel @Inject constructor(
         favoriteSongIds
     ) { songId, ids ->
         songId?.let { ids.contains(it) } ?: false
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    }.distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     // ---------------------------------------------------------------------------
     // FullPlayerSlice — consolidates 11 independent flows into ONE subscription.

@@ -144,6 +144,7 @@ object AppModule {
             PixelPlayDatabase.MIGRATION_35_36
         )
             .addCallback(PixelPlayDatabase.createRuntimeArtifactsCallback())
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
 
         // P2-4: Only allow destructive migration in debug builds.
         // In release, a migration bug will crash the app (revealing the problem)
