@@ -38,6 +38,9 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.theveloper.pixelplay.R
 
+val SmartImageCompactListTargetSize = Size(96, 96)
+val SmartImageListTargetSize = Size(128, 128)
+
 @Composable
 fun SmartImage(
     model: Any?,

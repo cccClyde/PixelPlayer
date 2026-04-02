@@ -1099,6 +1099,58 @@ class PlayerViewModel @Inject constructor(
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FullPlayerSlice())
 
+    // ---------------------------------------------------------------------------
+    // PlayerConfigSlice — consolidates 7 infrequently-changing preference flows
+    // into ONE subscription. Previously UnifiedPlayerSheet(V2) had 7 separate
+    // collectAsStateWithLifecycle() calls for config values, each causing a full
+    // sheet recomposition when any preference changed.
+    // ---------------------------------------------------------------------------
+    data class PlayerConfigSlice(
+        val navBarCornerRadius: Int = 32,
+        val navBarStyle: String = NavBarStyle.DEFAULT,
+        val carouselStyle: String = CarouselStyle.NO_PEEK,
+        val fullPlayerLoadingTweaks: FullPlayerLoadingTweaks = FullPlayerLoadingTweaks(),
+        val tapBackgroundClosesPlayer: Boolean = true,
+        val useSmoothCorners: Boolean = true,
+        val playerThemePreference: String = ThemePreference.ALBUM_ART
+    )
+
+    private val playerConfigSlicePart1 = combine(
+        navBarCornerRadius,
+        navBarStyle,
+        carouselStyle,
+        fullPlayerLoadingTweaks,
+        tapBackgroundClosesPlayer
+    ) { radius, style, carousel, tweaks, tapClose ->
+        PlayerConfigSlicePart1(radius, style, carousel, tweaks, tapClose)
+    }
+
+    private data class PlayerConfigSlicePart1(
+        val navBarCornerRadius: Int,
+        val navBarStyle: String,
+        val carouselStyle: String,
+        val fullPlayerLoadingTweaks: FullPlayerLoadingTweaks,
+        val tapBackgroundClosesPlayer: Boolean
+    )
+
+    val playerConfigSlice: StateFlow<PlayerConfigSlice> = combine(
+        playerConfigSlicePart1,
+        useSmoothCorners,
+        playerThemePreference
+    ) { p1, smoothCorners, themePref ->
+        PlayerConfigSlice(
+            navBarCornerRadius = p1.navBarCornerRadius,
+            navBarStyle = p1.navBarStyle,
+            carouselStyle = p1.carouselStyle,
+            fullPlayerLoadingTweaks = p1.fullPlayerLoadingTweaks,
+            tapBackgroundClosesPlayer = p1.tapBackgroundClosesPlayer,
+            useSmoothCorners = smoothCorners,
+            playerThemePreference = themePref
+        )
+    }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PlayerConfigSlice())
+
     // Library State - delegated to LibraryStateHolder
     // Favorites now use paginated flow from LibraryStateHolder (DB-level sort & filter)
     val favoritesPagingFlow = libraryStateHolder.favoritesPagingFlow

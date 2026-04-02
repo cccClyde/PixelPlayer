@@ -57,6 +57,7 @@ import com.theveloper.pixelplay.presentation.components.ExpressiveTopBarContent
 import com.theveloper.pixelplay.presentation.components.ExpressiveScrollBar
 import com.theveloper.pixelplay.presentation.components.GenreSortBottomSheet
 import com.theveloper.pixelplay.presentation.components.MiniPlayerHeight
+import com.theveloper.pixelplay.presentation.components.SmartImageCompactListTargetSize
 import com.theveloper.pixelplay.presentation.components.SmartImage
 import com.theveloper.pixelplay.presentation.components.SongInfoBottomSheet
 import com.theveloper.pixelplay.presentation.components.subcomps.EnhancedSongListItem
@@ -95,13 +96,10 @@ fun GenreDetailScreen(
     val playlistUiState by playlistViewModel.uiState.collectAsStateWithLifecycle()
     val libraryGenres by playerViewModel.genres.collectAsStateWithLifecycle()
     
-    // Track transition state to defer heavy list rendering
+    // Defer heavy list rendering until navigation transition settles
     var isTransitionFinished by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        // We wait slightly longer than the navigation transition duration (500ms)
-        // to ensure the heavy list content only populates after the screen is fully static.
-        // Increased delay slightly to ensure absolute smoothness before full list populates.
-        kotlinx.coroutines.delay(800) 
+        kotlinx.coroutines.delay(300)
         isTransitionFinished = true
     }
 
@@ -300,17 +298,14 @@ fun GenreDetailScreen(
                             )
                         }
                         is GenreDetailListItem.SongItem -> {
-                            // Use key to avoid unnecessary recomposition of this stable wrapper
-                            key(item.key) {
-                                GenreSongItemWrapper(
-                                    item = item,
-                                    stablePlayerState = stablePlayerState,
-                                    onSongClick = { song ->
-                                        playerViewModel.showAndPlaySong(song, uiState.sortedSongs, genreDisplayName)
-                                    },
-                                    onMoreOptionsClick = { song -> showSongOptionsSheet = song }
-                                )
-                            }
+                            GenreSongItemWrapper(
+                                item = item,
+                                stablePlayerState = stablePlayerState,
+                                onSongClick = { song ->
+                                    playerViewModel.showAndPlaySong(song, uiState.sortedSongs, genreDisplayName)
+                                },
+                                onMoreOptionsClick = { song -> showSongOptionsSheet = song }
+                            )
                         }
                         is GenreDetailListItem.Spacer -> {
                             Spacer(
@@ -721,6 +716,7 @@ fun GenreAlbumHeader(
             SmartImage(
                 model = album.artUri,
                 contentDescription = null,
+                targetSize = SmartImageCompactListTargetSize,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(8.dp))

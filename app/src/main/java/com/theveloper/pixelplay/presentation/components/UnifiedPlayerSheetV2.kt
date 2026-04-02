@@ -26,7 +26,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +50,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.theveloper.pixelplay.data.model.Song
@@ -109,16 +112,21 @@ fun UnifiedPlayerSheetV2(
     isNavBarHidden: Boolean = false
 ) {
     val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        playerViewModel.toastEvents.collect { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-    }
-
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val latestContext by rememberUpdatedState(context)
     var showNoInternetDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        playerViewModel.showNoInternetDialog.collect {
-            showNoInternetDialog = true
+    LaunchedEffect(playerViewModel, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            launch {
+                playerViewModel.toastEvents.collect { message ->
+                    Toast.makeText(latestContext, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+            launch {
+                playerViewModel.showNoInternetDialog.collect {
+                    showNoInternetDialog = true
+                }
+            }
         }
     }
 
@@ -168,13 +176,14 @@ fun UnifiedPlayerSheetV2(
     val predictiveBackSwipeEdge by playerViewModel.predictiveBackSwipeEdge.collectAsStateWithLifecycle()
     val prewarmFullPlayer = rememberPrewarmFullPlayer(infrequentPlayerState.currentSong?.id)
 
-    val navBarCornerRadius by playerViewModel.navBarCornerRadius.collectAsStateWithLifecycle()
-    val navBarStyle by playerViewModel.navBarStyle.collectAsStateWithLifecycle()
-    val carouselStyle by playerViewModel.carouselStyle.collectAsStateWithLifecycle()
-    val fullPlayerLoadingTweaks by playerViewModel.fullPlayerLoadingTweaks.collectAsStateWithLifecycle()
-    val tapBackgroundClosesPlayer by playerViewModel.tapBackgroundClosesPlayer.collectAsStateWithLifecycle()
-    val useSmoothCorners by playerViewModel.useSmoothCorners.collectAsStateWithLifecycle()
-    val playerThemePreference by playerViewModel.playerThemePreference.collectAsStateWithLifecycle()
+    val playerConfig by playerViewModel.playerConfigSlice.collectAsStateWithLifecycle()
+    val navBarCornerRadius = playerConfig.navBarCornerRadius
+    val navBarStyle = playerConfig.navBarStyle
+    val carouselStyle = playerConfig.carouselStyle
+    val fullPlayerLoadingTweaks = playerConfig.fullPlayerLoadingTweaks
+    val tapBackgroundClosesPlayer = playerConfig.tapBackgroundClosesPlayer
+    val useSmoothCorners = playerConfig.useSmoothCorners
+    val playerThemePreference = playerConfig.playerThemePreference
 
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current

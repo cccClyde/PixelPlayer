@@ -19,6 +19,7 @@ import com.theveloper.pixelplay.data.database.MusicDao
 import com.theveloper.pixelplay.data.database.NeteaseDao
 import com.theveloper.pixelplay.data.database.SongArtistCrossRef
 import com.theveloper.pixelplay.data.database.SongEntity
+import com.theveloper.pixelplay.data.database.SourceType
 import com.theveloper.pixelplay.data.database.TelegramDao // Added
 import com.theveloper.pixelplay.data.database.resolveAlbumArtUri
 import com.theveloper.pixelplay.data.database.serializeArtistRefs
@@ -1034,7 +1035,8 @@ constructor(
                         },
                 mimeType = audioMetadata?.mimeType ?: raw.mimeType,
                 sampleRate = audioMetadata?.sampleRate,
-                bitrate = audioMetadata?.bitrate
+                bitrate = audioMetadata?.bitrate,
+                sourceType = SourceType.LOCAL
         )
     }
 
@@ -1513,7 +1515,8 @@ constructor(
                     sampleRate = realSampleRate,
                     telegramChatId = tSong.chatId,
                     telegramFileId = tSong.fileId,
-                    artistsJson = serializeArtistRefs(telegramArtistRefs)
+                    artistsJson = serializeArtistRefs(telegramArtistRefs),
+                    sourceType = SourceType.TELEGRAM
                 )
                 songsToInsert.add(songEntity)
             }
@@ -1636,7 +1639,8 @@ constructor(
                         sampleRate = null,
                         telegramChatId = null,
                         telegramFileId = null,
-                        artistsJson = serializeArtistRefs(neteaseArtistRefs)
+                        artistsJson = serializeArtistRefs(neteaseArtistRefs),
+                        sourceType = SourceType.NETEASE
                     )
                 )
             }

@@ -11,6 +11,7 @@ import com.theveloper.pixelplay.data.database.NavidromeSongEntity
 import com.theveloper.pixelplay.data.database.toEntity
 import com.theveloper.pixelplay.data.database.SongArtistCrossRef
 import com.theveloper.pixelplay.data.database.SongEntity
+import com.theveloper.pixelplay.data.database.SourceType
 import com.theveloper.pixelplay.data.database.toSong
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.navidrome.model.NavidromeCredentials
@@ -694,7 +695,8 @@ class NavidromeRepository @Inject constructor(
                     bitrate = navidromeSong.bitRate,
                     sampleRate = null,
                     telegramChatId = null,
-                    telegramFileId = null
+                    telegramFileId = null,
+                    sourceType = SourceType.NAVIDROME
                 )
             )
         }

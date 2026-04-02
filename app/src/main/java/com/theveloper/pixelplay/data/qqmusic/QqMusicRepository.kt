@@ -11,6 +11,7 @@ import com.theveloper.pixelplay.data.database.QqMusicPlaylistEntity
 import com.theveloper.pixelplay.data.database.QqMusicSongEntity
 import com.theveloper.pixelplay.data.database.SongArtistCrossRef
 import com.theveloper.pixelplay.data.database.SongEntity
+import com.theveloper.pixelplay.data.database.SourceType
 import com.theveloper.pixelplay.data.database.toSong
 import com.theveloper.pixelplay.data.network.qqmusic.QqMusicApiService
 import com.theveloper.pixelplay.data.preferences.PlaylistPreferencesRepository
@@ -687,7 +688,8 @@ class QqMusicRepository @Inject constructor(
                     bitrate = qqSong.bitrate,
                     sampleRate = null,
                     telegramChatId = null,
-                    telegramFileId = null
+                    telegramFileId = null,
+                    sourceType = SourceType.QQMUSIC
                 )
             )
         }

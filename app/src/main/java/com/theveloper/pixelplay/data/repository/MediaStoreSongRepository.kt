@@ -26,6 +26,8 @@ import com.theveloper.pixelplay.utils.splitArtistsByDelimiters
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,6 +40,16 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private data class SearchPrefs(
+    val favoriteIds: Set<Long>,
+    val allowedDirs: Set<String>,
+    val blockedDirs: Set<String>,
+    val artistDelimiters: List<String>,
+    val wordDelims: List<String>,
+    val extractFromTitle: Boolean,
+    val minDuration: Int
+)
 
 @Singleton
 class MediaStoreSongRepository @Inject constructor(
@@ -323,13 +335,16 @@ class MediaStoreSongRepository @Inject constructor(
 
     override suspend fun searchSongs(query: String): List<Song> {
         if (query.isBlank()) return emptyList()
-        val favoriteIds = getFavoriteIds()
-        val allowedDirs = userPreferencesRepository.allowedDirectoriesFlow.first()
-        val blockedDirs = userPreferencesRepository.blockedDirectoriesFlow.first()
-        val artistDelimiters = userPreferencesRepository.artistDelimitersFlow.first()
-        val wordDelims = userPreferencesRepository.artistWordDelimitersFlow.first()
-        val extractFromTitle = userPreferencesRepository.extractArtistsFromTitleFlow.first()
-        val minDuration = userPreferencesRepository.minSongDurationFlow.first()
+        val (favoriteIds, allowedDirs, blockedDirs, artistDelimiters, wordDelims, extractFromTitle, minDuration) = coroutineScope {
+            val fav = async { getFavoriteIds() }
+            val allowed = async { userPreferencesRepository.allowedDirectoriesFlow.first() }
+            val blocked = async { userPreferencesRepository.blockedDirectoriesFlow.first() }
+            val delims = async { userPreferencesRepository.artistDelimitersFlow.first() }
+            val wordD = async { userPreferencesRepository.artistWordDelimitersFlow.first() }
+            val extract = async { userPreferencesRepository.extractArtistsFromTitleFlow.first() }
+            val minDur = async { userPreferencesRepository.minSongDurationFlow.first() }
+            SearchPrefs(fav.await(), allowed.await(), blocked.await(), delims.await(), wordD.await(), extract.await(), minDur.await())
+        }
         val queryTerm = "%${query.trim()}%"
         return fetchSongsFromMediaStore(
             favoriteIds = favoriteIds,
