@@ -35,7 +35,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal val NavBarContentHeight = 90.dp // Altura del contenido de la barra de navegación
-internal val NavBarCompactContentHeight = 58.dp
+internal val NavBarCompactContentHeight = 64.dp
 internal val NavBarContentHeightFullWidth = NavBarContentHeight // Altura del contenido de la barra de navegación en modo completo
 
 internal fun resolveNavBarContentHeight(compactMode: Boolean): Dp =
