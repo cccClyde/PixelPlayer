@@ -2,8 +2,6 @@ package com.theveloper.pixelplay.presentation.screens
 
 import com.theveloper.pixelplay.presentation.navigation.navigateSafely
 import com.theveloper.pixelplay.presentation.components.BackupModuleSelectionDialog
-import com.theveloper.pixelplay.ui.theme.ExpTitleTypography
-import com.theveloper.pixelplay.ui.theme.AbsoluteSmoothCornerShape
 import com.theveloper.pixelplay.data.preferences.AiPreferencesRepository
 
 import android.content.Intent
@@ -1128,14 +1126,14 @@ fun SettingsCategoryScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = "Context & Performance",
-                                style = ExpTitleTypography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
                             )
 
                             Surface(
                                 color = MaterialTheme.colorScheme.surfaceContainerLow,
-                                shape = AbsoluteSmoothCornerShape(24.dp, 80),
+                                shape = RoundedCornerShape(24.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
