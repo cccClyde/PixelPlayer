@@ -148,6 +148,7 @@ constructor(
         val FULL_PLAYER_SWITCH_ON_DRAG_RELEASE = booleanPreferencesKey("full_player_switch_on_drag_release")
         val FULL_PLAYER_DELAY_THRESHOLD = intPreferencesKey("full_player_delay_threshold_percent")
         val FULL_PLAYER_CLOSE_THRESHOLD = intPreferencesKey("full_player_close_threshold_percent")
+        // Deprecated experiment key kept only for one-time cleanup after removing the legacy player sheet.
         val USE_PLAYER_SHEET_V2 = booleanPreferencesKey("use_player_sheet_v2")
 
         // Multi-Artist Settings
@@ -830,11 +831,6 @@ constructor(
             )
         }
 
-    val usePlayerSheetV2Flow: Flow<Boolean> = dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.USE_PLAYER_SHEET_V2] ?: true
-        }
-
     val favoriteSongIdsFlow: Flow<Set<String>> =
             dataStore.data // Nuevo flujo para favoritos
                     .map { preferences ->
@@ -1347,9 +1343,9 @@ constructor(
         }
     }
 
-    suspend fun setUsePlayerSheetV2(enabled: Boolean) {
+    suspend fun clearDeprecatedPlayerSheetPreference() {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USE_PLAYER_SHEET_V2] = enabled
+            preferences.remove(PreferencesKeys.USE_PLAYER_SHEET_V2)
         }
     }
 

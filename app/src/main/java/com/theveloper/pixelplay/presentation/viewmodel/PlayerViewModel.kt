@@ -1201,7 +1201,7 @@ class PlayerViewModel @Inject constructor(
 
     // ---------------------------------------------------------------------------
     // PlayerConfigSlice — consolidates 7 infrequently-changing preference flows
-    // into ONE subscription. Previously UnifiedPlayerSheet(V2) had 7 separate
+    // into ONE subscription. Previously the player sheet had 7 separate
     // collectAsStateWithLifecycle() calls for config values, each causing a full
     // sheet recomposition when any preference changed.
     // ---------------------------------------------------------------------------

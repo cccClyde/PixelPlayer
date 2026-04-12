@@ -112,7 +112,6 @@ import com.theveloper.pixelplay.presentation.components.PlayerInternalNavigation
 import com.theveloper.pixelplay.presentation.components.PlayStoreAnnouncementDefaults
 import com.theveloper.pixelplay.presentation.components.PlayStoreAnnouncementDialog
 import com.theveloper.pixelplay.presentation.components.PlayStoreAnnouncementUiModel
-import com.theveloper.pixelplay.presentation.components.UnifiedPlayerSheet
 import com.theveloper.pixelplay.presentation.components.UnifiedPlayerSheetV2
 import com.theveloper.pixelplay.presentation.components.resolveNavBarOccupiedHeight
 import com.theveloper.pixelplay.presentation.components.resolveNavBarSurfaceHeight
@@ -701,6 +700,10 @@ class MainActivity : ComponentActivity() {
                 }
         }
 
+        LaunchedEffect(userPreferencesRepository) {
+            userPreferencesRepository.clearDeprecatedPlayerSheetPreference()
+        }
+
         CompositionLocalProvider(
             LocalAppHapticsConfig provides appHapticsConfig,
             LocalHapticFeedback provides scopedHapticFeedback
@@ -862,8 +865,6 @@ class MainActivity : ComponentActivity() {
                                 .map { it.currentSong?.id != null }
                                 .distinctUntilChanged()
                         }.collectAsStateWithLifecycle(initialValue = false)
-                        val usePlayerSheetV2 by userPreferencesRepository.usePlayerSheetV2Flow.collectAsStateWithLifecycle(initialValue = true)
-
                         val routesWithHiddenMiniPlayer = remember { setOf(Screen.NavBarCrRad.route) }
                         val shouldHideMiniPlayer by remember(currentRoute) {
                             derivedStateOf { currentRoute in routesWithHiddenMiniPlayer }
@@ -886,27 +887,15 @@ class MainActivity : ComponentActivity() {
                             onOpenSidebar = { scope.launch { drawerState.open() } }
                         )
 
-                        if (usePlayerSheetV2) {
-                            UnifiedPlayerSheetV2(
-                                playerViewModel = playerViewModel,
-                                sheetCollapsedTargetY = sheetCollapsedTargetY,
-                                collapsedStateHorizontalPadding = horizontalPadding,
-                                hideMiniPlayer = shouldHideMiniPlayer,
-                                containerHeight = containerHeight,
-                                navController = navController,
-                                isNavBarHidden = isNavBarEffectivelyHidden
-                            )
-                        } else {
-                            UnifiedPlayerSheet(
-                                playerViewModel = playerViewModel,
-                                sheetCollapsedTargetY = sheetCollapsedTargetY,
-                                collapsedStateHorizontalPadding = horizontalPadding,
-                                hideMiniPlayer = shouldHideMiniPlayer,
-                                containerHeight = containerHeight,
-                                navController = navController,
-                                isNavBarHidden = isNavBarEffectivelyHidden
-                            )
-                        }
+                        UnifiedPlayerSheetV2(
+                            playerViewModel = playerViewModel,
+                            sheetCollapsedTargetY = sheetCollapsedTargetY,
+                            collapsedStateHorizontalPadding = horizontalPadding,
+                            hideMiniPlayer = shouldHideMiniPlayer,
+                            containerHeight = containerHeight,
+                            navController = navController,
+                            isNavBarHidden = isNavBarEffectivelyHidden
+                        )
 
                         val dismissUndoBarSlice by remember {
                             playerViewModel.playerUiState
