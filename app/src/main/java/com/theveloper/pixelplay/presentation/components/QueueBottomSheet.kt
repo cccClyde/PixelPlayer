@@ -145,6 +145,7 @@ import com.theveloper.pixelplay.presentation.components.AutoScrollingText
 import com.theveloper.pixelplay.presentation.components.SmartImage
 import com.theveloper.pixelplay.presentation.components.subcomps.PlayingEqIcon
 import com.theveloper.pixelplay.presentation.components.player.AnimatedPlaybackControls
+import com.theveloper.pixelplay.presentation.viewmodel.PlayerUiState
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.SettingsViewModel
@@ -187,6 +188,17 @@ import coil.size.Size
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.util.RandomAccess
+
+private data class QueueUndoBarProjection(
+    val isVisible: Boolean = false,
+    val removedSongTitle: String = ""
+)
+
+private fun PlayerUiState.toQueueUndoBarProjection(): QueueUndoBarProjection =
+    QueueUndoBarProjection(
+        isVisible = showQueueItemUndoBar,
+        removedSongTitle = lastRemovedQueueSong?.title.orEmpty()
+    )
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
@@ -294,6 +306,24 @@ fun QueueBottomSheet(
     var reorderPreviewQueueSignature by remember { mutableStateOf<Int?>(null) }
     val displaySongsSignature = remember(displaySongs, queueIndexOffset) {
         (queueIndexOffset * 31) + System.identityHashCode(displaySongs)
+    }
+    val defaultDisplayOrder = remember(displaySongCount, queueIndexOffset) {
+        List(displaySongCount) { queueIndexOffset + it }
+    }
+    val defaultDisplayKeys = remember(displaySongCount, queueIndexOffset) {
+        List(displaySongCount) { (queueIndexOffset + it).toLong() }
+    }
+    val activeOrder = reorderPreviewOrder ?: defaultDisplayOrder
+    val activeKeys = reorderPreviewKeys
+        ?: committedDisplayKeys.takeIf { it.size == displaySongCount }
+        ?: defaultDisplayKeys
+    val activeSongSource = reorderPreviewBaseQueue ?: queue
+    val activeKeyToLocalIndex = remember(activeKeys) {
+        HashMap<Long, Int>(activeKeys.size).apply {
+            activeKeys.forEachIndexed { index, stableKey ->
+                put(stableKey, index)
+            }
+        }
     }
 
     fun remapCommittedKeysForDisplay(newSongs: List<Song>) {
@@ -409,10 +439,9 @@ fun QueueBottomSheet(
     var reorderHandleInUse by remember { mutableStateOf(false) }
     val updatedReorderHandleInUse by rememberUpdatedState(reorderHandleInUse)
 
-    fun mapKeyToLocalIndex(key: Any?, keys: List<Long>): Int? {
+    fun mapKeyToLocalIndex(key: Any?, keyToLocalIndex: Map<Long, Int>): Int? {
         val stableKey = key as? Long ?: return null
-        val localIndex = keys.indexOf(stableKey)
-        return localIndex.takeIf { it >= 0 }
+        return keyToLocalIndex[stableKey]
     }
 
     val reorderableState = rememberReorderableLazyListState(
@@ -421,13 +450,11 @@ fun QueueBottomSheet(
             if (reorderPreviewOrder == null) {
                 reorderPreviewBaseQueue = queue
             }
-            val currentOrder = reorderPreviewOrder ?: List(displaySongCount) { queueIndexOffset + it }
-            val currentKeys = reorderPreviewKeys
-                ?: committedDisplayKeys.takeIf { it.size == displaySongCount }
-                ?: List(displaySongCount) { (queueIndexOffset + it).toLong() }
+            val currentOrder = activeOrder
+            val currentKeys = activeKeys
 
-            val fromLocalIndex = mapKeyToLocalIndex(from.key, currentKeys) ?: return@rememberReorderableLazyListState
-            val toLocalIndex = mapKeyToLocalIndex(to.key, currentKeys) ?: return@rememberReorderableLazyListState
+            val fromLocalIndex = mapKeyToLocalIndex(from.key, activeKeyToLocalIndex) ?: return@rememberReorderableLazyListState
+            val toLocalIndex = mapKeyToLocalIndex(to.key, activeKeyToLocalIndex) ?: return@rememberReorderableLazyListState
             if (fromLocalIndex == toLocalIndex) return@rememberReorderableLazyListState
 
             reorderPreviewOrder = currentOrder.toMutableList().apply {
@@ -702,18 +729,16 @@ fun QueueBottomSheet(
                                 Spacer(modifier = Modifier.height(6.dp))
                             }
 
-                            val activeOrder = reorderPreviewOrder ?: List(displaySongCount) { queueIndexOffset + it }
-                            val activeKeys = reorderPreviewKeys
-                                ?: committedDisplayKeys.takeIf { it.size == displaySongCount }
-                                ?: List(displaySongCount) { (queueIndexOffset + it).toLong() }
                             items(
                                 count = displaySongCount,
-                                key = { index -> activeKeys.getOrNull(index) ?: (queueIndexOffset + index).toLong() }
+                                key = { index -> activeKeys[index] },
+                                contentType = { "queue_song" }
                             ) { index ->
-                                val queueIndex = activeOrder.getOrNull(index) ?: return@items
-                                val itemStableKey = activeKeys.getOrNull(index) ?: return@items
-                                val songSource = reorderPreviewBaseQueue ?: queue
-                                val song = songSource.getOrNull(queueIndex) ?: return@items
+                                if (index >= activeOrder.size || index >= activeKeys.size) return@items
+                                val queueIndex = activeOrder[index]
+                                if (queueIndex !in activeSongSource.indices) return@items
+                                val itemStableKey = activeKeys[index]
+                                val song = activeSongSource[queueIndex]
                                 // Use currentSongDisplayIndex for comparison since index is in displayQueue
                                 val canReorder = index > currentSongDisplayIndex
                                 ReorderableItem(
@@ -975,9 +1000,13 @@ fun QueueBottomSheet(
             }
 
             // Undo bar for queue item removal
-            val playerUiState by viewModel.playerUiState.collectAsStateWithLifecycle()
+            val queueUndoBarState by remember(viewModel) {
+                viewModel.playerUiState
+                    .map { it.toQueueUndoBarProjection() }
+                    .distinctUntilChanged()
+            }.collectAsStateWithLifecycle(initialValue = QueueUndoBarProjection())
             AnimatedVisibility(
-                visible = playerUiState.showQueueItemUndoBar,
+                visible = queueUndoBarState.isVisible,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(
@@ -987,7 +1016,6 @@ fun QueueBottomSheet(
                 enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
             ) {
-                val removedSongTitle = playerUiState.lastRemovedQueueSong?.title ?: ""
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = colors.inverseSurface,
@@ -999,7 +1027,7 @@ fun QueueBottomSheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = removedSongTitle,
+                            text = queueUndoBarState.removedSongTitle,
                             style = MaterialTheme.typography.bodyMedium,
                             color = colors.inverseOnSurface,
                             maxLines = 1,
