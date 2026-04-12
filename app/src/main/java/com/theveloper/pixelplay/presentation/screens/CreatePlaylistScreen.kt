@@ -239,6 +239,7 @@ fun EditPlaylistDialog(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreatePlaylistContent(
     onDismiss: () -> Unit,
