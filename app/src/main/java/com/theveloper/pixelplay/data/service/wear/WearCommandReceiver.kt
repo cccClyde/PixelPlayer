@@ -247,10 +247,10 @@ class WearCommandReceiver : WearableListenerService() {
                 playlist.songIds.mapNotNull { id -> songsById[id] }
             }
             "favorites" -> {
-                musicRepository.getFavoriteSongsOnce()
+                musicRepository.getFavoriteSongsPage(limit = MAX_SONGS, offset = 0)
             }
             "all_songs" -> {
-                musicRepository.getAllSongsOnce().take(MAX_SONGS)
+                musicRepository.getSongsPage(limit = MAX_SONGS, offset = 0)
             }
             else -> {
                 Timber.tag(TAG).w("Unknown context type: $contextType")
@@ -317,8 +317,7 @@ class WearCommandReceiver : WearableListenerService() {
             )
 
             WearBrowseRequest.ALBUMS -> {
-                musicRepository.getAllAlbumsOnce()
-                    .take(MAX_ALBUMS)
+                musicRepository.getAlbumsPage(limit = MAX_ALBUMS, offset = 0)
                     .map { album ->
                         WearLibraryItem(
                             id = album.id.toString(),
@@ -330,8 +329,7 @@ class WearCommandReceiver : WearableListenerService() {
             }
 
             WearBrowseRequest.ARTISTS -> {
-                musicRepository.getAllArtistsOnce()
-                    .take(MAX_ARTISTS)
+                musicRepository.getArtistsPage(limit = MAX_ARTISTS, offset = 0)
                     .map { artist ->
                         WearLibraryItem(
                             id = artist.id.toString(),
@@ -355,14 +353,12 @@ class WearCommandReceiver : WearableListenerService() {
             }
 
             WearBrowseRequest.FAVORITES -> {
-                musicRepository.getFavoriteSongsOnce()
-                    .take(MAX_SONGS)
+                musicRepository.getFavoriteSongsPage(limit = MAX_SONGS, offset = 0)
                     .map { song -> song.toWearLibraryItem() }
             }
 
             WearBrowseRequest.ALL_SONGS -> {
-                musicRepository.getAllSongsOnce()
-                    .take(MAX_SONGS)
+                musicRepository.getSongsPage(limit = MAX_SONGS, offset = 0)
                     .map { song -> song.toWearLibraryItem() }
             }
 

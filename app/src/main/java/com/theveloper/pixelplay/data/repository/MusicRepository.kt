@@ -60,6 +60,16 @@ interface MusicRepository {
     ): List<Song>
 
     /**
+     * Returns a bounded favorites page without materializing the full favorites list.
+     */
+    suspend fun getFavoriteSongsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: com.theveloper.pixelplay.data.model.SortOption = com.theveloper.pixelplay.data.model.SortOption.LikedSongTitleAZ,
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
+    ): List<Song>
+
+    /**
      * Returns the count of favorite songs (reactive).
      */
     fun getFavoriteSongCountFlow(
@@ -79,6 +89,36 @@ interface MusicRepository {
      * @return List of randomly selected songs.
      */
     suspend fun getRandomSongs(limit: Int): List<Song>
+
+    /**
+     * Returns a bounded song page without materializing the full library.
+     */
+    suspend fun getSongsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: com.theveloper.pixelplay.data.model.SortOption = com.theveloper.pixelplay.data.model.SortOption.SongDefaultOrder,
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
+    ): List<Song>
+
+    /**
+     * Returns a bounded album page without materializing the full albums list.
+     */
+    suspend fun getAlbumsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: com.theveloper.pixelplay.data.model.SortOption = com.theveloper.pixelplay.data.model.SortOption.AlbumTitleAZ,
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
+    ): List<Album>
+
+    /**
+     * Returns a bounded artist page without materializing the full artists list.
+     */
+    suspend fun getArtistsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: com.theveloper.pixelplay.data.model.SortOption = com.theveloper.pixelplay.data.model.SortOption.ArtistNameAZ,
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
+    ): List<Artist>
 
     /**
      * Returns a single playable song without materializing the entire library.

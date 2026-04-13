@@ -351,7 +351,7 @@ class PlaylistViewModel @Inject constructor(
         rule: SmartPlaylistRule,
         limit: Int
     ): List<String> {
-        val allSongs = musicRepository.getAudioFiles().first()
+        val allSongs = musicRepository.getAllSongsOnce()
         if (allSongs.isEmpty()) return emptyList()
 
         val engagements = dailyMixManager.getAllEngagementStats()
@@ -930,9 +930,8 @@ class PlaylistViewModel @Inject constructor(
             _uiState.update { it.copy(isAiGenerating = true, aiGenerationError = null) }
 
             try {
-                // Fetch all library songs
                 val allSongs = withContext(Dispatchers.IO) {
-                    musicRepository.getAudioFiles().first()
+                    musicRepository.getAllSongsOnce()
                 }
 
                 // Call AiPlaylistGenerator

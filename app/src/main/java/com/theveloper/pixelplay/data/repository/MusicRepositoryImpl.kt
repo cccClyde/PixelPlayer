@@ -266,6 +266,23 @@ class MusicRepositoryImpl @Inject constructor(
         return songRepository.getFavoriteSongsOnce(storageFilter)
     }
 
+    override suspend fun getFavoriteSongsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: SortOption,
+        storageFilter: StorageFilter
+    ): List<Song> = withContext(Dispatchers.IO) {
+        val filter = cachedDirFilter.value
+        musicDao.getFavoriteSongsPage(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter,
+            sortOrder = sortOption.storageKey,
+            filterMode = storageFilter.toFilterMode(),
+            limit = limit,
+            offset = offset
+        ).map { it.toSong() }
+    }
+
     override fun getFavoriteSongCountFlow(storageFilter: StorageFilter): Flow<Int> {
         return songRepository.getFavoriteSongCountFlow(storageFilter)
     }
@@ -277,6 +294,57 @@ class MusicRepositoryImpl @Inject constructor(
     override suspend fun getRandomSongs(limit: Int): List<Song> = withContext(Dispatchers.IO) {
         val filter = cachedDirFilter.value
         musicDao.getRandomSongs(limit, filter.allowedParentDirs, filter.applyFilter).map { it.toSong() }
+    }
+
+    override suspend fun getSongsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: SortOption,
+        storageFilter: StorageFilter
+    ): List<Song> = withContext(Dispatchers.IO) {
+        val filter = cachedDirFilter.value
+        musicDao.getSongsPage(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter,
+            sortOrder = sortOption.storageKey,
+            filterMode = storageFilter.toFilterMode(),
+            limit = limit,
+            offset = offset
+        ).map { it.toSong() }
+    }
+
+    override suspend fun getAlbumsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: SortOption,
+        storageFilter: StorageFilter
+    ): List<Album> = withContext(Dispatchers.IO) {
+        val filter = cachedDirFilter.value
+        musicDao.getAlbumsPage(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter,
+            sortOrder = sortOption.storageKey,
+            filterMode = storageFilter.toFilterMode(),
+            limit = limit,
+            offset = offset
+        ).map { it.toAlbum() }
+    }
+
+    override suspend fun getArtistsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: SortOption,
+        storageFilter: StorageFilter
+    ): List<Artist> = withContext(Dispatchers.IO) {
+        val filter = cachedDirFilter.value
+        musicDao.getArtistsPage(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter,
+            sortOrder = sortOption.storageKey,
+            filterMode = storageFilter.toFilterMode(),
+            limit = limit,
+            offset = offset
+        ).map { it.toArtist() }
     }
 
     override suspend fun getFirstPlayableSong(): Song? = withContext(Dispatchers.IO) {
@@ -673,11 +741,20 @@ class MusicRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllAlbumsOnce(): List<Album> = withContext(Dispatchers.IO) {
-        musicDao.getAllAlbumsList(emptyList(), false).map { it.toAlbum() }
+        val filter = cachedDirFilter.value
+        musicDao.getAllAlbumsList(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter
+        ).map { it.toAlbum() }
     }
 
     override suspend fun getAllArtistsOnce(): List<Artist> = withContext(Dispatchers.IO) {
-        musicDao.getAllArtistsListRaw().map { it.toArtist() }
+        val filter = cachedDirFilter.value
+        musicDao.getArtistsWithSongCountsFiltered(
+            allowedParentDirs = filter.allowedParentDirs,
+            applyDirectoryFilter = filter.applyFilter,
+            filterMode = StorageFilter.ALL.toFilterMode()
+        ).first().map { it.toArtist() }
     }
 
     override suspend fun setFavoriteStatus(songId: String, isFavorite: Boolean) = withContext(Dispatchers.IO) {

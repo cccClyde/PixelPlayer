@@ -6,7 +6,6 @@ import com.theveloper.pixelplay.data.model.Playlist
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.repository.MusicRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.first
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
@@ -22,8 +21,8 @@ class M3uManager @Inject constructor(
         val songIds = mutableListOf<String>()
         var playlistName = "Imported Playlist"
 
-        // Pre-load all songs once for efficient lookup (fixes performance issue with large M3U files)
-        val allSongs = musicRepository.getAudioFiles().first()
+        // Load a filtered one-shot snapshot so import respects the current library visibility rules.
+        val allSongs = musicRepository.getAllSongsOnce()
         
         // Build lookup maps for fast matching
         val songsByPath = allSongs.associateBy { it.path }

@@ -93,12 +93,12 @@ class AutoMediaBrowseTree @Inject constructor(
             }
             mediaId.startsWith(ALBUM_PREFIX) -> {
                 val albumId = mediaId.removePrefix(ALBUM_PREFIX).toLongOrNull() ?: return null
-                val album = musicRepository.getAllAlbumsOnce().find { it.id == albumId } ?: return null
+                val album = musicRepository.getAlbumById(albumId).first() ?: return null
                 buildBrowsableAlbumItem(album)
             }
             mediaId.startsWith(ARTIST_PREFIX) -> {
                 val artistId = mediaId.removePrefix(ARTIST_PREFIX).toLongOrNull() ?: return null
-                val artist = musicRepository.getAllArtistsOnce().find { it.id == artistId } ?: return null
+                val artist = musicRepository.getArtistById(artistId).first() ?: return null
                 buildBrowsableArtistItem(artist)
             }
             mediaId.startsWith(PLAYLIST_PREFIX) -> {
@@ -146,10 +146,8 @@ class AutoMediaBrowseTree @Inject constructor(
     }
 
     private suspend fun getFavoriteSongs(offset: Int, limit: Int): List<MediaItem> {
-        val songs = musicRepository.getFavoriteSongsOnce()
+        val songs = musicRepository.getFavoriteSongsPage(limit = limit, offset = offset)
         return songs
-            .drop(offset)
-            .take(limit)
             .map { buildPlayableSongItem(it, CONTEXT_TYPE_FAVORITES, null, FAVORITES_ID) }
     }
 
@@ -162,26 +160,20 @@ class AutoMediaBrowseTree @Inject constructor(
     }
 
     private suspend fun getAlbums(offset: Int, limit: Int): List<MediaItem> {
-        val albums = musicRepository.getAllAlbumsOnce()
+        val albums = musicRepository.getAlbumsPage(limit = limit, offset = offset)
         return albums
-            .drop(offset)
-            .take(limit)
             .map { buildBrowsableAlbumItem(it) }
     }
 
     private suspend fun getArtists(offset: Int, limit: Int): List<MediaItem> {
-        val artists = musicRepository.getAllArtistsOnce()
+        val artists = musicRepository.getArtistsPage(limit = limit, offset = offset)
         return artists
-            .drop(offset)
-            .take(limit)
             .map { buildBrowsableArtistItem(it) }
     }
 
     private suspend fun getAllSongs(offset: Int, limit: Int): List<MediaItem> {
-        val songs = musicRepository.getAllSongsOnce()
+        val songs = musicRepository.getSongsPage(limit = limit, offset = offset)
         return songs
-            .drop(offset)
-            .take(limit)
             .map { buildPlayableSongItem(it, CONTEXT_TYPE_ALL_SONGS, null, SONGS_ID) }
     }
 

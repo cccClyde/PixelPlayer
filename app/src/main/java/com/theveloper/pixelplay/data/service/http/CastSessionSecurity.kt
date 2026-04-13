@@ -33,7 +33,8 @@ internal object CastSessionSecurity {
     fun buildAccessPolicy(
         existingToken: String?,
         allowedSongIds: Collection<String>,
-        castDeviceIpHint: String?
+        castDeviceIpHint: String?,
+        serverOwnIp: String? = null
     ): CastAccessPolicy {
         val normalizedSongIds = allowedSongIds
             .asSequence()
@@ -44,6 +45,11 @@ internal object CastSessionSecurity {
         val allowedAddresses = buildSet {
             loopbackCandidates.forEach { addAll(normalizeAddressVariants(it)) }
             addAll(castAddressVariants)
+            // Also allow the server's own LAN IP so that on-device components
+            // (widget updates, notification album art) that connect to the Cast
+            // HTTP server via its LAN address are not rejected when the allowlist
+            // is enforced.
+            serverOwnIp?.let { addAll(normalizeAddressVariants(it)) }
         }
         return CastAccessPolicy(
             authToken = existingToken ?: generateAuthToken(),
