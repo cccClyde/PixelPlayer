@@ -248,6 +248,10 @@ fun QueueBottomSheet(
     var showClearQueueDialog by remember { mutableStateOf(false) }
     var isFabExpanded by rememberSaveable { mutableStateOf(false) }
 
+    BackHandler(enabled = isFabExpanded) {
+        isFabExpanded = false
+    }
+
     val infrequentPlayerState by viewModel.stablePlayerState.collectAsStateWithLifecycle()
 
     val albumColorSchemePair by viewModel.currentAlbumArtColorSchemePair.collectAsStateWithLifecycle()
