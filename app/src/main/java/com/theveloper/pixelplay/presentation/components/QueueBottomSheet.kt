@@ -775,8 +775,7 @@ fun QueueBottomSheet(
                                             .graphicsLayer {
                                                 scaleX = scale
                                                 scaleY = scale
-                                            }
-                                        ,
+                                            },
                                         onClick = { onPlaySong(song) },
                                         song = song,
                                         // Use index comparison to correctly highlight only the current song
@@ -1191,14 +1190,14 @@ private fun QueueHeaderSection(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            QueueHeaderTransportPanel(
-                isPlaying = isPlaying,
-                onPrevious = onPrevious,
-                onPlayPause = onPlayPause,
-                onNext = onNext,
-                colorScheme = colorScheme,
-                modifier = Modifier.fillMaxWidth()
-            )
+//            QueueHeaderTransportPanel(
+//                isPlaying = isPlaying,
+//                onPrevious = onPrevious,
+//                onPlayPause = onPlayPause,
+//                onNext = onNext,
+//                colorScheme = colorScheme,
+//                modifier = Modifier.fillMaxWidth()
+//            )
         }
     }
 }

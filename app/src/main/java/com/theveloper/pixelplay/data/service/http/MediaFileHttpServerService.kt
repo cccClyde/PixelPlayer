@@ -417,6 +417,27 @@ class MediaFileHttpServerService : Service() {
                                         return@get
                                     }
 
+                                    // FLAC: Cast DMR supports FLAC natively but its duration
+                                    // estimate is wrong (VBR + missing seektable → reported duration
+                                    // differs from actual), so seeking overshoots and lands near EOF
+                                    // causing an involuntary track skip. Transcode to AAC-ADTS so
+                                    // Cast gets a CBR stream it can seek accurately.
+                                    val isFlac = codecInfo?.codecMime == "audio/flac"
+                                    if (isFlac && codecInfo != null && isFlacTranscodeSupported(codecInfo)) {
+                                        Timber.tag(castHttpLogTag).i(
+                                            "GET /song FLAC→AAC transcode songId=%s sr=%d ch=%d",
+                                            song.id, codecInfo.sampleRate, codecInfo.channelCount
+                                        )
+                                        Log.i(
+                                            "PX_CAST_HTTP",
+                                            "GET /song transcode_flac songId=${song.id} sr=${codecInfo.sampleRate} ch=${codecInfo.channelCount}"
+                                        )
+                                        call.respondOutputStream(ContentType.parse("audio/aac")) {
+                                            transcodeToAacAdts(codecInfo, song, uri, this)
+                                        }
+                                        return@get
+                                    }
+
                                     val contentType = resolveAudioContentType(resolvePreferredAudioMimeType(song, uri))
                                     val rangeHeader = call.request.headers[HttpHeaders.Range]
                                     val source = resolveAudioStreamSource(song, uri)
@@ -516,6 +537,15 @@ class MediaFileHttpServerService : Service() {
                                         // ALAC decoder unavailable — raw M4A fallback
                                         call.response.header(HttpHeaders.ContentType, "audio/mp4")
                                         Timber.tag(castHttpLogTag).d("HEAD /song ALAC fallback songId=%s -> audio/mp4 (decoder unavailable)", song.id)
+                                        call.respond(HttpStatusCode.OK)
+                                        return@head
+                                    }
+
+                                    // FLAC: transcoded to AAC-ADTS for reliable Cast seeking.
+                                    val isFlac = codecInfo?.codecMime == "audio/flac"
+                                    if (isFlac && codecInfo != null && isFlacTranscodeSupported(codecInfo)) {
+                                        call.response.header(HttpHeaders.ContentType, "audio/aac")
+                                        Timber.tag(castHttpLogTag).d("HEAD /song FLAC songId=%s -> audio/aac (transcoded)", song.id)
                                         call.respond(HttpStatusCode.OK)
                                         return@head
                                     }
@@ -1629,6 +1659,21 @@ class MediaFileHttpServerService : Service() {
     }
 
     /**
+     * Returns true if a working MediaCodec decoder for FLAC is available on this device.
+     * Android 5.0+ ships `c2.android.flac.decoder` so this is almost always true, but
+     * we check via [MediaCodecList.findDecoderForFormat] to be safe.
+     */
+    private fun isFlacTranscodeSupported(codecInfo: AudioCodecInfo): Boolean {
+        if (codecInfo.codecMime != "audio/flac") return false
+        val format = MediaFormat.createAudioFormat(
+            "audio/flac", codecInfo.sampleRate, codecInfo.channelCount
+        )
+        return runCatching {
+            MediaCodecList(MediaCodecList.REGULAR_CODECS).findDecoderForFormat(format) != null
+        }.getOrDefault(false)
+    }
+
+    /**
      * Detects the actual audio codec inside a container (e.g. audio/alac vs audio/mp4 for ALAC-in-M4A).
      * Results are cached to avoid repeated MediaExtractor operations per song.
      */
@@ -1743,10 +1788,10 @@ class MediaFileHttpServerService : Service() {
                 .findDecoderForFormat(inputFormat)
             if (decoderName == null) {
                 Timber.tag(castHttpLogTag).w(
-                    "transcodeToAacAdts: no decoder found for audio/alac sr=%d ch=%d songId=%s",
-                    codecInfo.sampleRate, codecInfo.channelCount, song.id
+                    "transcodeToAacAdts: no decoder found for %s sr=%d ch=%d songId=%s",
+                    codecInfo.codecMime, codecInfo.sampleRate, codecInfo.channelCount, song.id
                 )
-                Log.w("PX_CAST_HTTP", "transcode_no_decoder songId=${song.id} sr=${codecInfo.sampleRate}")
+                Log.w("PX_CAST_HTTP", "transcode_no_decoder songId=${song.id} codec=${codecInfo.codecMime} sr=${codecInfo.sampleRate}")
                 return
             }
             decoder = MediaCodec.createByCodecName(decoderName)

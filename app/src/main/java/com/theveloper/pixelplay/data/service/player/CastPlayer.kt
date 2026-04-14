@@ -259,19 +259,21 @@ class CastPlayer(
             // as audio/mp4 (no transcode), so declaring audio/aac would cause a MIME mismatch
             // and a Cast load failure (status 2103).  Let resolveCastContentType() handle those.
             for (song in songs) {
-                val isMaybeM4a = song.path.substringAfterLast('.', "").lowercase(Locale.ROOT)
-                    .let { it == "m4a" || it == "m4b" || it == "mp4" || it == "3gp" || it == "3gpp" } ||
-                    song.mimeType?.lowercase(Locale.ROOT)
-                        ?.let { it.contains("mp4") || it.contains("m4a") || it == "audio/alac" } == true
+                val ext = song.path.substringAfterLast('.', "").lowercase(Locale.ROOT)
+                val mimeL = song.mimeType?.lowercase(Locale.ROOT)
+                // We need to probe songs that the server will transcode (ALAC or FLAC → AAC).
+                val isMaybeTranscodeCandidate =
+                    ext.let { it == "m4a" || it == "m4b" || it == "mp4" || it == "3gp" || it == "3gpp" || it == "flac" } ||
+                    mimeL?.let { it.contains("mp4") || it.contains("m4a") || it == "audio/alac" || it == "audio/flac" || it == "audio/x-flac" } == true
 
-                if (!isMaybeM4a && song.id != startSong?.id) {
-                    // Not an M4A-family file and not the start song — skip the expensive probe.
+                if (!isMaybeTranscodeCandidate && song.id != startSong?.id) {
+                    // Not a transcode-candidate file and not the start song — skip the probe.
                     continue
                 }
 
                 val rawExtractorMime = detectAudioMimeTypeViaExtractor(song)
 
-                // Only override the MIME when the server will transcode (ALAC → AAC ADTS).
+                // Only override the MIME when the server will transcode (ALAC or FLAC → AAC ADTS).
                 // For every other codec — including audio/mp4a-latm (AAC-LC in MP4 container) —
                 // the server pipes the raw bytes as audio/mp4, which resolveCastContentType()
                 // already returns correctly from the file extension / metadata.
@@ -287,6 +289,22 @@ class CastPlayer(
                     Log.i(
                         "PX_CAST_QLOAD",
                         "alac_probe songId=${song.id} rawCodec=audio/alac forcedMime=$forcedMime decoderAvailable=$alacDecoderAvailable nonce=$queueLoadNonce"
+                    )
+                    continue
+                }
+
+                if (rawExtractorMime == "audio/flac") {
+                    // FLAC: Cast DMR can play FLAC natively but its duration estimate is
+                    // wrong (VBR without seektable → Cast reports wrong total time), so any
+                    // seek computes a bad byte offset, overshoots, and triggers an involuntary
+                    // track skip. The server transcodes FLAC → AAC-ADTS (CBR), which gives
+                    // Cast an accurate byte↔time mapping and reliable seeking.
+                    val flacDecoderAvailable = isFlacTranscodeSupported(song)
+                    val forcedMime = if (flacDecoderAvailable) "audio/aac" else "audio/flac"
+                    forcedMimeBySongId[song.id] = forcedMime
+                    Log.i(
+                        "PX_CAST_QLOAD",
+                        "flac_probe songId=${song.id} rawCodec=audio/flac forcedMime=$forcedMime decoderAvailable=$flacDecoderAvailable nonce=$queueLoadNonce"
                     )
                     continue
                 }
@@ -882,6 +900,40 @@ class CastPlayer(
                     .findDecoderForFormat(fmt)
                     ?: return@runCatching false
                 return@runCatching !isKnownUnstableAlacDecoder(decoderName)
+            }
+            false
+        }.getOrDefault(false).also {
+            runCatching { extractor.release() }
+        }
+    }
+
+    /**
+     * Returns true if a working MediaCodec FLAC decoder is available on this device.
+     * Android 5.0+ ships `c2.android.flac.decoder`, so this is almost always true.
+     * When false, the server falls back to serving raw FLAC bytes (poor Cast seeking).
+     */
+    private fun isFlacTranscodeSupported(song: Song): Boolean {
+        val resolver = contentResolver ?: return false
+        val uri = song.contentUriString.toUri()
+        val extractor = MediaExtractor()
+        return runCatching {
+            val opened = runCatching {
+                resolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
+                    val len = afd.length.takeIf { it > 0L } ?: afd.declaredLength.takeIf { it > 0L }
+                    if (len != null) extractor.setDataSource(afd.fileDescriptor, afd.startOffset, len)
+                    else extractor.setDataSource(afd.fileDescriptor)
+                } != null
+            }.getOrElse { false } || runCatching {
+                song.path.takeIf { it.isNotBlank() }?.let { extractor.setDataSource(it) }
+                true
+            }.getOrElse { false }
+            if (!opened) return@runCatching false
+            for (i in 0 until extractor.trackCount) {
+                val fmt = extractor.getTrackFormat(i)
+                val mime = fmt.getString(MediaFormat.KEY_MIME)?.lowercase(Locale.ROOT) ?: continue
+                if (mime != "audio/flac") continue
+                return@runCatching MediaCodecList(MediaCodecList.REGULAR_CODECS)
+                    .findDecoderForFormat(fmt) != null
             }
             false
         }.getOrDefault(false).also {
