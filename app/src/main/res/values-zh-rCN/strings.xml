@@ -1,0 +1,121 @@
+<resources>
+    <string name="app_name">PixelPlayer</string>
+    <string name="app_name_change_title">应用已更名</string>
+    <string name="app_name_change_message">因为涉及到商标问题，我们已将应用从 PixelPlay 更名为 PixelPlayer。照播不误！</string>
+    <string name="do_not_show_again">不再显示</string>
+    <string name="dismiss">关闭</string>
+    <string name="all_files_access_title">需要特殊权限</string>
+    <string name="all_files_access_description">PixelPlayer 需要访问所有文件的特殊权限才能向你提供曲目（.mp3 文件）元数据编辑功能。如果你想直接编辑曲目的元数据标签，请在下一个界面中授予该权限。</string>
+    <string name="grant_permission_button">授予权限</string>
+    <string name="all_files_access_setting">访问所有文件</string>
+    <string name="error">错误</string>
+    <string name="ok">完成</string>
+    <string name="cancel">取消</string>
+    <string name="import_file">导入</string>
+    <string name="search">搜索</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics">歌词</string>
+    <string name="close_lyrics_sheet">关闭歌词面板</string>
+    <string name="loading_lyrics">歌词加载中……</string>
+    <string name="cant_find_lyrics">未能找到这首歌的歌词。</string>
+    <string name="lyrics_provided_by">歌词提供方：</string>
+    <string name="lrclib_uri">https://lrclib.net/</string>
+    <string name="lyrics_not_found">找不到歌词</string>
+    <string name="search_lyrics_online_prompt">是否需要在线搜索歌词？</string>
+    <string name="lyrics_custom_search_hint">我们无法自动找到对应歌词。你可以编辑标题或艺术家后手动搜索试试。</string>
+    <string name="failed_to_search_for_lyrics">搜索歌词失败</string>
+    <string name="failed_to_fetch_lyrics_from_remote">联网获取歌词失败</string>
+    <string name="lyrics_fetch_timeout">连接超时。请检查你的网络连接。</string>
+    <string name="lyrics_network_error">网络错误。请检查你的网络连接。</string>
+    <string name="lyrics_server_error">服务器出错（错误代码 %d）。请稍候重试。</string>
+    <string name="found_n_matches_format">找到 %d 个匹配</string>
+    <string name="searched_for_x_format">查找 \"%s\"</string>
+    <string name="searching_lyrics">正在搜索歌词……</string>
+    <string name="lyrics_embedded_already_available">找到了内嵌歌词，已跳过在线获取。</string>
+    <string name="local_lrc_already_available">找到了本地歌词（.lrc），已跳过在线获取。</string>
+    <string name="fetch_lyrics_show_options_title">显示歌词选项</string>
+    <string name="fetch_lyrics_show_options_subtitle">总是打开选择器，而非自动应用第一个匹配结果</string>
+    <string name="save_lyrics_as_lrc">保存歌词为 .lrc</string>
+    <string name="save_lyrics_dialog_title">保存歌词</string>
+    <string name="save_lyrics_dialog_message">选择要保存的版本：</string>
+    <string name="save_synced_lyrics">同步（包含时间戳）</string>
+    <string name="save_plain_lyrics">常规（仅文本）</string>
+    <string name="lyrics_saved_successfully">歌词保存成功</string>
+    <string name="lyrics_save_failed">歌词保存失败</string>
+    <string name="no_lyrics_to_save">没有可保存的歌词</string>
+    <string name="reset_imported_lyrics">重置已导入的歌词</string>
+    <string name="lyrics_sync_offset">歌词同步偏移</string>
+    <string name="lyrics_sync_offset_format">%+.1fs</string>
+    <string name="lyrics_sync_offset_reset">重置</string>
+    <string name="lyrics_earlier">提前</string>
+    <string name="lyrics_later">延后</string>
+
+    <!-- Sync/Progress strings -->
+    <string name="sync_scanning">正在扫描音乐文件……</string>
+    <string name="sync_processing">正在处理文件……</string>
+    <string name="sync_files_progress">%1$d/%2$d 个文件</string>
+    <string name="sync_in_progress">正在同步媒体库……</string>
+    <string name="sync_complete">同步完成</string>
+    <string name="sync_pending">请稍后……</string>
+    <string name="syncing_library">正在同步媒体库……</string>
+    <string name="unknown_song_title">未知曲目</string>
+    <string name="unknown_artist">未知艺术家</string>
+    <string name="unknown_album">未知专辑</string>
+    <string name="artist_picker_title">选择艺术家</string>
+    <string name="artist_picker_supporting_text">打开该曲目对应的艺术家。</string>
+    <string name="artist_picker_count_single">1 位艺术家</string>
+    <string name="artist_picker_count_multiple">%1$d 位艺术家</string>
+    <string name="artist_picker_primary_label">主要艺术家</string>
+    <string name="artist_picker_shortcut_label">艺术家页面</string>
+    <string name="external_queue_label">快速播放</string>
+    <string name="external_playback_error">无法打开该音频文件。</string>
+    <string name="open_full_player">打开播放器界面</string>
+    <string name="close_external_player">关闭浮动播放器</string>
+    <string name="close_notification_player">关闭播放器</string>
+    <string name="previous_track">上一曲</string>
+    <string name="next_track">下一曲</string>
+    <string name="pause_playback">暂停播放</string>
+    <string name="play_playback">播放</string>
+    <string name="playlist_not_found">找不到播放列表。</string>
+
+    <!-- AI Playlist -->
+    <string name="ai_error_api_key">请在设置中位选定的 AI 服务提供商配置有效的 API 密钥。</string>
+    <string name="ai_error_generic">AI 服务出错: %s</string>
+    <string name="ai_error_quota">因为该账户余额不足或用量超限，所选 AI 服务提供商拒绝了该请求。</string>
+    <string name="ai_error_model_unavailable">所选 AI 模型不再可用。PixelPlayer 已尝试自动切换到其他可用模型。</string>
+    <string name="ai_no_songs_found">AI 服务找不到和你的提示词相符的任何曲目。</string>
+    <string name="ai_prompt_empty">为你的每日合辑加一点创意</string>
+    <string name="ai_daily_mix_updated">由 AI 生成的每日合辑</string>
+    <string name="ai_no_songs_for_mix">AI 服务找不到可用于该合辑的曲目</string>
+
+    <!-- Launcher Shortcuts -->
+    <string name="shortcut_shuffle_short">随机</string>
+    <string name="shortcut_shuffle_long">随机全部曲目</string>
+    <string name="shortcut_playlist_short">播放列表</string>
+    <string name="shortcut_playlist_long">最近播放的列表</string>
+
+    <!-- Quick Settings Tiles -->
+    <string name="tile_shuffle_all">全部随机</string>
+    <string name="tile_last_playlist">最近的播放列表</string>
+    <string name="tile_last_playlist_unavailable">找不到可打开的播放列表</string>
+
+    <!-- Errors -->
+    <string name="invalid_album_id">无效的专辑 ID</string>
+    <string name="album_id_not_found">找不到专辑 ID</string>
+    <string name="error_loading_album">加载专辑数据时出错：%s</string>
+    <string name="album_not_found">找不到专辑</string>
+    <string name="could_not_update">更新失败：%s</string>
+    <string name="invalid_artist_id">无效的艺术家 ID</string>
+    <string name="artist_id_not_found">找不到艺术家 ID</string>
+    <string name="error_loading_artist">加载艺术家数据时出错：%s</string>
+    <string name="could_not_find_artist">找不到指定艺术家</string>
+    <string name="no_valid_songs">找不到可播放的有效曲目</string>
+
+    <!-- Widgets -->
+    <string name="glance_widget_description">尺寸可调的响应式小组件</string>
+    <string name="widget_bar_4x1_desc">精简播放条</string>
+    <string name="widget_control_4x2_desc">包含随机与重复播放等完整控制</string>
+    <string name="widget_grid_2x2_desc">极简方型播放器</string>
+    <string name="service_processing_action">正在处理播放操作……</string>
+</resources>
