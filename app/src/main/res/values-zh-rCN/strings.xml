@@ -118,4 +118,92 @@
     <string name="widget_control_4x2_desc">包含随机与重复播放等完整控制</string>
     <string name="widget_grid_2x2_desc">极简方型播放器</string>
     <string name="service_processing_action">正在处理播放操作……</string>
+
+    <!-- Common extracted UI strings -->
+    <string name="common_back">返回</string>
+    <string name="common_sync">同步</string>
+    <string name="common_syncing">正在同步</string>
+    <string name="common_remove">移除</string>
+    <string name="common_delete">删除</string>
+    <string name="common_logout">注销</string>
+    <string name="common_disconnect">断开连接</string>
+    <string name="common_refresh">刷新</string>
+    <string name="common_retry">重试</string>
+    <string name="common_done">完成</string>
+    <string name="common_stay">保留</string>
+    <string name="common_open_home">打开主页</string>
+    <string name="common_playlists">播放列表</string>
+    <string name="common_quick_actions">快速操作</string>
+    <string name="common_sync_library">同步媒体库</string>
+    <string name="sync_all_playlists">同步所有播放列表</string>
+    <string name="sync_failed_prefix">同步失败</string>
+    <string name="sync_failed_generic">同步失败</string>
+    <string name="sync_failed_with_reason">同步失败：%1$s</string>
+    <string name="sync_message_all_playlists_and_songs">正在同步所有播放列表和曲目……</string>
+    <string name="sync_message_playlists">正在同步播放列表……</string>
+    <string name="sync_message_songs">正在同步曲目……</string>
+    <string name="sync_summary_playlists_songs">已同步 %1$s/%2$s</string>
+    <string name="sync_summary_playlists_songs_failed">已同步 %1$s/%2$s（失败 %3$d 个）</string>
+    <string name="sync_summary_playlists">已同步 %1$s 个播放列表</string>
+    <string name="sync_summary_songs">已同步 %1$s 首曲目</string>
+    <string name="notification_channel_playback">PixelPlayer 音乐播放</string>
+
+    <!-- Dashboard extracted UI strings -->
+    <string name="netease_cloud_music">网易云音乐</string>
+    <string name="subsonic_title">Subsonic</string>
+    <string name="jellyfin_title">Jellyfin</string>
+    <string name="empty_playlists_synced_title">尚未同步播放列表</string>
+    <string name="empty_playlists_synced_subtitle">点击同步来获取你的播放列表</string>
+    <string name="empty_jellyfin_playlists_synced_subtitle">点击同步来获取你的 Jellyfin 播放列表</string>
+    <string name="navidrome_quick_actions_description">管理 Navidrome、Airsonic 和其他兼容的 Subsonic 服务器。</string>
+    <string name="jellyfin_quick_actions_description">管理你的 Jellyfin 服务器连接。</string>
+
+    <!-- NetEase login extracted UI strings -->
+    <string name="netease_login_title">登录到网易云音乐</string>
+    <string name="netease_login_exit_title">退出网易云音乐登录？</string>
+    <string name="netease_login_exit_message">你可以少后回来继续登录，但当前页面会在关闭时失效。</string>
+    <string name="netease_login_exit_confirm">退出</string>
+    <string name="netease_web_back">上一个页面</string>
+    <string name="netease_web_forward">下一个页面</string>
+    <string name="netease_login_saving">正在保存……</string>
+    <string name="netease_login_welcome">欢迎，%1$s！</string>
+    <string name="netease_login_timeout_snackbar">页面加载超时。你可以在不丢失当前进度的情况下重试。</string>
+    <string name="netease_cookie_read_failed">无法读取会话缓存。</string>
+    <string name="netease_login_security_note">安全提醒：你的密码仅提供给网易云音乐网页。PixelPlay 存储会话缓存（MUSIC_U）来同步你的曲库。</string>
+    <string name="netease_page_too_long">页面加载超时。请刷新或换个网络重试。</string>
+    <string name="netease_webview_load_failed">WebView 加载失败。</string>
+    <string name="netease_http_loading_error">加载网易云音乐时出现 HTTP %1$d 错误。</string>
+    <string name="netease_no_cookies_found">找不到缓存。请先登录。</string>
+    <string name="netease_login_not_detected">未检测到登录。点击完成前请确认已登录网易云音乐。</string>
+
+    <!-- Delimiter config extracted UI strings -->
+    <string name="delimiter_invalid_or_exists">分隔符已存在或无效</string>
+    <string name="add_delimiter">添加分隔符</string>
+    <string name="default_delimiters">默认分隔符</string>
+    <string name="delimiters_title">分隔符</string>
+    <string name="current_delimiters">当前分隔符</string>
+    <string name="current_delimiters_hint">点击移除。至少需要一个分隔符。</string>
+    <string name="at_least_one_delimiter_required">至少需要一个分隔符</string>
+    <string name="add_new_delimiter">添加新的分隔符</string>
+    <string name="delimiter_hint_example">比如 ,、/ 或 ; </string>
+    <string name="delimiter_added">已添加分隔符</string>
+    <string name="reset_defaults">重置为默认</string>
+    <string name="reset_delimiters_title">是否重置分隔符？</string>
+    <string name="reset_delimiters_message">清除你的所有自定义分隔符并重置为默认。该操作不可撤销。</string>
+    <string name="delimiters_reset_to_defaults">分隔符已重置为默认</string>
+    <string name="space_label">空格</string>
+
+    <plurals name="playlist_count_synced">
+        <item quantity="one">已同步 %d 个播放列表</item>
+        <item quantity="other">已同步 %d 个播放列表</item>
+    </plurals>
+    <plurals name="playlist_count">
+        <item quantity="one">%d 个播放列表</item>
+        <item quantity="other">%d 个播放列表</item>
+    </plurals>
+    <plurals name="song_count">
+        <item quantity="one">%d 首曲目</item>
+        <item quantity="other">%d 首曲目</item>
+    </plurals>
+
 </resources>
