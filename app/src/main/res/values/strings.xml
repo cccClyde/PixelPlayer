@@ -118,4 +118,91 @@
     <string name="widget_control_4x2_desc">Full controls with shuffle and repeat</string>
     <string name="widget_grid_2x2_desc">Minimalist square player</string>
     <string name="service_processing_action">Processing playback action…</string>
+
+    <!-- Common extracted UI strings -->
+    <string name="common_back">Back</string>
+    <string name="common_sync">Sync</string>
+    <string name="common_syncing">Syncing</string>
+    <string name="common_remove">Remove</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_logout">Logout</string>
+    <string name="common_disconnect">Disconnect</string>
+    <string name="common_refresh">Refresh</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_done">Done</string>
+    <string name="common_stay">Stay</string>
+    <string name="common_open_home">Open home</string>
+    <string name="common_playlists">Playlists</string>
+    <string name="common_quick_actions">Quick actions</string>
+    <string name="common_sync_library">Sync library</string>
+    <string name="sync_all_playlists">Sync all playlists</string>
+    <string name="sync_failed_prefix">Sync failed</string>
+    <string name="sync_failed_generic">Sync failed</string>
+    <string name="sync_failed_with_reason">Sync failed: %1$s</string>
+    <string name="sync_message_all_playlists_and_songs">Syncing all playlists and songs…</string>
+    <string name="sync_message_playlists">Syncing playlists…</string>
+    <string name="sync_message_songs">Syncing songs…</string>
+    <string name="sync_summary_playlists_songs">Synced %1$s, %2$s</string>
+    <string name="sync_summary_playlists_songs_failed">Synced %1$s, %2$s (%3$d failed)</string>
+    <string name="sync_summary_playlists">Synced %1$s</string>
+    <string name="sync_summary_songs">Synced %1$s</string>
+    <string name="notification_channel_playback">PixelPlayer Music Playback</string>
+
+    <!-- Dashboard extracted UI strings -->
+    <string name="netease_cloud_music">NetEase Cloud Music</string>
+    <string name="subsonic_title">Subsonic</string>
+    <string name="jellyfin_title">Jellyfin</string>
+    <string name="empty_playlists_synced_title">No playlists synced yet</string>
+    <string name="empty_playlists_synced_subtitle">Tap sync to fetch your playlists</string>
+    <string name="empty_jellyfin_playlists_synced_subtitle">Tap sync to fetch your Jellyfin playlists</string>
+    <string name="navidrome_quick_actions_description">Manage Navidrome, Airsonic and other Subsonic-compatible servers.</string>
+    <string name="jellyfin_quick_actions_description">Manage your Jellyfin server connection.</string>
+
+    <!-- NetEase login extracted UI strings -->
+    <string name="netease_login_title">Login to NetEase</string>
+    <string name="netease_login_exit_title">Exit NetEase login?</string>
+    <string name="netease_login_exit_message">You can come back later. Current page state will be discarded when closing.</string>
+    <string name="netease_login_exit_confirm">Exit</string>
+    <string name="netease_web_back">Web back</string>
+    <string name="netease_web_forward">Web forward</string>
+    <string name="netease_login_saving">Saving…</string>
+    <string name="netease_login_welcome">Welcome, %1$s!</string>
+    <string name="netease_login_timeout_snackbar">Page load timed out. You can retry without losing your progress.</string>
+    <string name="netease_cookie_read_failed">Could not read session cookies.</string>
+    <string name="netease_login_security_note">Security note: your password is entered only in NetEase web pages. PixelPlay stores session cookies (MUSIC_U) to sync your library.</string>
+    <string name="netease_page_too_long">Page is taking too long to load. Use refresh or try another network.</string>
+    <string name="netease_webview_load_failed">WebView load failed.</string>
+    <string name="netease_http_loading_error">HTTP %1$d while loading NetEase.</string>
+    <string name="netease_no_cookies_found">No cookies found. Log in first.</string>
+    <string name="netease_login_not_detected">Login not detected yet. Complete NetEase login before pressing Done.</string>
+
+    <!-- Delimiter config extracted UI strings -->
+    <string name="delimiter_invalid_or_exists">Delimiter already exists or is invalid</string>
+    <string name="add_delimiter">Add delimiter</string>
+    <string name="default_delimiters">Default Delimiters</string>
+    <string name="delimiters_title">Delimiters</string>
+    <string name="current_delimiters">Current Delimiters</string>
+    <string name="current_delimiters_hint">Tap a delimiter to remove it. At least one delimiter is required.</string>
+    <string name="at_least_one_delimiter_required">At least one delimiter is required</string>
+    <string name="add_new_delimiter">Add New Delimiter</string>
+    <string name="delimiter_hint_example">e.g., / or ;</string>
+    <string name="delimiter_added">Delimiter added</string>
+    <string name="reset_defaults">Reset defaults</string>
+    <string name="reset_delimiters_title">Reset delimiters?</string>
+    <string name="reset_delimiters_message">This will clear all your custom delimiters and restore the defaults. This action cannot be undone.</string>
+    <string name="delimiters_reset_to_defaults">Delimiters reset to defaults</string>
+    <string name="space_label">Space</string>
+
+    <plurals name="playlist_count_synced">
+        <item quantity="one">%d playlist synced</item>
+        <item quantity="other">%d playlists synced</item>
+    </plurals>
+    <plurals name="playlist_count">
+        <item quantity="one">%d playlist</item>
+        <item quantity="other">%d playlists</item>
+    </plurals>
+    <plurals name="song_count">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
 </resources>

@@ -26,15 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.database.NeteasePlaylistEntity
 import com.theveloper.pixelplay.presentation.components.SmartImage
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -45,6 +48,7 @@ fun NeteaseDashboardScreen(
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val syncMessage by viewModel.syncMessage.collectAsStateWithLifecycle()
+    val syncFailedPrefix = stringResource(R.string.sync_failed_prefix)
 
     val cardShape = AbsoluteSmoothCornerShape(
         cornerRadiusTR = 20.dp, cornerRadiusTL = 20.dp,
@@ -58,14 +62,14 @@ fun NeteaseDashboardScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Netease Cloud Music",
+                        stringResource(R.string.netease_cloud_music),
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
                     }
                 },
                 actions = {
@@ -76,7 +80,7 @@ fun NeteaseDashboardScreen(
                     ) {
                         Icon(
                             Icons.Rounded.CloudSync,
-                            contentDescription = "Sync All Playlists",
+                            contentDescription = stringResource(R.string.sync_all_playlists),
                             tint = MaterialTheme.colorScheme.tertiary
                         )
                     }
@@ -87,7 +91,7 @@ fun NeteaseDashboardScreen(
                     }) {
                         Icon(
                             Icons.AutoMirrored.Rounded.Logout,
-                            contentDescription = "Logout"
+                            contentDescription = stringResource(R.string.common_logout)
                         )
                     }
                 }
@@ -114,7 +118,7 @@ fun NeteaseDashboardScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         shape = cardShape,
                         colors = CardDefaults.cardColors(
-                            containerColor = if (message.contains("failed"))
+                            containerColor = if (message.startsWith(syncFailedPrefix, ignoreCase = true))
                                 MaterialTheme.colorScheme.errorContainer
                             else
                                 MaterialTheme.colorScheme.tertiaryContainer
@@ -190,7 +194,7 @@ fun NeteaseDashboardScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "${playlists.size} playlists synced",
+                                text = pluralStringResource(R.plurals.playlist_count_synced, playlists.size, playlists.size),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = GoogleSansRounded,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -211,7 +215,7 @@ fun NeteaseDashboardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Playlists",
+                    text = stringResource(R.string.common_playlists),
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = GoogleSansRounded,
                     fontWeight = FontWeight.Bold
@@ -224,7 +228,7 @@ fun NeteaseDashboardScreen(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text("Sync", fontFamily = GoogleSansRounded)
+                        Text(stringResource(R.string.common_sync), fontFamily = GoogleSansRounded)
                     }
                 }
             }
@@ -248,14 +252,14 @@ fun NeteaseDashboardScreen(
                         )
                         Spacer(Modifier.height(16.dp))
                         Text(
-                            text = "No playlists synced yet",
+                            text = stringResource(R.string.empty_playlists_synced_title),
                             style = MaterialTheme.typography.bodyLarge,
                             fontFamily = GoogleSansRounded,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "Tap sync to fetch your playlists",
+                            text = stringResource(R.string.empty_playlists_synced_subtitle),
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = GoogleSansRounded,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -348,7 +352,7 @@ private fun PlaylistCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${playlist.songCount} songs",
+                    text = pluralStringResource(R.plurals.song_count, playlist.songCount, playlist.songCount),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = GoogleSansRounded,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -362,7 +366,7 @@ private fun PlaylistCard(
             ) {
                 Icon(
                     Icons.Rounded.Sync,
-                    contentDescription = "Sync",
+                    contentDescription = stringResource(R.string.common_sync),
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -372,7 +376,7 @@ private fun PlaylistCard(
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Rounded.Delete,
-                    contentDescription = "Remove",
+                    contentDescription = stringResource(R.string.common_remove),
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
                     modifier = Modifier.size(20.dp)
                 )

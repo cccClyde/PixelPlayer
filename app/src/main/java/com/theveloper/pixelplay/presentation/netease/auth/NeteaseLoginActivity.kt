@@ -64,6 +64,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -140,7 +141,11 @@ fun NeteaseWebLoginScreen(
     LaunchedEffect(loginState) {
         when (val state = loginState) {
             is NeteaseLoginState.Success -> {
-                Toast.makeText(context, "Welcome, ${state.nickname}!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.netease_login_welcome, state.nickname),
+                    Toast.LENGTH_SHORT
+                ).show()
                 onClose()
             }
 
@@ -162,7 +167,7 @@ fun NeteaseWebLoginScreen(
         delay(20_000)
         if (webUiState.isLoadingPage) {
             pageLoadTimeout = true
-            snackbarHostState.showSnackbar("Page load timed out. You can retry without losing your progress.")
+            snackbarHostState.showSnackbar(context.getString(R.string.netease_login_timeout_snackbar))
         }
     }
 
@@ -181,7 +186,7 @@ fun NeteaseWebLoginScreen(
                 viewModel.processCookies(cookieJson)
             },
             onFailure = { error ->
-                val message = error.message ?: "Could not read session cookies."
+                val message = error.message ?: context.getString(R.string.netease_cookie_read_failed)
                 viewModel.clearError()
                 webUiState = webUiState.copy(lastError = message)
             }
@@ -200,11 +205,11 @@ fun NeteaseWebLoginScreen(
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
             title = {
-                Text(text = "Exit NetEase login?", fontFamily = GoogleSansRounded)
+                Text(text = stringResource(R.string.netease_login_exit_title), fontFamily = GoogleSansRounded)
             },
             text = {
                 Text(
-                    text = "You can come back later. Current page state will be discarded when closing.",
+                    text = stringResource(R.string.netease_login_exit_message),
                     fontFamily = GoogleSansRounded
                 )
             },
@@ -215,18 +220,18 @@ fun NeteaseWebLoginScreen(
                         onClose()
                     }
                 ) {
-                    Text(text = "Exit", fontFamily = GoogleSansRounded)
+                    Text(text = stringResource(R.string.netease_login_exit_confirm), fontFamily = GoogleSansRounded)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showExitDialog = false }) {
-                    Text(text = "Stay", fontFamily = GoogleSansRounded)
+                    Text(text = stringResource(R.string.common_stay), fontFamily = GoogleSansRounded)
                 }
             }
         )
     }
 
-    val appBarTitle = "Login to NetEase" //webUiState.title.ifBlank { "Login to NetEase" } add after translations
+    val appBarTitle = stringResource(R.string.netease_login_title)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -251,7 +256,7 @@ fun NeteaseWebLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.common_back)
                         )
                     }
                 },
@@ -279,7 +284,7 @@ fun NeteaseWebLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Web back"
+                            contentDescription = stringResource(R.string.netease_web_back)
                         )
                     }
 
@@ -296,7 +301,7 @@ fun NeteaseWebLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                            contentDescription = "Web forward"
+                            contentDescription = stringResource(R.string.netease_web_forward)
                         )
                     }
 
@@ -313,7 +318,7 @@ fun NeteaseWebLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Refresh,
-                            contentDescription = "Refresh"
+                            contentDescription = stringResource(R.string.common_refresh)
                         )
                     }
 
@@ -331,7 +336,7 @@ fun NeteaseWebLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Home,
-                            contentDescription = "Open home"
+                            contentDescription = stringResource(R.string.common_open_home)
                         )
                     }
                 },
@@ -356,7 +361,11 @@ fun NeteaseWebLoginScreen(
                         }
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = if (loginState is NeteaseLoginState.Loading) "Saving..." else "Done",
+                            text = if (loginState is NeteaseLoginState.Loading) {
+                                stringResource(R.string.netease_login_saving)
+                            } else {
+                                stringResource(R.string.common_done)
+                            },
                             fontFamily = GoogleSansRounded,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -386,7 +395,7 @@ fun NeteaseWebLoginScreen(
                 )
             ) {
                 Text(
-                    text = "Security note: your password is entered only in NetEase web pages. PixelPlay stores session cookies (MUSIC_U) to sync your library.",
+                    text = stringResource(R.string.netease_login_security_note),
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = GoogleSansRounded,
@@ -395,7 +404,7 @@ fun NeteaseWebLoginScreen(
             }
 
             val effectiveError = when {
-                pageLoadTimeout -> "Page is taking too long to load. Use refresh or try another network."
+                pageLoadTimeout -> stringResource(R.string.netease_page_too_long)
                 webUiState.lastError != null -> webUiState.lastError
                 else -> null
             }
@@ -430,7 +439,7 @@ fun NeteaseWebLoginScreen(
                                 webView?.reload()
                             }
                         ) {
-                            Text(text = "Retry", fontFamily = GoogleSansRounded)
+                            Text(text = stringResource(R.string.common_retry), fontFamily = GoogleSansRounded)
                         }
                     }
                 }

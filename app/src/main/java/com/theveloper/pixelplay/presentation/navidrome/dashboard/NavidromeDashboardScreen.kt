@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,7 +65,7 @@ fun NavidromeDashboardScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Subsonic",
+                        stringResource(R.string.subsonic_title),
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.Bold
                     )
@@ -81,7 +83,7 @@ fun NavidromeDashboardScreen(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.common_back)
                         )
                     }
                 },
@@ -122,6 +124,7 @@ private fun DashboardContent(
     cardShape: AbsoluteSmoothCornerShape,
     paddingValues: PaddingValues
 ) {
+    val syncFailedPrefix = stringResource(R.string.sync_failed_prefix)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -142,7 +145,7 @@ private fun DashboardContent(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = cardShape,
                     colors = CardDefaults.cardColors(
-                        containerColor = if (message.contains("failed"))
+                        containerColor = if (message.startsWith(syncFailedPrefix, ignoreCase = true))
                             MaterialTheme.colorScheme.errorContainer
                         else
                             MaterialTheme.colorScheme.primaryContainer
@@ -210,7 +213,7 @@ private fun DashboardContent(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "${playlists.size} playlists synced",
+                            text = pluralStringResource(R.plurals.playlist_count_synced, playlists.size, playlists.size),
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = GoogleSansRounded,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -238,7 +241,7 @@ private fun DashboardContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Playlists",
+                text = stringResource(R.string.common_playlists),
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = GoogleSansRounded,
                 fontWeight = FontWeight.Bold
@@ -251,7 +254,7 @@ private fun DashboardContent(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(4.dp))
-                    Text("Sync", fontFamily = GoogleSansRounded)
+                    Text(stringResource(R.string.common_sync), fontFamily = GoogleSansRounded)
                 }
             }
         }
@@ -275,14 +278,14 @@ private fun DashboardContent(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text = "No playlists synced yet",
+                        text = stringResource(R.string.empty_playlists_synced_title),
                         style = MaterialTheme.typography.bodyLarge,
                         fontFamily = GoogleSansRounded,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Tap sync to fetch your playlists",
+                        text = stringResource(R.string.empty_playlists_synced_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = GoogleSansRounded,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -332,14 +335,14 @@ private fun SubsonicMenuCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Quick actions",
+                text = stringResource(R.string.common_quick_actions),
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = GoogleSansRounded,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Manage Navidrome, Airsonic and other Subsonic-compatible servers.",
+                text = stringResource(R.string.navidrome_quick_actions_description),
                 style = MaterialTheme.typography.bodySmall,
                 fontFamily = GoogleSansRounded,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -365,7 +368,7 @@ private fun SubsonicMenuCard(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Syncing", fontFamily = GoogleSansRounded)
+                        Text(stringResource(R.string.common_syncing), fontFamily = GoogleSansRounded)
                     } else {
                         Icon(
                             Icons.Rounded.CloudSync,
@@ -373,7 +376,7 @@ private fun SubsonicMenuCard(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Sync library", fontFamily = GoogleSansRounded)
+                        Text(stringResource(R.string.common_sync_library), fontFamily = GoogleSansRounded)
                     }
                 }
 
@@ -391,7 +394,7 @@ private fun SubsonicMenuCard(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Disconnect", fontFamily = GoogleSansRounded)
+                    Text(stringResource(R.string.common_disconnect), fontFamily = GoogleSansRounded)
                 }
             }
         }
@@ -528,7 +531,7 @@ private fun PlaylistCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${playlist.songCount} songs",
+                    text = pluralStringResource(R.plurals.song_count, playlist.songCount, playlist.songCount),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = GoogleSansRounded,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -545,7 +548,7 @@ private fun PlaylistCard(
             ) {
                 Icon(
                     Icons.Rounded.Sync,
-                    contentDescription = "Sync",
+                    contentDescription = stringResource(R.string.common_sync),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -561,7 +564,7 @@ private fun PlaylistCard(
             ) {
                 Icon(
                     Icons.Rounded.Delete,
-                    contentDescription = "Remove",
+                    contentDescription = stringResource(R.string.common_remove),
                     modifier = Modifier.size(20.dp)
                 )
             }
