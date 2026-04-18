@@ -111,6 +111,7 @@ import com.theveloper.pixelplay.presentation.components.resolveNavBarOccupiedHei
 import com.theveloper.pixelplay.presentation.navigation.Screen
 import com.theveloper.pixelplay.presentation.screens.search.components.GenreCategoriesGrid
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistViewModel
+import com.theveloper.pixelplay.utils.formatSongCount
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -1002,7 +1003,7 @@ fun SearchResultArtistItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${artist.songCount} Songs",
+                    text = formatSongCount(artist.songCount),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1072,7 +1073,7 @@ fun SearchResultPlaylistItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${playlist.songIds.size} songs",
+                    text = formatSongCount(playlist.songIds.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

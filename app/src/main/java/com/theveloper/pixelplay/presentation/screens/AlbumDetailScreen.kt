@@ -97,6 +97,7 @@ import com.theveloper.pixelplay.presentation.navigation.Screen
 import com.theveloper.pixelplay.presentation.viewmodel.AlbumDetailViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistViewModel
+import com.theveloper.pixelplay.utils.formatSongCount
 import com.theveloper.pixelplay.utils.shapes.RoundedStarShape
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -539,7 +540,7 @@ private fun SharedAlbumTopBarProbe(
 
         CollapsibleCommonTopBar(
             title = album.title,
-            subtitle = "${album.artist} • $songsCount songs",
+            subtitle = "${album.artist} • ${formatSongCount(songsCount)}",
             collapseFraction = collapseFraction,
             headerHeight = headerHeight,
             onBackClick = onBackPressed,
@@ -727,7 +728,7 @@ private fun CollapsingAlbumTopBar(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "${album.artist} • $songsCount songs",
+                            text = "${album.artist} • ${formatSongCount(songsCount)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

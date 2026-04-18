@@ -85,6 +85,7 @@ import com.theveloper.pixelplay.presentation.screens.PlayerSheetCollapsedCornerR
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistUiState
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistSelectionStateHolder
+import com.theveloper.pixelplay.utils.formatSongCount
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import androidx.compose.foundation.combinedClickable
 import kotlinx.coroutines.flow.map
@@ -496,7 +497,7 @@ fun PlaylistItem(
                     }
                 }
                 Text(
-                    text = "${playlist.songIds.size} Songs",
+                    text = formatSongCount(playlist.songIds.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -589,55 +590,29 @@ fun CreatePlaylistDialogRedesigned(
                     )
                 )
 
-                Column(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FilledTonalButton(
-                        onClick = {
-                            onDismiss()
-                            onGenerateClick()
-                        },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        ),
-                        contentPadding = PaddingValues(vertical = 12.dp)
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.generate_playlist_ai),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text("Generate with AI")
+                        Text("Cancel", fontWeight = FontWeight.SemiBold)
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                    Button(
+                        onClick = { onCreate(playlistName) },
+                        modifier = Modifier.weight(1f),
+                        enabled = playlistName.isNotEmpty(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        TextButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text("Cancel", fontWeight = FontWeight.SemiBold)
-                        }
-
-                        Button(
-                            onClick = { onCreate(playlistName) },
-                            enabled = playlistName.isNotEmpty(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text("Create", fontWeight = FontWeight.Bold)
-                        }
+                        Text("Create", fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -5,6 +5,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.os.Environment
+import android.os.Build
 import android.os.Trace // Import Trace
 import android.provider.MediaStore
 import android.util.Log
@@ -130,16 +131,17 @@ constructor(
                     // For INCREMENTAL syncs we skip it if we already ran within the last hour
                     // (the MediaStore daemon itself picks up new files quickly via inotify).
                     // FULL and REBUILD always run it unconditionally.
-                    val mediaScanCooldownMs = 60L * 60L * 1000L // 1 hour
+                    // Media scan for un-indexed files is slow. Run only if forced, or once every 12 hours.
+                    val mediaScanCooldownMs = 12L * 60L * 60L * 1000L // 12 hours
                     val timeSinceLastScan = System.currentTimeMillis() - lastSyncTimestamp
-                    val shouldRunMediaScan = syncMode != SyncMode.INCREMENTAL ||
-                            lastSyncTimestamp == 0L ||
-                            timeSinceLastScan >= mediaScanCooldownMs
+                    val forceFilesystemScan = forceMetadata
+                    val shouldRunMediaScan = forceFilesystemScan || 
+                            (lastSyncTimestamp > 0L && timeSinceLastScan >= mediaScanCooldownMs)
                     if (shouldRunMediaScan) {
                         triggerMediaScanForNewFiles(directoryResolver)
                     } else {
                         Timber.tag(TAG).d(
-                            "Skipping filesystem walk — last scan was ${timeSinceLastScan / 1000}s ago (cooldown: ${mediaScanCooldownMs / 1000}s)"
+                            "Skipping filesystem walk — forceMetadata=$forceMetadata, lastSyncTimestamp=${lastSyncTimestamp}"
                         )
                     }
 
@@ -561,6 +563,11 @@ constructor(
      * 2. Fetches all genres first, then queries members in parallel with controlled concurrency
      */
     private suspend fun fetchGenreMap(forceRefresh: Boolean = false): Map<Long, String> = coroutineScope {
+        // Optimization: Skip genre map on Android 11+ because we can query GENRE directly.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return@coroutineScope emptyMap()
+        }
+
         // Check cache first (valid for 1 hour)
         val now = System.currentTimeMillis()
         val cacheAge = now - genreMapCacheTimestamp
@@ -670,13 +677,15 @@ constructor(
             val trackNumber: Int,
             val discNumber: Int?,
             val year: Int,
-            val dateModified: Long
+            val dateModified: Long,
+            val genre: String?
     )
 
     private fun isSongUnchanged(raw: RawSongData, existing: SongEntity?): Boolean {
         if (existing == null) return false
 
-        val parentDir = File(raw.filePath).parent ?: ""
+        val lastSlash = raw.filePath.lastIndexOf('/')
+        val parentDir = if (lastSlash > 0) raw.filePath.substring(0, lastSlash) else ""
         val existingDateModifiedSeconds = TimeUnit.MILLISECONDS.toSeconds(existing.dateAdded)
 
         return existing.filePath == raw.filePath &&
@@ -706,22 +715,28 @@ constructor(
         val deepScan = forceMetadata
         val genreMap = fetchGenreMap() // Load genres upfront
 
-        val projection =
-                arrayOf(
-                        MediaStore.Audio.Media._ID,
-                        MediaStore.Audio.Media.TITLE,
-                        MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.ARTIST_ID,
-                        MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ALBUM_ID,
-                        MediaStore.Audio.Media.ALBUM_ARTIST,
-                        MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Media.DATA,
-                        MediaStore.Audio.Media.MIME_TYPE,
-                        MediaStore.Audio.Media.TRACK,
-                        MediaStore.Audio.Media.YEAR,
-                        MediaStore.Audio.Media.DATE_MODIFIED
-                )
+        val projectionList = mutableListOf(
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ARTIST_ID,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.ALBUM_ARTIST,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.MIME_TYPE,
+                MediaStore.Audio.Media.TRACK,
+                MediaStore.Audio.Media.YEAR,
+                MediaStore.Audio.Media.DATE_MODIFIED
+        )
+
+        // API 30+ supports GENRE in the main audio table
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            projectionList.add(MediaStore.Audio.Media.GENRE)
+        }
+
+        val projection = projectionList.toTypedArray()
 
         val (baseSelection, baseArgs) = buildLocalAudioSelection(minSongDurationMs)
         val selectionBuilder = StringBuilder(baseSelection)
@@ -767,13 +782,16 @@ constructor(
                     val yearCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR)
                     val dateModifiedCol =
                             cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
+                    val genreCol = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        cursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
+                    } else -1
 
                     while (cursor.moveToNext()) {
                         try {
-                            val data = cursor.getString(dataCol)
-                            val parentPath = File(data).parent
-                            if (parentPath != null) {
-                                val normalizedParent = File(parentPath).absolutePath
+                            val data = cursor.getString(dataCol) ?: continue
+                            val lastSlash = data.lastIndexOf('/')
+                            if (lastSlash > 0) {
+                                val normalizedParent = data.substring(0, lastSlash)
                                 if (directoryResolver.isBlocked(normalizedParent)) {
                                     continue
                                 }
@@ -811,7 +829,8 @@ constructor(
                                         trackNumber = cursor.getInt(trackCol) % 1000,
                                         discNumber = (cursor.getInt(trackCol) / 1000).takeIf { it > 0 },
                                         year = cursor.getInt(yearCol),
-                                        dateModified = cursor.getLong(dateModifiedCol)
+                                        dateModified = cursor.getLong(dateModifiedCol),
+                                        genre = if (genreCol >= 0) cursor.getString(genreCol) else null
                                 )
                         )
                     }
@@ -969,7 +988,7 @@ constructor(
         var trackNumber = raw.trackNumber
         var discNumber = raw.discNumber
         var year = raw.year
-        var genre: String? = genreMap[raw.id] // Use mapped genre as default
+        var genre: String? = genreMap[raw.id] ?: raw.genre // Use mapped genre as default, or direct genre from main cursor
 
         val shouldAugmentMetadata =
                 deepScan ||
@@ -1082,6 +1101,13 @@ constructor(
                         if (dir.isHidden || name.startsWith(".")) return@onEnter false
                         val path = dir.absolutePath
                         if (directoryResolver.isBlocked(path)) return@onEnter false
+
+                        if (File(dir, ".nomedia").exists()) {
+                            val isAllowed = allowedSet.any { allowed -> 
+                                allowed.absolutePath == path || allowed.absolutePath.startsWith("$path/")
+                            }
+                            if (!isAllowed) return@onEnter false
+                        }
 
                         // Default Skip Rules (System Folders)
                         val isSystemFolder = (name == "Android" || name == "data" || name == "obb")

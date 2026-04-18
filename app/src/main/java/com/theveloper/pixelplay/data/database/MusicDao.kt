@@ -1408,10 +1408,10 @@ interface MusicDao {
     @Query("SELECT DISTINCT album_art_uri_string FROM songs WHERE album_art_uri_string IS NOT NULL")
     fun getAllUniqueAlbumArtUrisFromSongs(): Flow<List<String>>
 
-    @Query("DELETE FROM albums WHERE id NOT IN (SELECT DISTINCT album_id FROM songs)")
+    @Query("DELETE FROM albums WHERE NOT EXISTS (SELECT 1 FROM songs WHERE songs.album_id = albums.id)")
     suspend fun deleteOrphanedAlbums()
 
-    @Query("DELETE FROM artists WHERE id NOT IN (SELECT DISTINCT artist_id FROM song_artist_cross_ref)")
+    @Query("DELETE FROM artists WHERE NOT EXISTS (SELECT 1 FROM song_artist_cross_ref WHERE song_artist_cross_ref.artist_id = artists.id)")
     suspend fun deleteOrphanedArtists()
 
     // --- Favorite Operations ---

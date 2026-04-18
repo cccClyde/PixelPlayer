@@ -183,7 +183,7 @@ class MusicRepositoryImpl @Inject constructor(
             }.flatMapLatest { it }
         }.map { entities ->
             entities.map { it.toSong() }
-        }.distinctUntilChanged().flowOn(Dispatchers.IO)
+        }.distinctUntilChanged().conflate().flowOn(Dispatchers.IO)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -419,7 +419,7 @@ class MusicRepositoryImpl @Inject constructor(
             musicDao.getAlbums(allowedParentDirs, applyFilter, storageFilter.toFilterMode())
                 .map { entities -> entities.map { it.toAlbum() } }
                 .distinctUntilChanged()
-        }.flowOn(Dispatchers.IO)
+        }.conflate().flowOn(Dispatchers.IO)
     }
 
     override fun getAlbumById(id: Long): Flow<Album?> {
@@ -456,7 +456,7 @@ class MusicRepositoryImpl @Inject constructor(
                     }
                     artists
                 }
-        }.flowOn(Dispatchers.IO)
+        }.conflate().flowOn(Dispatchers.IO)
     }
 
     override fun getSongsForAlbum(albumId: Long): Flow<List<Song>> {

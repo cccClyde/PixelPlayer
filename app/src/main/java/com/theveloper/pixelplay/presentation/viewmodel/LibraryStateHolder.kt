@@ -3,6 +3,7 @@ package com.theveloper.pixelplay.presentation.viewmodel
 import android.content.ComponentCallbacks2
 import android.os.Trace
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import androidx.compose.ui.graphics.toArgb
@@ -245,7 +246,7 @@ class LibraryStateHolder @Inject constructor(
 
         songsJob = scope?.launch {
             _isLoadingLibrary.value = true
-            musicRepository.getAudioFiles().collect { songs ->
+            musicRepository.getAudioFiles().conflate().collect { songs ->
                 // Process heavy list conversions on Default dispatcher to avoid blocking UI
                 val immutableSongs = withContext(Dispatchers.Default) { songs.toImmutableList() }
                 val songsMap = withContext(Dispatchers.Default) { songs.associateBy { it.id } }
@@ -266,7 +267,7 @@ class LibraryStateHolder @Inject constructor(
             @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
             effectiveStorageFilter.flatMapLatest { filter ->
                 musicRepository.getAlbums(filter)
-            }.collect { albums ->
+            }.conflate().collect { albums ->
                 val sortedAlbums = withContext(Dispatchers.Default) {
                     sortAlbumsList(albums, _currentAlbumSortOption.value).toImmutableList()
                 }
@@ -280,7 +281,7 @@ class LibraryStateHolder @Inject constructor(
             @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
             effectiveStorageFilter.flatMapLatest { filter ->
                 musicRepository.getArtists(filter)
-            }.collect { artists ->
+            }.conflate().collect { artists ->
                 val sortedArtists = withContext(Dispatchers.Default) {
                     sortArtistsList(artists, _currentArtistSortOption.value).toImmutableList()
                 }
@@ -293,7 +294,7 @@ class LibraryStateHolder @Inject constructor(
             @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
             effectiveStorageFilter.flatMapLatest { filter ->
                 musicRepository.getMusicFolders(effectiveFoldersStorageFilter(filter))
-            }.collect { folders ->
+            }.conflate().collect { folders ->
                 val sortedFolders = withContext(Dispatchers.Default) {
                     sortFoldersList(folders, _currentFolderSortOption.value).toImmutableList()
                 }
