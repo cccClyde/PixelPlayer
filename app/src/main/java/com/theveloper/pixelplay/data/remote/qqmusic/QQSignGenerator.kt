@@ -1,10 +1,12 @@
 package com.theveloper.pixelplay.data.remote.qqmusic
 
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
 import android.webkit.JavascriptInterface
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import org.json.JSONArray
@@ -69,7 +71,20 @@ class QQSignGenerator(private val context: Context) {
                 val readyLatch = CountDownLatch(1)
                 readyLatchRef.set(readyLatch)
                 val instance = WebView(appContext).apply {
-                    settings.javaScriptEnabled = true
+                    settings.apply {
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        allowFileAccess = false
+                        allowContentAccess = false
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            allowFileAccessFromFileURLs = false
+                            allowUniversalAccessFromFileURLs = false
+                        }
+                        mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            safeBrowsingEnabled = true
+                        }
+                    }
                     webViewClient = object : WebViewClient() {
                         override fun onPageFinished(view: WebView?, url: String?) {
                             webViewReady = true
