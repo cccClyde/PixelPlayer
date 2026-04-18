@@ -94,7 +94,6 @@ private fun formatReplayGainForInput(gainDb: Float?): String {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-
 fun EditSongSheet(
     visible: Boolean,
     song: Song,
@@ -110,12 +109,7 @@ fun EditSongSheet(
         replayGainTrackGainDb: String,
         replayGainAlbumGainDb: String,
         coverArtUpdate: CoverArtUpdate?
-    ) -> Unit,
-    generateAiMetadata: suspend (List<String>) -> Result<com.theveloper.pixelplay.data.ai.SongMetadata>,
-    isGeneratingAiMetadata: Boolean = false,
-    aiMetadataSuccess: Boolean = false,
-    aiError: String? = null,
-    onRetryMetadata: () -> Unit = {}
+    ) -> Unit
 ) {
     val transitionState = remember { MutableTransitionState(false) }
     transitionState.targetState = visible
@@ -136,12 +130,7 @@ fun EditSongSheet(
                 EditSongContent(
                     song = song,
                     onDismiss = onDismiss,
-                    onSave = onSave,
-                    generateAiMetadata = generateAiMetadata,
-                    isGeneratingAiMetadata = isGeneratingAiMetadata,
-                    aiMetadataSuccess = aiMetadataSuccess,
-                    aiError = aiError,
-                    onRetryMetadata = onRetryMetadata
+                    onSave = onSave
                 )
             }
         }
@@ -165,11 +154,6 @@ private fun EditSongContent(
         replayGainAlbumGainDb: String,
         coverArtUpdate: CoverArtUpdate?
     ) -> Unit,
-    generateAiMetadata: suspend (List<String>) -> Result<com.theveloper.pixelplay.data.ai.SongMetadata>,
-    isGeneratingAiMetadata: Boolean,
-    aiMetadataSuccess: Boolean,
-    aiError: String?,
-    onRetryMetadata: () -> Unit
 ) {
     var title by remember { mutableStateOf(song.title) }
     var artist by remember { mutableStateOf(song.displayArtist) }
@@ -187,9 +171,6 @@ private fun EditSongContent(
     var pendingCoverArtUri by remember { mutableStateOf<Uri?>(null) }
 
     var showInfoDialog by remember { mutableStateOf(false) }
-    var showAiSheet by remember { mutableStateOf(false) }
-    var aiMetadata by remember { mutableStateOf<com.theveloper.pixelplay.data.ai.SongMetadata?>(null) }
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val pickCoverArtLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -235,39 +216,6 @@ private fun EditSongContent(
 
             replayGainTrackGainDb = formatReplayGainForInput(embeddedMetadata?.replayGainTrackGainDb)
             replayGainAlbumGainDb = formatReplayGainForInput(embeddedMetadata?.replayGainAlbumGainDb)
-        }
-    }
-
-    if (showAiSheet) {
-        // AI Integration: Use premium bottom sheet for metadata generation workflow
-        AiMetadataSheet(
-            onDismiss = { 
-                showAiSheet = false
-                aiMetadata = null
-            },
-            initialMetadata = aiMetadata,
-            isGenerating = isGeneratingAiMetadata,
-            isSuccess = aiMetadataSuccess,
-            error = aiError,
-            onApply = { metadata ->
-                // Apply generated metadata with fallbacks
-                title = metadata.title?.takeIf { it.isNotBlank() } ?: title
-                artist = metadata.artist?.takeIf { it.isNotBlank() } ?: artist
-                album = metadata.album?.takeIf { it.isNotBlank() } ?: album
-                genre = metadata.genre?.takeIf { it.isNotBlank() } ?: genre
-                showAiSheet = false
-                aiMetadata = null
-            },
-            onRetry = onRetryMetadata
-        )
-
-        // Trigger generation if not already done
-        LaunchedEffect(Unit) {
-            if (aiMetadata == null && !isGeneratingAiMetadata && !aiMetadataSuccess) {
-                generateAiMetadata(listOf("title", "artist", "album", "genre")).onSuccess { metadata ->
-                    aiMetadata = metadata
-                }
-            }
         }
     }
 
@@ -345,41 +293,12 @@ private fun EditSongContent(
                     )
                 },
                 actions = {
-                    Row(
+                    FilledTonalIconButton(
                         modifier = Modifier.padding(end = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        onClick = { showInfoDialog = true },
+                        shape = CircleShape
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.secondary,
-                                            MaterialTheme.colorScheme.tertiary
-                                        )
-                                    )
-                                )
-                        ) {
-                            IconButton(onClick = { showAiSheet = true }) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(20.dp),
-                                    painter = painterResource(id = R.drawable.gemini_ai),
-                                    contentDescription = "Use Gemini AI",
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
-                        FilledTonalIconButton(
-                            onClick = { showInfoDialog = true },
-                            shape = CircleShape
-                        ) {
-                            Icon(Icons.Rounded.Info, contentDescription = "Show info dialog")
-                        }
+                        Icon(Icons.Rounded.Info, contentDescription = "Show info dialog")
                     }
                 }
             )
