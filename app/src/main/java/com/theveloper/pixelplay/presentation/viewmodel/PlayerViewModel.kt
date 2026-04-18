@@ -54,6 +54,7 @@ import com.theveloper.pixelplay.data.model.SearchFilterType
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.model.SortOption
 import com.theveloper.pixelplay.data.model.toLibraryTabIdOrNull
+import com.theveloper.pixelplay.data.provider.SharedArtworkContentProvider
 import com.theveloper.pixelplay.data.preferences.CarouselStyle
 import com.theveloper.pixelplay.data.preferences.LibraryNavigationMode
 import com.theveloper.pixelplay.data.preferences.NavBarStyle
@@ -75,6 +76,7 @@ import com.theveloper.pixelplay.utils.AppShortcutManager
 import com.theveloper.pixelplay.utils.ValidatedLyricsImport
 import com.theveloper.pixelplay.utils.QueueUtils
 import com.theveloper.pixelplay.utils.MediaItemBuilder
+import com.theveloper.pixelplay.utils.LocalArtworkUri
 import com.theveloper.pixelplay.utils.LyricsUtils
 import com.theveloper.pixelplay.utils.StorageType
 import com.theveloper.pixelplay.utils.StorageUtils
@@ -4738,12 +4740,40 @@ class PlayerViewModel @Inject constructor(
 internal fun Song.withRepositoryHydration(repositorySong: Song): Song {
     if (id != repositorySong.id) return this
 
+    val hydratedArtworkUri = when {
+        repositorySong.albumArtUriString.isNullOrBlank() -> albumArtUriString
+        albumArtUriString.isNullOrBlank() -> repositorySong.albumArtUriString
+        areEquivalentArtworkUrisForSong(id, albumArtUriString, repositorySong.albumArtUriString) ->
+            albumArtUriString
+        else -> repositorySong.albumArtUriString
+    }
+
     return repositorySong.copy(
         contentUriString = repositorySong.contentUriString.ifBlank { contentUriString },
-        albumArtUriString = repositorySong.albumArtUriString ?: albumArtUriString,
+        albumArtUriString = hydratedArtworkUri,
         duration = repositorySong.duration.takeIf { it > 0L } ?: duration,
         lyrics = repositorySong.lyrics ?: lyrics
     )
+}
+
+internal fun areEquivalentArtworkUrisForSong(
+    songId: String,
+    firstUri: String?,
+    secondUri: String?
+): Boolean {
+    if (firstUri == secondUri) return true
+    if (firstUri.isNullOrBlank() || secondUri.isNullOrBlank()) return false
+
+    val targetSongId = songId.toLongOrNull() ?: return false
+
+    fun resolveUriSongId(uri: String): Long? {
+        return LocalArtworkUri.parseSongId(uri)
+            ?: SharedArtworkContentProvider.parseSongId(uri)
+    }
+
+    val firstSongId = resolveUriSongId(firstUri)
+    val secondSongId = resolveUriSongId(secondUri)
+    return firstSongId == targetSongId && secondSongId == targetSongId
 }
 
 internal fun Song.improvesLyricsLookupComparedTo(previousSong: Song): Boolean {
