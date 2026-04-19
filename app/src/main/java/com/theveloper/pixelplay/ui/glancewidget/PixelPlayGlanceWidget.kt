@@ -94,8 +94,8 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         size: DpSize,
         context: Context
     ) {
-        val title = playerInfo.songTitle.ifEmpty { "PixelPlayer" }
-        val artist = playerInfo.artistName.ifEmpty { "Toca para abrir" }
+        val title = playerInfo.songTitle.ifEmpty { context.getString(R.string.app_name) }
+        val artist = playerInfo.artistName.ifEmpty { context.getString(R.string.widget_tap_to_open) }
         val isPlaying = playerInfo.isPlaying
         val isFavorite = playerInfo.isFavorite
         val albumArtBitmapData = playerInfo.albumArtBitmapData
@@ -279,7 +279,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
                 Spacer(GlanceModifier.width(10.dp))
                 Column(modifier = GlanceModifier.defaultWeight()) {
                     Text(text = title, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor), maxLines = 1)
-                    if (artist.isNotEmpty() && artist != "Toca para abrir") {
+                    if (artist.isNotEmpty() && artist != context.getString(R.string.widget_tap_to_open)) {
                         Text(text = artist, style = TextStyle(fontSize = 14.sp, color = textColor), maxLines = 1)
                     }
                 }
@@ -357,7 +357,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
                 Spacer(GlanceModifier.width(14.dp))
                 Column(modifier = GlanceModifier.defaultWeight()) {
                     Text(text = title, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor), maxLines = 1)
-                    if (artist.isNotEmpty() && artist != "Toca para abrir") {
+                    if (artist.isNotEmpty() && artist != context.getString(R.string.widget_tap_to_open)) {
                         Text(text = artist, style = TextStyle(fontSize = 14.sp, color = textColor), maxLines = 1)
                     }
                 }
@@ -845,7 +845,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
                     Spacer(GlanceModifier.width(4.dp))
                     Image(
                         provider = ImageProvider(if (isFavorite) R.drawable.round_favorite_24 else R.drawable.rounded_favorite_24),
-                        contentDescription = "favorite",
+                        contentDescription = context.getString(R.string.cd_favorite),
                         modifier = GlanceModifier
                             .size(28.dp)
                             .clickable(actionRunCallback<PlayerControlActionCallback>(actionParametersOf(PlayerActions.key to PlayerActions.FAVORITE)))
@@ -1183,7 +1183,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
             if (imageProvider != null) {
                 Image(
                     provider = imageProvider,
-                    contentDescription = "Album Art",
+                    contentDescription = context.getString(R.string.widget_album_art),
                     modifier = GlanceModifier.fillMaxSize().cornerRadius(cornerRadius),
                     contentScale = ContentScale.Crop
                 )
@@ -1207,7 +1207,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
                 ) {
                     Image(
                         provider = ImageProvider(R.drawable.ic_music_placeholder),
-                        contentDescription = "Album Art Placeholder",
+                        contentDescription = context.getString(R.string.widget_album_art_placeholder),
                         modifier = GlanceModifier.size(placeholderSize),
                         contentScale = ContentScale.Fit,
                         colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant)
@@ -1250,6 +1250,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         iconSize: Dp = 24.dp,
         cornerRadius: Dp = 0.dp
     ) {
+        val context = LocalContext.current
         val params = actionParametersOf(PlayerActions.key to PlayerActions.PLAY_PAUSE)
         Box(
             modifier = modifier
@@ -1260,7 +1261,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         ) {
             Image(
                 provider = ImageProvider(if (isPlaying) R.drawable.rounded_pause_24 else R.drawable.rounded_play_arrow_24),
-                contentDescription = if (isPlaying) "Pause" else "Play",
+                contentDescription = context.getString(if (isPlaying) R.string.cd_pause else R.string.cd_play),
                 modifier = GlanceModifier.size(iconSize),
                 colorFilter = ColorFilter.tint(iconColor)
             )
@@ -1313,7 +1314,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         ) {
             Image(
                 provider = iconProvider,
-                contentDescription = "Next",
+                contentDescription = context.getString(R.string.next_track),
                 modifier = GlanceModifier.size(iconSize),
                 colorFilter = ColorFilter.tint(iconColor)
             )
@@ -1328,6 +1329,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         iconSize: Dp = 24.dp,
         cornerRadius: Dp = 8.dp
     ) {
+        val context = LocalContext.current
         val params = actionParametersOf(PlayerActions.key to PlayerActions.NEXT)
         Box(
             modifier = modifier
@@ -1338,7 +1340,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         ) {
             Image(
                 provider = ImageProvider(R.drawable.rounded_skip_next_24),
-                contentDescription = "Next",
+                contentDescription = context.getString(R.string.next_track),
                 modifier = GlanceModifier.size(iconSize),
                 colorFilter = ColorFilter.tint(iconColor)
             )
@@ -1353,6 +1355,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         iconSize: Dp = 24.dp,
         cornerRadius: Dp = 8.dp
     ) {
+        val context = LocalContext.current
         val params = actionParametersOf(PlayerActions.key to PlayerActions.PREVIOUS)
         Box(
             modifier = modifier
@@ -1363,7 +1366,7 @@ class PixelPlayGlanceWidget : GlanceAppWidget() {
         ) {
             Image(
                 provider = ImageProvider(R.drawable.rounded_skip_previous_24),
-                contentDescription = "Previous",
+                contentDescription = context.getString(R.string.previous_track),
                 modifier = GlanceModifier.size(iconSize),
                 colorFilter = ColorFilter.tint(iconColor)
             )
