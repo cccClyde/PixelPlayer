@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.theveloper.pixelplay.ui.theme.PixelPlayStatusBarStyle
+import androidx.compose.ui.res.stringResource
+import com.theveloper.pixelplay.R
 
 @Composable
 fun CollapsibleCommonTopBar(
@@ -97,7 +99,7 @@ fun CollapsibleCommonTopBar(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(R.string.auth_cd_back)
                 )
             }
 
