@@ -25,15 +25,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.theveloper.pixelplay.R
 
-sealed class DrawerDestination(val route: String, val title: String) {
-    object Home : DrawerDestination("home", "Home")
-    object Equalizer : DrawerDestination("equalizer", "Equalizer")
-    object Settings : DrawerDestination("settings", "Settings")
-    object Telegram : DrawerDestination("telegram", "Telegram")
+sealed class DrawerDestination(val route: String) {
+    object Home : DrawerDestination("home")
+    object Equalizer : DrawerDestination("equalizer")
+    object Settings : DrawerDestination("settings")
+    object Telegram : DrawerDestination("telegram")
 }
 
 @Composable
@@ -75,42 +76,40 @@ private fun DrawerContent(
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
     ) {
-        // App Header
         Column(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 8.dp)
         ) {
             Text(
-                text = "PixelPlay",
+                text = stringResource(R.string.presentation_batch_g_app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Music Player",
+                text = stringResource(R.string.presentation_batch_g_app_tagline),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
-        // Navigation Items
+
         NavigationDrawerItem(
             icon = {
                 Icon(
                     imageVector = Icons.Rounded.Home,
-                    contentDescription = "Home"
+                    contentDescription = stringResource(R.string.tab_home)
                 )
             },
             label = {
                 Text(
-                    text = "Home",
+                    text = stringResource(R.string.tab_home),
                     style = MaterialTheme.typography.labelLarge
                 )
             },
@@ -127,17 +126,17 @@ private fun DrawerContent(
             ),
             shape = RoundedCornerShape(16.dp)
         )
-        
+
         NavigationDrawerItem(
             icon = {
                 Icon(
                     imageVector = Icons.Rounded.GraphicEq,
-                    contentDescription = "Equalizer"
+                    contentDescription = stringResource(R.string.settings_category_equalizer_title)
                 )
             },
             label = {
                 Text(
-                    text = "Equalizer",
+                    text = stringResource(R.string.settings_category_equalizer_title),
                     style = MaterialTheme.typography.labelLarge
                 )
             },
@@ -154,9 +153,9 @@ private fun DrawerContent(
             ),
             shape = RoundedCornerShape(16.dp)
         )
-        
+
         Spacer(modifier = Modifier.weight(1f))
-        
+
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -166,12 +165,12 @@ private fun DrawerContent(
             icon = {
                 Icon(
                     imageVector = Icons.Rounded.Cloud,
-                    contentDescription = "Telegram"
+                    contentDescription = stringResource(R.string.presentation_batch_b_service_telegram)
                 )
             },
             label = {
                 Text(
-                    text = "Telegram",
+                    text = stringResource(R.string.presentation_batch_b_service_telegram),
                     style = MaterialTheme.typography.labelLarge
                 )
             },
@@ -188,18 +187,17 @@ private fun DrawerContent(
             ),
             shape = RoundedCornerShape(16.dp)
         )
-        
-        // Settings at bottom
+
         NavigationDrawerItem(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.rounded_settings_24),
-                    contentDescription = "Settings"
+                    contentDescription = stringResource(R.string.settings_top_bar_title)
                 )
             },
             label = {
                 Text(
-                    text = "Settings",
+                    text = stringResource(R.string.settings_top_bar_title),
                     style = MaterialTheme.typography.labelLarge
                 )
             },
@@ -216,7 +214,7 @@ private fun DrawerContent(
             ),
             shape = RoundedCornerShape(16.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
