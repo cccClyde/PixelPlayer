@@ -4,9 +4,9 @@
     <string name="app_name_change_message">We have changed our app\'s name from PixelPlay to PixelPlayer due to a trademark-related issue. Keep playing!</string>
     <string name="do_not_show_again">Do not show again</string>
     <string name="dismiss">Dismiss</string>
-    <string name="all_files_access_title">Permiso Especial Requerido</string>
-    <string name="all_files_access_description">Para poder editar los metadatos de tus canciones (archivos .mp3), PixelPlayer necesita un permiso especial de acceso a todos los archivos. Esto nos permitirá modificar las etiquetas de tus pistas directamente. Por favor, concede este permiso en la siguiente pantalla para habilitar la edición de metadatos.</string>
-    <string name="grant_permission_button">Conceder Permiso</string>
+    <string name="all_files_access_title">Special Permission Required</string>
+    <string name="all_files_access_description">To edit song metadata (.mp3 files), PixelPlayer needs special access to all files. This allows us to modify track tags directly. Please grant this permission on the next screen to enable metadata editing.</string>
+    <string name="grant_permission_button">Grant Permission</string>
     <string name="all_files_access_setting">All Files Access</string>
     <string name="error">Error</string>
     <string name="ok">OK</string>
@@ -14,7 +14,6 @@
     <string name="import_file">Import</string>
     <string name="search">Search</string>
 
-    <!-- Lyrics -->
     <string name="lyrics">Lyrics</string>
     <string name="close_lyrics_sheet">Close Lyrics Sheet</string>
     <string name="loading_lyrics">Loading lyrics…</string>
@@ -51,14 +50,13 @@
     <string name="lyrics_earlier">Earlier</string>
     <string name="lyrics_later">Later</string>
 
-    <!-- Sync/Progress strings -->
     <string name="sync_scanning">Scanning music files…</string>
     <string name="sync_processing">Processing files…</string>
     <string name="sync_files_progress">%1$d of %2$d files</string>
     <string name="sync_in_progress">Syncing library…</string>
     <string name="sync_complete">Sync complete</string>
     <string name="sync_pending">Waiting…</string>
-    <string name="syncing_library">Sincronizando biblioteca…</string>
+    <string name="syncing_library">Syncing library…</string>
     <string name="unknown_song_title">Unknown track</string>
     <string name="unknown_artist">Unknown artist</string>
     <string name="unknown_album">Unknown album</string>
@@ -79,7 +77,6 @@
     <string name="play_playback">Play</string>
     <string name="playlist_not_found">Playlist not found.</string>
 
-    <!-- AI Playlist -->
     <string name="ai_error_api_key">Please configure a valid API key for the selected AI provider in Settings.</string>
     <string name="ai_error_generic">AI Error: %s</string>
     <string name="ai_error_quota">The selected AI provider rejected the request because the account has no credits or available quota.</string>
@@ -89,18 +86,15 @@
     <string name="ai_daily_mix_updated">Daily Mix updated with AI</string>
     <string name="ai_no_songs_for_mix">AI couldn\'t find songs for this mix</string>
 
-    <!-- Launcher Shortcuts -->
     <string name="shortcut_shuffle_short">Shuffle</string>
     <string name="shortcut_shuffle_long">Shuffle all songs</string>
     <string name="shortcut_playlist_short">Playlist</string>
     <string name="shortcut_playlist_long">Last played playlist</string>
 
-    <!-- Quick Settings Tiles -->
     <string name="tile_shuffle_all">Shuffle All</string>
     <string name="tile_last_playlist">Last Playlist</string>
     <string name="tile_last_playlist_unavailable">No playlist available to open</string>
 
-    <!-- Errors -->
     <string name="invalid_album_id">Invalid album ID</string>
     <string name="album_id_not_found">Album ID not found</string>
     <string name="error_loading_album">Error loading album data: %s</string>
@@ -112,7 +106,6 @@
     <string name="could_not_find_artist">Could not find the artist</string>
     <string name="no_valid_songs">No valid songs found to play</string>
 
-    <!-- Widgets -->
     <string name="glance_widget_description">Responsive widget that adapts to its size</string>
     <string name="widget_bar_4x1_desc">Compact player bar</string>
     <string name="widget_control_4x2_desc">Full controls with shuffle and repeat</string>

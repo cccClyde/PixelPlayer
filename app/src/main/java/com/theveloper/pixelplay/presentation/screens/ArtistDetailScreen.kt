@@ -81,6 +81,7 @@ import com.theveloper.pixelplay.presentation.viewmodel.ArtistDetailViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.ArtistAlbumSection
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistViewModel
+import com.theveloper.pixelplay.utils.formatSongCount
 import com.theveloper.pixelplay.utils.shapes.RoundedStarShape
 import kotlinx.coroutines.launch
 import com.theveloper.pixelplay.presentation.components.subcomps.EnhancedSongListItem
@@ -555,7 +556,7 @@ private fun CollapsibleAlbumSectionHeader(
                 append(it.toString())
                 append(" • ")
             }
-            append("${section.songs.size} songs")
+            append(formatSongCount(section.songs.size))
         }
     }
 
@@ -791,7 +792,7 @@ private fun SharedArtistTopBarProbe(
 
         CollapsibleCommonTopBar(
             title = artist.name,
-            subtitle = "$songsCount songs",
+            subtitle = formatSongCount(songsCount),
             collapseFraction = collapseFraction,
             headerHeight = headerHeight,
             onBackClick = onBackPressed,
@@ -1069,7 +1070,7 @@ private fun CustomCollapsingTopBar(
                         )
 
                         Text(
-                            text = "$songsCount songs",
+                            text = formatSongCount(songsCount),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

@@ -1,5 +1,6 @@
 package com.theveloper.pixelplay.presentation.components
 
+import androidx.annotation.OptIn
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -23,9 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.util.UnstableApi
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
+import androidx.lifecycle.compose.currentStateAsState
 
 
+@OptIn(UnstableApi::class)
 @Composable
 fun ScreenWrapper(
     navController: androidx.navigation.NavController,
@@ -51,24 +55,30 @@ fun ScreenWrapper(
     }
     
     // Initial Check
-    val currentState = lifecycleOwner.lifecycle.currentState
+    val currentState = lifecycleOwner.lifecycle.currentStateAsState().value
     if (currentState.isAtLeast(Lifecycle.State.RESUMED)) {
         isResumed = true
     }
 
-    // Stack Check (for Dimming)
-    // We compare indices to determine if we are strictly BEHIND the active screen.
-    val backStack by navController.currentBackStack.collectAsStateWithLifecycle()
+    // Visible entries is the public Navigation API designed for transition-aware stacking.
+    // It stays stable while entries are entering / exiting, unlike the restricted currentBackStack.
+    val visibleEntries by navController.visibleEntries.collectAsStateWithLifecycle()
     val myEntry = lifecycleOwner as? androidx.navigation.NavBackStackEntry
-    val myIndex = backStack.indexOfFirst { it.id == myEntry?.id }
-    val topIndex = backStack.lastIndex
+    val myIndex = visibleEntries.indexOfFirst { it.id == myEntry?.id }
+    val topIndex = visibleEntries.indexOfLast {
+        it.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    }
     
     // Dim Logic:
     // If I am BACKGROUND (myIndex < topIndex) -> Dim.
     // If I am TOP (myIndex == topIndex) -> Clear.
     // If I am EXITING (myIndex > topIndex, effectively in front during pop) -> Clear.
-    val shouldDim = remember(backStack, myIndex, topIndex) {
-        myIndex != -1 && topIndex != -1 && myIndex < topIndex
+    // Created entries are on their way out, so we keep them clear instead of dimming them for a frame.
+    val shouldDim = remember(visibleEntries, myEntry, myIndex, topIndex) {
+        myIndex != -1 &&
+            topIndex != -1 &&
+            myIndex < topIndex &&
+            myEntry?.lifecycle?.currentState != Lifecycle.State.CREATED
     }
 
     // Declarative Animations

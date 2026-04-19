@@ -22,3 +22,10 @@ annotation class FastOkHttpClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class BackupGson
+
+/**
+ * Qualifier for application-lifetime coroutine scope.
+ */
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AppScope

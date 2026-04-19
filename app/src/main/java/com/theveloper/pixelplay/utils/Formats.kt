@@ -55,3 +55,6 @@ fun formatListeningDurationCompact(milliseconds: Long): String {
     }
 }
 
+fun formatSongCount(count: Int): String {
+    return if (count <= 1) "$count Song" else "$count Songs"
+}

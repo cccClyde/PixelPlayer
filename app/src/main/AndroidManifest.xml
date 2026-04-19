@@ -222,7 +222,7 @@
                 tools:node="remove" />
         </provider>
 
-        <receiver android:name=".ui.glancewidget.WidgetUpdateReceiver" android:exported="true">
+        <receiver android:name=".ui.glancewidget.WidgetUpdateReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.theveloper.pixelplay.ACTION_WIDGET_UPDATE_PLAYBACK_STATE" />
             </intent-filter>

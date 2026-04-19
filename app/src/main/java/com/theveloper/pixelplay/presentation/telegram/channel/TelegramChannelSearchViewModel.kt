@@ -14,6 +14,8 @@ import org.drinkless.tdlib.TdApi
 import javax.inject.Inject
 
 import com.theveloper.pixelplay.presentation.viewmodel.ConnectivityStateHolder
+import com.theveloper.pixelplay.data.database.TelegramChannelEntity
+import com.theveloper.pixelplay.data.database.TelegramTopicEntity
 
 @HiltViewModel
 class TelegramChannelSearchViewModel @Inject constructor(
@@ -91,39 +93,66 @@ class TelegramChannelSearchViewModel @Inject constructor(
         _statusMessage.value = "Syncing songs from channel..."
 
         viewModelScope.launch {
-            val fetchedSongs = telegramRepository.getAudioMessages(chatId)
+            try {
+                val isForum = telegramRepository.isForum(chatId)
+                val chat = _foundChat.value ?: return@launch
 
-            if (fetchedSongs.isNotEmpty()) {
-                musicRepository.replaceTelegramSongsForChannel(chatId, fetchedSongs)
+                val allSongs = telegramRepository.getAudioMessages(chatId)
+                musicRepository.replaceTelegramSongsForChannel(chatId, allSongs)
 
-                // Save Channel Entity
-                val chat = _foundChat.value
-                val currentQuery = _searchQuery.value
-                if (chat != null) {
-                    var localPhotoPath: String? = null
-                    val photoFileId = chat.photo?.small?.id
-                    if (photoFileId != null) {
-                        localPhotoPath = telegramRepository.downloadFileAwait(photoFileId)
-                    }
-
-                    val entity = com.theveloper.pixelplay.data.database.TelegramChannelEntity(
-                        chatId = chat.id,
-                        title = chat.title,
-                        username = _resolvedUsername.value,
-                        songCount = fetchedSongs.size,
-                        lastSyncTime = System.currentTimeMillis(),
-                        photoPath = localPhotoPath
-                    )
-                    musicRepository.saveTelegramChannel(entity)
+                var localPhotoPath: String? = null
+                val photoFileId = chat.photo?.small?.id
+                if (photoFileId != null) {
+                    localPhotoPath = telegramRepository.downloadFileAwait(photoFileId)
                 }
 
-                _statusMessage.value = "Success! ${fetchedSongs.size} songs added to library. You can close this window."
-            } else {
-                _statusMessage.value = "No audio songs found in this channel."
+                val baseEntity = TelegramChannelEntity(
+                    chatId = chat.id,
+                    title = chat.title,
+                    username = _resolvedUsername.value,
+                    songCount = allSongs.size,
+                    lastSyncTime = System.currentTimeMillis(),
+                    photoPath = localPhotoPath
+                )
+
+                // Always save base entity first for channel playlist
+                musicRepository.saveTelegramChannel(baseEntity)
+
+                if (isForum) {
+                    val topics = telegramRepository.getForumTopics(chatId)
+                    if (topics.isNotEmpty()) {
+                        musicRepository.replaceTopicsForChannel(chatId, topics)
+                        var totalSongs = 0
+                        topics.forEach { topic ->
+                            val topicSongs = telegramRepository.getAudioMessagesByTopic(chatId, topic.threadId)
+                            totalSongs += topicSongs.size
+                            musicRepository.replaceTelegramSongsForTopic(
+                                chatId = chatId,
+                                threadId = topic.threadId,
+                                topicName = topic.name,
+                                songs = topicSongs
+                            )
+                            musicRepository.saveTelegramTopics(chatId, listOf(
+                                topic.copy(
+                                    songCount = topicSongs.size,
+                                    lastSyncTime = System.currentTimeMillis()
+                                )
+                            ))
+                        }
+                        musicRepository.saveTelegramChannel(baseEntity.copy(songCount = totalSongs))
+                        _statusMessage.value = "Success! $totalSongs songs across ${topics.size} topics added. You can close this window."
+                    } else {
+                        _statusMessage.value = "Success! ${allSongs.size} songs added to library. You can close this window."
+                    }
+                } else {
+                    _statusMessage.value = "Success! ${allSongs.size} songs added to library. You can close this window."
+                }
+            } catch (e: Exception) {
+                _statusMessage.value = "Sync failed: ${e.message}"
+            } finally {
+                _songs.value = emptyList()
+                _isLoading.value = false
             }
-            // We do NOT update _songs to avoid showing the list
-            _songs.value = emptyList()
-            _isLoading.value = false
         }
     }
 

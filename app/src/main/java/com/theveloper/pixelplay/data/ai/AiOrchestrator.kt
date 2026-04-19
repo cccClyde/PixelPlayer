@@ -8,11 +8,12 @@ import com.theveloper.pixelplay.data.database.AiCacheEntity
 import com.theveloper.pixelplay.data.preferences.AiPreferencesRepository
 import com.theveloper.pixelplay.data.database.AiUsageDao
 import com.theveloper.pixelplay.data.database.AiUsageEntity
+import com.theveloper.pixelplay.di.AppScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withTimeout
+import timber.log.Timber
 import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +24,8 @@ class AiOrchestrator @Inject constructor(
     private val clientFactory: AiClientFactory,
     private val cacheDao: AiCacheDao,
     private val usageDao: AiUsageDao,
-    private val promptEngine: AiSystemPromptEngine
+    private val promptEngine: AiSystemPromptEngine,
+    @AppScope private val appScope: CoroutineScope
 ) {
     // Cooldown timer: Provider -> Expiry Timestamp
     private val providerCooldowns = mutableMapOf<AiProvider, Long>()
@@ -219,18 +221,22 @@ class AiOrchestrator @Inject constructor(
                 val estimatedOutputTokens = response.length / 4
                 val estimatedThoughtTokens = if (isThinkingModel) (estimatedOutputTokens * 1.5).toInt() else 0
 
-                kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
-                    usageDao.insertUsage(
-                        AiUsageEntity(
-                            timestamp = now,
-                            provider = provider.displayName,
-                            model = provider.name,
-                            promptType = type.name,
-                            promptTokens = estimatedPromptTokens,
-                            outputTokens = estimatedOutputTokens,
-                            thoughtTokens = estimatedThoughtTokens
+                appScope.launch {
+                    runCatching {
+                        usageDao.insertUsage(
+                            AiUsageEntity(
+                                timestamp = now,
+                                provider = provider.displayName,
+                                model = provider.name,
+                                promptType = type.name,
+                                promptTokens = estimatedPromptTokens,
+                                outputTokens = estimatedOutputTokens,
+                                thoughtTokens = estimatedThoughtTokens
+                            )
                         )
-                    )
+                    }.onFailure { error ->
+                        Timber.tag("AiOrchestrator").e(error, "Failed to persist AI usage")
+                    }
                 }
 
                 cacheDao.insert(AiCacheEntity(promptHash = hash, responseJson = response, timestamp = System.currentTimeMillis()))

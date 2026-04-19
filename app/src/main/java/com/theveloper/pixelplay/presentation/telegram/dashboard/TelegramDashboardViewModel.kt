@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,8 +36,9 @@ class TelegramDashboardViewModel @Inject constructor(
     val statusMessage = _statusMessage.asStateFlow()
 
     // Topics per channel: channelChatId -> list of topics
-    private val _topicsMap = MutableStateFlow<Map<Long, List<TelegramTopicEntity>>>(emptyMap())
-    val topicsMap = _topicsMap.asStateFlow()
+    val topicsMap = musicRepository.getAllTelegramTopics()
+        .map { topics -> topics.groupBy { it.chatId } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
     // Track which channels are expanded to show topics
     private val _expandedChannels = MutableStateFlow<Set<Long>>(emptySet())
@@ -95,16 +97,13 @@ class TelegramDashboardViewModel @Inject constructor(
         }
 
         // Replace topics in DB — this deletes any topics removed from Telegram
-        // and inserts the fresh list, so the dashboard stays in sync
+        // and inserts the fresh list. The reactive topicsMap flow will detect this.
         musicRepository.replaceTopicsForChannel(channel.chatId, topics)
-        _topicsMap.value = _topicsMap.value + (channel.chatId to topics)
         if (channel.chatId !in _expandedChannels.value) {
             _expandedChannels.value = _expandedChannels.value + channel.chatId
         }
 
         var totalSongs = 0
-        val updatedTopics = mutableListOf<TelegramTopicEntity>()
-
         topics.forEach { topic ->
             val topicSongs = telegramRepository.getAudioMessagesByTopic(channel.chatId, topic.threadId)
             totalSongs += topicSongs.size
@@ -122,12 +121,8 @@ class TelegramDashboardViewModel @Inject constructor(
                 songCount = topicSongs.size,
                 lastSyncTime = System.currentTimeMillis()
             )
-            updatedTopics.add(updatedTopic)
             musicRepository.saveTelegramTopics(channel.chatId, listOf(updatedTopic))
         }
-
-        // Refresh UI with final song counts across all topics
-        _topicsMap.value = _topicsMap.value + (channel.chatId to updatedTopics)
 
         // Update channel metadata (total across all topics)
         val updatedChannel = channel.copy(
@@ -137,16 +132,6 @@ class TelegramDashboardViewModel @Inject constructor(
         musicRepository.saveTelegramChannel(updatedChannel)
 
         _statusMessage.value = "Synced $totalSongs songs across ${topics.size} topics in ${channel.title}"
-    }
-
-    /** Load cached topics for a channel from DB (no network call). */
-    fun loadTopicsForChannel(chatId: Long) {
-        viewModelScope.launch {
-            val topics = musicRepository.getTopicsForChannel(chatId)
-            if (topics.isNotEmpty()) {
-                _topicsMap.value = _topicsMap.value + (chatId to topics)
-            }
-        }
     }
 
     fun removeChannel(chatId: Long) {

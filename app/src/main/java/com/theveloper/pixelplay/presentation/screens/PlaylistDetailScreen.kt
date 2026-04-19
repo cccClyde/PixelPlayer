@@ -120,6 +120,7 @@ import com.theveloper.pixelplay.presentation.utils.LocalAppHapticsConfig
 import com.theveloper.pixelplay.presentation.utils.performAppCompatHapticFeedback
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import com.theveloper.pixelplay.presentation.viewmodel.PlaylistSongsOrderMode
+import com.theveloper.pixelplay.utils.formatSongCount
 import com.theveloper.pixelplay.utils.formatTotalDuration
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import sh.calvin.reorderable.ReorderableItem
@@ -243,7 +244,7 @@ fun PlaylistDetailScreen(
                 subtitle = {
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
-                        text = "${songsInPlaylist.size} songs • ${
+                        text = "${formatSongCount(songsInPlaylist.size)} • ${
                             formatTotalDuration(
                                 songsInPlaylist
                             )

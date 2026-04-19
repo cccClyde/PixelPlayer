@@ -70,6 +70,9 @@ interface TelegramDao {
     @Query("DELETE FROM telegram_topics WHERE chat_id = :chatId")
     suspend fun deleteTopicsByChannel(chatId: Long)
 
+    @Query("SELECT * FROM telegram_topics ORDER BY name ASC")
+    fun getAllTopics(): Flow<List<TelegramTopicEntity>>
+
     @Query("DELETE FROM telegram_topics WHERE id = :id")
     suspend fun deleteTopic(id: String)
 }

@@ -35,3 +35,4 @@ baselineprofile/build/
 misc.xml
 markdown.xml
 .vscode/
+.agents/

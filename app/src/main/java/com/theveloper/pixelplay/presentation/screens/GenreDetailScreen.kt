@@ -73,6 +73,7 @@ import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.StablePlayerState
 import com.theveloper.pixelplay.ui.theme.LocalPixelPlayDarkTheme
 import com.theveloper.pixelplay.utils.formatDuration
+import com.theveloper.pixelplay.utils.formatSongCount
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -810,7 +811,7 @@ fun GenreAlbumHeader(
                     )
                 }
                 Text(
-                    text = "${album.songs.size} songs",
+                    text = formatSongCount(album.songs.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

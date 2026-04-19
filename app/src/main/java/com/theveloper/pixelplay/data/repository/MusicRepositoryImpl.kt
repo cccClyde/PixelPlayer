@@ -1047,6 +1047,9 @@ class MusicRepositoryImpl @Inject constructor(
     override suspend fun getTopicsForChannel(chatId: Long): List<TelegramTopicEntity> {
         return telegramDao.getTopicsByChannelOnce(chatId)
     }
+    override fun getAllTelegramTopics(): Flow<List<TelegramTopicEntity>> {
+        return telegramDao.getAllTopics()
+    }
 
     override suspend fun replaceTelegramSongsForTopic(
         chatId: Long,

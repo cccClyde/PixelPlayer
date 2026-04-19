@@ -6,4 +6,7 @@
     <exclude domain="sharedpref" path="netease_prefs.xml"/>
     <exclude domain="sharedpref" path="gdrive_prefs.xml"/>
     <exclude domain="sharedpref" path="qqmusic_prefs.xml"/>
+
+    <!-- Exclude DataStore preferences that may contain API keys/sensitive settings -->
+    <exclude domain="file" path="datastore/settings.preferences_pb"/>
 </full-backup-content>

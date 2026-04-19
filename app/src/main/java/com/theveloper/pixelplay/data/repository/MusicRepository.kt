@@ -326,6 +326,7 @@ interface MusicRepository {
     /** Replaces the full topic list for a channel, deleting any topics that no longer exist. */
     suspend fun replaceTopicsForChannel(chatId: Long, freshTopics: List<com.theveloper.pixelplay.data.database.TelegramTopicEntity>)
     suspend fun getTopicsForChannel(chatId: Long): List<com.theveloper.pixelplay.data.database.TelegramTopicEntity>
+    fun getAllTelegramTopics(): Flow<List<com.theveloper.pixelplay.data.database.TelegramTopicEntity>>
     suspend fun replaceTelegramSongsForTopic(chatId: Long, threadId: Long, topicName: String, songs: List<Song>)
 
     val telegramRepository: com.theveloper.pixelplay.data.telegram.TelegramRepository

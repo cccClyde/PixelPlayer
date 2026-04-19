@@ -88,6 +88,7 @@ fun LibraryActionRow(
     onLocateClick: () -> Unit = {},
     showSortButton: Boolean,
     showLocateButton: Boolean = false,
+    showImportButton: Boolean = true,
     isPlaylistTab: Boolean,
     onImportM3uClick: () -> Unit = {},
     isFoldersTab: Boolean,
@@ -104,6 +105,8 @@ fun LibraryActionRow(
     currentStorageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL,
     onStorageFilterClick: () -> Unit = {}
 ) {
+    val shouldShowImport = isPlaylistTab && showImportButton
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -134,12 +137,16 @@ fun LibraryActionRow(
                     onNavigateBack = onNavigateBack
                 )
             } else {
+                val outerCorner = 26.dp
+                val innerCorner = 8.dp
+
                 val newButtonEndCorner by animateDpAsState(
-                    targetValue = if (isPlaylistTab) 8.dp else 26.dp,
+                    targetValue = if (shouldShowImport) innerCorner else outerCorner,
                     label = "NewButtonEndCorner"
                 )
+
                 val importButtonStartCorner by animateDpAsState(
-                    targetValue = if (isPlaylistTab) 6.dp else 26.dp,
+                    targetValue = innerCorner,
                     label = "ImportButtonStartCorner"
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -185,7 +192,7 @@ fun LibraryActionRow(
                     }
 
                     AnimatedVisibility(
-                        visible = isPlaylistTab,
+                        visible = shouldShowImport,
                         enter = fadeIn() + expandHorizontally(
                             expandFrom = Alignment.Start,
                             clip = false, // <— evita el “corte” durante la expansión

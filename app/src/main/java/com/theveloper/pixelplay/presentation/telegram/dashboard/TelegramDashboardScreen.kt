@@ -131,12 +131,6 @@ fun TelegramDashboardScreen(
         }
     }
 
-    // Load cached topics for all channels on first composition
-    LaunchedEffect(channels) {
-        channels.forEach { channel ->
-            viewModel.loadTopicsForChannel(channel.chatId)
-        }
-    }
 
     if (!isOnline) {
         NoInternetScreen(onRetry = viewModel::refreshChannels)
