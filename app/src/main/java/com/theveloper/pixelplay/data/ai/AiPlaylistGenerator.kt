@@ -22,7 +22,8 @@ class AiPlaylistGenerator @Inject constructor(
         allSongs: List<Song>,
         minLength: Int,
         maxLength: Int,
-        candidateSongs: List<Song>? = null
+        candidateSongs: List<Song>? = null,
+        type: AiSystemPromptType = AiSystemPromptType.PLAYLIST
     ): Result<List<Song>> {
         return try {
 
@@ -72,7 +73,7 @@ class AiPlaylistGenerator @Inject constructor(
             </candidate_pool>
             """.trimIndent()
 
-            val responseText = aiOrchestrator.generateContent(fullPrompt, AiSystemPromptType.PLAYLIST)
+            val responseText = aiOrchestrator.generateContent(fullPrompt, type)
 
             val songIds = extractPlaylistSongIds(responseText)
 

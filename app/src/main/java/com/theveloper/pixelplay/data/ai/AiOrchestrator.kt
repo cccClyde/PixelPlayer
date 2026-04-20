@@ -150,7 +150,7 @@ class AiOrchestrator @Inject constructor(
                 // AI Optimization: Moderate temperature for tags to allow creative yet relevant descriptors
                 AiSystemPromptType.TAGGING -> 0.4f
                 // AI Optimization: Balanced temperature for playlists to ensure variety without losing cohesion
-                AiSystemPromptType.PLAYLIST -> 0.6f
+                AiSystemPromptType.PLAYLIST, AiSystemPromptType.DAILY_MIX -> 0.6f
                 // AI Optimization: High temperature for persona-based responses to increase flair and engagement
                 AiSystemPromptType.PERSONA -> 0.85f
                 AiSystemPromptType.GENERAL -> 0.7f
@@ -244,6 +244,7 @@ class AiOrchestrator @Inject constructor(
             } catch (e: Exception) {
                 // AI Optimization: Robust failover logic—if one provider fails, we log and try the next in the chain
                 val failure = com.theveloper.pixelplay.data.ai.provider.AiProviderSupport.wrapThrowable(provider.displayName, e)
+                Timber.tag("AiOrchestrator").w(e, "Provider ${provider.name} failed: ${failure.message}")
                 failedProviders.add("${provider.name}: ${failure.message ?: "Unknown error"}")
                 // Trigger cooldown only on provider-level outages and account problems.
                 if (failure.shouldCooldown()) {
@@ -267,6 +268,7 @@ class AiOrchestrator @Inject constructor(
                 "AI generation failed after trying ${failedProviders.size} providers:\n${failedProviders.joinToString("\n• ", prefix = "• ")}"
         }
         
+        Timber.tag("AiOrchestrator").e("All providers failed. Details: %s", failedProviders.joinToString(" | "))
         throw Exception(errorMessage)
     }
 }

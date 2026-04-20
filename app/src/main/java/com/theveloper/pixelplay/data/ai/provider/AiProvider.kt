@@ -11,7 +11,8 @@ enum class AiProvider(val displayName: String, val requiresApiKey: Boolean) {
     NVIDIA("NVIDIA NIM", requiresApiKey = true),
     KIMI("Kimi (Moonshot)", requiresApiKey = true),
     GLM("Zhipu GLM", requiresApiKey = true),
-    OPENAI("OpenAI", requiresApiKey = true);
+    OPENAI("OpenAI", requiresApiKey = true),
+    OPENROUTER("OpenRouter", requiresApiKey = true);
     
     companion object {
         fun fromString(value: String): AiProvider {

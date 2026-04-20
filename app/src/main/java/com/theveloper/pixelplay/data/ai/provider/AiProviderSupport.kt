@@ -83,6 +83,7 @@ internal object AiProviderSupport {
             AiProvider.DEEPSEEK,
             AiProvider.MISTRAL,
             AiProvider.OPENAI,
+            AiProvider.OPENROUTER,
             AiProvider.NVIDIA,
             AiProvider.KIMI,
             AiProvider.GLM

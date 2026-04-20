@@ -52,6 +52,7 @@ class AiWorker @AssistedInject constructor(
             // Include deep user context for relevant tasks
             val context = if (type == AiSystemPromptType.PLAYLIST || 
                             type == AiSystemPromptType.TAGGING || 
+                            type == AiSystemPromptType.DAILY_MIX ||
                             type == AiSystemPromptType.PERSONA) {
                 val allSongs = musicRepository.getAllSongsOnce()
                 val isSafe = preferencesRepo.isSafeTokenLimitEnabled.first()

@@ -256,6 +256,13 @@ class SettingsViewModel @Inject constructor(
     val openaiSystemPrompt: StateFlow<String> = aiPreferencesRepository.openaiSystemPrompt
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiPreferencesRepository.DEFAULT_OPENAI_SYSTEM_PROMPT)
 
+    val openrouterApiKey: StateFlow<String> = aiPreferencesRepository.openrouterApiKey
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+    val openrouterModel: StateFlow<String> = aiPreferencesRepository.openrouterModel
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+    val openrouterSystemPrompt: StateFlow<String> = aiPreferencesRepository.openrouterSystemPrompt
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiPreferencesRepository.DEFAULT_OPENROUTER_SYSTEM_PROMPT)
+
     fun onAiApiKeyChange(apiKey: String) {
         viewModelScope.launch {
             val providerStr = aiProvider.value
@@ -323,6 +330,13 @@ class SettingsViewModel @Inject constructor(
             else clearModelsState("OPENAI")
         }
     }
+    fun onOpenrouterApiKeyChange(apiKey: String) {
+        viewModelScope.launch {
+            aiPreferencesRepository.setApiKey(AiProvider.OPENROUTER, apiKey)
+            if (apiKey.isNotBlank()) fetchAvailableModels(apiKey, "OPENROUTER")
+            else clearModelsState("OPENROUTER")
+        }
+    }
 
     fun onAiModelChange(model: String) {
         viewModelScope.launch {
@@ -339,6 +353,7 @@ class SettingsViewModel @Inject constructor(
     fun onKimiModelChange(model: String) = viewModelScope.launch { aiPreferencesRepository.setModel(AiProvider.KIMI, model) }
     fun onGlmModelChange(model: String) = viewModelScope.launch { aiPreferencesRepository.setModel(AiProvider.GLM, model) }
     fun onOpenAiModelChange(model: String) = viewModelScope.launch { aiPreferencesRepository.setModel(AiProvider.OPENAI, model) }
+    fun onOpenrouterModelChange(model: String) = viewModelScope.launch { aiPreferencesRepository.setModel(AiProvider.OPENROUTER, model) }
 
     fun onAiSystemPromptChange(prompt: String) {
         viewModelScope.launch {
@@ -355,6 +370,7 @@ class SettingsViewModel @Inject constructor(
     fun onKimiSystemPromptChange(prompt: String) = viewModelScope.launch { aiPreferencesRepository.setSystemPrompt(AiProvider.KIMI, prompt) }
     fun onGlmSystemPromptChange(prompt: String) = viewModelScope.launch { aiPreferencesRepository.setSystemPrompt(AiProvider.GLM, prompt) }
     fun onOpenAiSystemPromptChange(prompt: String) = viewModelScope.launch { aiPreferencesRepository.setSystemPrompt(AiProvider.OPENAI, prompt) }
+    fun onOpenrouterSystemPromptChange(prompt: String) = viewModelScope.launch { aiPreferencesRepository.setSystemPrompt(AiProvider.OPENROUTER, prompt) }
 
     fun resetAiSystemPrompt() {
         viewModelScope.launch {
@@ -371,6 +387,7 @@ class SettingsViewModel @Inject constructor(
     fun resetKimiSystemPrompt() = viewModelScope.launch { aiPreferencesRepository.resetSystemPrompt(AiProvider.KIMI) }
     fun resetGlmSystemPrompt() = viewModelScope.launch { aiPreferencesRepository.resetSystemPrompt(AiProvider.GLM) }
     fun resetOpenAiSystemPrompt() = viewModelScope.launch { aiPreferencesRepository.resetSystemPrompt(AiProvider.OPENAI) }
+    fun resetOpenrouterSystemPrompt() = viewModelScope.launch { aiPreferencesRepository.resetSystemPrompt(AiProvider.OPENROUTER) }
 
     fun clearAiUsageData() {
         viewModelScope.launch {

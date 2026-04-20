@@ -6,18 +6,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.ButtonDefaults
@@ -47,7 +51,9 @@ fun AlbumMultiSelectionOptionSheet(
     selectedAlbums: List<Album>,
     maxSelection: Int,
     onDismiss: () -> Unit,
-    onQueueAndPlay: () -> Unit
+    onPlay: () -> Unit,
+    onPlayNext: () -> Unit,
+    onAddToQueue: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -95,51 +101,117 @@ fun AlbumMultiSelectionOptionSheet(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Queue + play respects your selection order.",
+                text = "Play replaces the current queue. Play Next inserts right after the current song.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "Limit: $maxSelection albums per selection.",
+                text = "Add to Queue appends to the end. Limit: $maxSelection albums per selection.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            FilledTonalButton(
+            AlbumSelectionActionButton(
                 onClick = {
-                    onQueueAndPlay()
+                    onPlay()
                     onDismiss()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
+                    .heightIn(min = 66.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                shape = CircleShape
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.PlayArrow,
+                        contentDescription = "Play selected albums"
+                    )
+                },
+                text = "Play"
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
-                    contentDescription = null
+                AlbumSelectionActionButton(
+                    onClick = {
+                        onPlayNext()
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .fillMaxHeight(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
+                    ),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.QueueMusic,
+                            contentDescription = "Play selected albums next"
+                        )
+                    },
+                    text = "Next"
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Add to Queue & Play",
-                    style = MaterialTheme.typography.titleMedium
+
+                AlbumSelectionActionButton(
+                    onClick = {
+                        onAddToQueue()
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .fillMaxHeight(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    ),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
+                            contentDescription = "Add selected albums to queue"
+                        )
+                    },
+                    text = "Add to Queue"
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+    }
+}
+
+@Composable
+private fun AlbumSelectionActionButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: androidx.compose.material3.ButtonColors,
+    icon: @Composable () -> Unit,
+    text: String
+) {
+    FilledTonalButton(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 66.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        colors = colors,
+        shape = CircleShape
+    ) {
+        icon()
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 

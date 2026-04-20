@@ -49,6 +49,12 @@ class AiClientFactory @Inject constructor() {
                 defaultModelId = "gpt-4o-mini",
                 providerName = "OpenAI"
             )
+            AiProvider.OPENROUTER -> GenericOpenAiClient(
+                apiKey = apiKey,
+                baseUrl = "https://openrouter.ai/api/v1",
+                defaultModelId = "google/gemini-2.0-flash-lite-preview-02-05:free",
+                providerName = "OpenRouter"
+            )
         }
     }
 }

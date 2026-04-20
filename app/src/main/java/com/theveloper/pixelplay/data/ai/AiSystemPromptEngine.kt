@@ -10,6 +10,7 @@ enum class AiSystemPromptType {
     TAGGING,
     MOOD_ANALYSIS,
     PERSONA,
+    DAILY_MIX,
     GENERAL
 }
 
@@ -29,7 +30,7 @@ class AiSystemPromptEngine @Inject constructor() {
 
     fun buildPrompt(basePersona: String, type: AiSystemPromptType, context: String = ""): String {
         val requirementLayer = when (type) {
-            AiSystemPromptType.PLAYLIST -> """
+            AiSystemPromptType.PLAYLIST, AiSystemPromptType.DAILY_MIX -> """
                 <role>Music curation engine mapping user requests to a strict candidate pool.</role>
                 <strategy>
                 - If request implies "discovery/new", prioritize the [DISCOVERY_POOL].

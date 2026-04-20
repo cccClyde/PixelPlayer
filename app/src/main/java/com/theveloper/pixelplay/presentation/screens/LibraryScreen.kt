@@ -1606,24 +1606,7 @@ fun LibraryScreen(
                         }
                     }
                 }
-                if (playerUiState.isGeneratingAiMetadata) {
-                    Surface( // Fondo semitransparente para el indicador
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                LoadingIndicator(modifier = Modifier.size(64.dp))
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "Generating metadata with AI...",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-                    }
-                } else if (
+                if (
                     playerUiState.isSyncingLibrary ||
                     (
                             (playerUiState.isLoadingInitialSongs || playerUiState.isLoadingLibraryCategories) &&
@@ -1887,8 +1870,18 @@ fun LibraryScreen(
             selectedAlbums = selectedAlbums,
             maxSelection = MAX_ALBUM_MULTI_SELECTION,
             onDismiss = { showAlbumMultiSelectionSheet = false },
-            onQueueAndPlay = {
-                playerViewModel.queueAndPlaySelectedAlbums(selectedAlbums)
+            onPlay = {
+                playerViewModel.playSelectedAlbums(selectedAlbums)
+                selectedAlbums = emptyList()
+                showAlbumMultiSelectionSheet = false
+            },
+            onPlayNext = {
+                playerViewModel.addSelectedAlbumsAsNext(selectedAlbums)
+                selectedAlbums = emptyList()
+                showAlbumMultiSelectionSheet = false
+            },
+            onAddToQueue = {
+                playerViewModel.addSelectedAlbumsToQueue(selectedAlbums)
                 selectedAlbums = emptyList()
                 showAlbumMultiSelectionSheet = false
             }

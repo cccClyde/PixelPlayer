@@ -76,12 +76,17 @@ class GenericOpenAiClient(
             val jsonBody = json.encodeToString(ChatRequest.serializer(), requestBody)
             val body = jsonBody.toRequestBody("application/json".toMediaType())
             
-            val request = Request.Builder()
+            val requestBuilder = Request.Builder()
                 .url("${baseUrl.trimEnd('/')}/chat/completions")
                 .addHeader("Authorization", "Bearer $apiKey")
                 .addHeader("Content-Type", "application/json")
-                .post(body)
-                .build()
+            
+            if (providerName.equals("OpenRouter", ignoreCase = true)) {
+                requestBuilder.addHeader("HTTP-Referer", "https://github.com/theovilardo/PixelPlayer")
+                requestBuilder.addHeader("X-Title", "PixelPlayer")
+            }
+
+            val request = requestBuilder.post(body).build()
 
             try {
                 client.newCall(request).execute().use { response ->

@@ -29,6 +29,7 @@ class AiPreferencesRepository @Inject constructor(
         val DEFAULT_KIMI_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
         val DEFAULT_GLM_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
         val DEFAULT_OPENAI_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
+        val DEFAULT_OPENROUTER_SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT
     }
 
     private object Keys {
@@ -102,6 +103,10 @@ class AiPreferencesRepository @Inject constructor(
     val openaiApiKey: Flow<String> = getApiKey(AiProvider.OPENAI)
     val openaiModel: Flow<String> = getModel(AiProvider.OPENAI)
     val openaiSystemPrompt: Flow<String> = getSystemPrompt(AiProvider.OPENAI)
+
+    val openrouterApiKey: Flow<String> = getApiKey(AiProvider.OPENROUTER)
+    val openrouterModel: Flow<String> = getModel(AiProvider.OPENROUTER)
+    val openrouterSystemPrompt: Flow<String> = getSystemPrompt(AiProvider.OPENROUTER)
 
     val aiProvider: Flow<String> =
         dataStore.data.map { preferences -> preferences[Keys.AI_PROVIDER] ?: "GEMINI" }
