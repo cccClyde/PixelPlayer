@@ -79,6 +79,7 @@ constructor(
 
     private val contentResolver: ContentResolver = appContext.contentResolver
     private var minSongDurationMs: Int = 10000
+    private var minTracksPerAlbum: Int = 1
 
     override suspend fun doWork(): Result =
             withContext(Dispatchers.IO) {
@@ -116,6 +117,7 @@ constructor(
 
                     // Smart Duration Filtering
                     minSongDurationMs = userPreferencesRepository.getMinSongDuration()
+                    minTracksPerAlbum = userPreferencesRepository.minTracksPerAlbumFlow.first()
 
                     Timber.tag(TAG)
                         .d(
@@ -229,7 +231,7 @@ constructor(
                                 if (syncMode == SyncMode.REBUILD) {
                                     emptyList()
                                 } else {
-                                    musicDao.getAllAlbumsList(emptyList(), false)
+                                    musicDao.getAllAlbumsList(emptyList(), false, 0)
                                 }
 
                         val existingArtistMetadata =
@@ -1368,7 +1370,7 @@ constructor(
 
             // 1. Pre-load Local Data for Merging
             val existingArtists = musicDao.getAllArtistsListRaw().associate { it.name.trim().lowercase() to it.id }
-            val existingAlbums = musicDao.getAllAlbumsList(emptyList(), false).associate { "${it.title.trim().lowercase()}_${it.artistName?.trim()?.lowercase()}" to it.id }
+            val existingAlbums = musicDao.getAllAlbumsList(emptyList(), false, 0).associate { "${it.title.trim().lowercase()}_${it.artistName?.trim()?.lowercase()}" to it.id }
             val existingArtistImageUrls = musicDao.getAllArtistsListRaw().associate { it.id to it.imageUrl }
             val nextArtistId = AtomicLong((musicDao.getMaxArtistId() ?: 0L) + 1)
             val delimiters = userPreferencesRepository.artistDelimitersFlow.first()

@@ -150,7 +150,7 @@ class SyncWorkerTest {
         assertThat(songsInDb).hasSize(2)
         assertThat(songsInDb.find { it.id == 1L }?.title).isEqualTo("Test Song 1")
 
-        val albumsInDb = musicDao.getAlbums(emptyList(), false, 0).first()
+        val albumsInDb = musicDao.getAlbums(emptyList(), false, 0, 1).first()
         assertThat(albumsInDb).hasSize(2)
         assertThat(albumsInDb.find { it.id == 201L }?.title).isEqualTo("Test Album 1")
 

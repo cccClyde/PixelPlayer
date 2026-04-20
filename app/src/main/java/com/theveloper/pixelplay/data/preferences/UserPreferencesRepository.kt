@@ -226,6 +226,9 @@ constructor(
         // Smart Duration Filtering
         val MIN_SONG_DURATION = intPreferencesKey("min_song_duration_ms")
 
+        // Album Tracks Filtering
+        val MIN_TRACKS_PER_ALBUM = intPreferencesKey("min_tracks_per_album")
+
         // ReplayGain
         val REPLAYGAIN_ENABLED = booleanPreferencesKey("replaygain_enabled")
         val REPLAYGAIN_USE_ALBUM_GAIN = booleanPreferencesKey("replaygain_use_album_gain")
@@ -741,6 +744,21 @@ constructor(
     }
 
     // ===== End Smart Duration Filtering =====
+
+    // ===== Album Tracks Filtering =====
+
+    val minTracksPerAlbumFlow: Flow<Int> =
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKeys.MIN_TRACKS_PER_ALBUM] ?: 1
+        }
+
+    suspend fun setMinTracksPerAlbum(minTracks: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.MIN_TRACKS_PER_ALBUM] = minTracks
+        }
+    }
+
+    // ===== End Album Tracks Filtering =====
 
     // ===== ReplayGain =====
 

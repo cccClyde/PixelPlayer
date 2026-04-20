@@ -227,6 +227,9 @@ fun SettingsCategoryScreen(
     var minSongDurationDraft by remember(uiState.minSongDuration) {
         mutableStateOf(uiState.minSongDuration.toFloat())
     }
+    var minTracksPerAlbumDraft by remember(uiState.minTracksPerAlbum) {
+        mutableStateOf(uiState.minTracksPerAlbum.toFloat())
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -426,6 +429,20 @@ fun SettingsCategoryScreen(
                                         }
                                     },
                                     valueText = { value -> "${(value / 1000).toInt()}s" }
+                                )
+                                SliderSettingsItem(
+                                    label = "Minimum Tracks Per Album",
+                                    value = minTracksPerAlbumDraft,
+                                    valueRange = 1f..5f,
+                                    steps = 3, // 1, 2, 3, 4, 5
+                                    onValueChange = { minTracksPerAlbumDraft = it },
+                                    onValueChangeFinished = {
+                                        val selectedTracks = minTracksPerAlbumDraft.toInt()
+                                        if (selectedTracks != uiState.minTracksPerAlbum) {
+                                            settingsViewModel.setMinTracksPerAlbum(selectedTracks)
+                                        }
+                                    },
+                                    valueText = { value -> "${value.toInt()}" }
                                 )
                             }
 

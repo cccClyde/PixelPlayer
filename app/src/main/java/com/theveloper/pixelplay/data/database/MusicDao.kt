@@ -950,12 +950,14 @@ interface MusicDao {
             albums.album_art_uri_string,
             albums.date_added,
             albums.year
+        HAVING COUNT(songs.id) >= :minTracks
         ORDER BY albums.title ASC
     """)
     fun getAlbums(
         allowedParentDirs: List<String>,
         applyDirectoryFilter: Boolean,
-        filterMode: Int
+        filterMode: Int,
+        minTracks: Int
     ): Flow<List<AlbumEntity>>
 
     @Query("""
@@ -990,6 +992,7 @@ interface MusicDao {
             albums.album_art_uri_string,
             albums.date_added,
             albums.year
+        HAVING COUNT(songs.id) >= :minTracks
         ORDER BY
             CASE WHEN :sortOrder = 'album_title_az' THEN albums.title END COLLATE NOCASE ASC,
             CASE WHEN :sortOrder = 'album_title_za' THEN albums.title END COLLATE NOCASE DESC,
@@ -1008,7 +1011,8 @@ interface MusicDao {
         allowedParentDirs: List<String>,
         applyDirectoryFilter: Boolean,
         filterMode: Int,
-        sortOrder: String
+        sortOrder: String,
+        minTracks: Int
     ): PagingSource<Int, AlbumEntity>
 
     @Query("""
@@ -1043,6 +1047,7 @@ interface MusicDao {
             albums.album_art_uri_string,
             albums.date_added,
             albums.year
+        HAVING COUNT(songs.id) >= :minTracks
         ORDER BY
             CASE WHEN :sortOrder = 'album_title_az' THEN albums.title END COLLATE NOCASE ASC,
             CASE WHEN :sortOrder = 'album_title_za' THEN albums.title END COLLATE NOCASE DESC,
@@ -1063,6 +1068,7 @@ interface MusicDao {
         applyDirectoryFilter: Boolean,
         filterMode: Int,
         sortOrder: String,
+        minTracks: Int,
         limit: Int,
         offset: Int
     ): List<AlbumEntity>
@@ -1103,9 +1109,10 @@ interface MusicDao {
             albums.year AS year
         FROM albums
         WHERE albums.title LIKE '%' || :query || '%'
+        AND song_count >= :minTracks
         ORDER BY albums.title ASC
     """)
-    fun searchAlbums(query: String): Flow<List<AlbumEntity>>
+    fun searchAlbums(query: String, minTracks: Int = 1): Flow<List<AlbumEntity>>
 
     @Query("SELECT COUNT(*) FROM albums")
     fun getAlbumCount(): Flow<Int>
@@ -1132,11 +1139,13 @@ interface MusicDao {
             albums.album_art_uri_string,
             albums.date_added,
             albums.year
+        HAVING COUNT(songs.id) >= :minTracks
         ORDER BY albums.title ASC
     """)
     suspend fun getAllAlbumsList(
         allowedParentDirs: List<String>,
-        applyDirectoryFilter: Boolean
+        applyDirectoryFilter: Boolean,
+        minTracks: Int
     ): List<AlbumEntity>
 
     @Query("""
@@ -1186,12 +1195,14 @@ interface MusicDao {
             albums.album_art_uri_string,
             albums.date_added,
             albums.year
+        HAVING COUNT(songs.id) >= :minTracks
         ORDER BY albums.title ASC
     """)
     fun searchAlbums(
         query: String,
         allowedParentDirs: List<String>,
-        applyDirectoryFilter: Boolean
+        applyDirectoryFilter: Boolean,
+        minTracks: Int
     ): Flow<List<AlbumEntity>>
 
     // --- Artist Queries ---

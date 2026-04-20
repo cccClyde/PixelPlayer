@@ -80,11 +80,11 @@ class MusicRepositoryImplTest {
             if (allowedParams.isEmpty()) flowOf(emptyList()) else flowOf(emptyList()) // Placeholder, can be improved if needed
         }
         every { mockMusicDao.getSongs(any(), eq(false)) } returns flowOf(emptyList()) // Placeholder
-        every { mockMusicDao.getAlbums(any(), eq(true), any()) } answers {
+        every { mockMusicDao.getAlbums(any(), eq(true), any(), any()) } answers {
             val allowedParams = firstArg<List<String>>()
             if (allowedParams.isEmpty()) flowOf(emptyList()) else flowOf(emptyList())
         }
-        every { mockMusicDao.getAlbums(any(), eq(false), any()) } returns flowOf(emptyList())
+        every { mockMusicDao.getAlbums(any(), eq(false), any(), any()) } returns flowOf(emptyList())
         
         every { mockMusicDao.getArtists(any(), eq(true)) } answers {
              val allowedParams = firstArg<List<String>>()
@@ -201,7 +201,7 @@ class MusicRepositoryImplTest {
                 else -> album
             }
         }.filter { it.id == 201L || it.id == 203L }
-        every { mockMusicDao.getAlbums(any(), eq(true), any()) } returns flowOf(expectedAlbums)
+        every { mockMusicDao.getAlbums(any(), eq(true), any(), any()) } returns flowOf(expectedAlbums)
 
         every { mockUserPreferencesRepository.allowedDirectoriesFlow } returns flowOf(allowedDirs)
         every { mockUserPreferencesRepository.initialSetupDoneFlow } returns flowOf(true)
