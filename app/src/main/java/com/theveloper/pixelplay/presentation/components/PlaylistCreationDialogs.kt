@@ -89,11 +89,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import kotlin.math.max
 import kotlin.math.min
@@ -152,7 +154,7 @@ fun PlaylistCreationTypeDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Create playlist",
+                        text = stringResource(R.string.playlist_creation_dialog_title),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontFamily = GoogleSansRounded,
@@ -160,15 +162,15 @@ fun PlaylistCreationTypeDialog(
                         )
                     )
                     Text(
-                        text = "Choose the creation flow.",
+                        text = stringResource(R.string.playlist_creation_dialog_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                 }
 
                 CreationModeCard(
-                    title = "Manual",
-                    subtitle = "Design artwork, icon, shape and pick songs yourself.",
+                    title = stringResource(R.string.playlist_create_mode_manual),
+                    subtitle = stringResource(R.string.playlist_creation_dialog_manual_subtitle),
                     icon = {
                         Icon(
                             imageVector = Icons.Rounded.PlaylistAdd,
@@ -183,11 +185,11 @@ fun PlaylistCreationTypeDialog(
                 )
 
                 CreationModeCard(
-                    title = "With AI",
+                    title = stringResource(R.string.playlist_creation_dialog_with_ai),
                     subtitle = if (isAiEnabled) {
-                        "Generate a curated playlist with advanced controls."
+                        stringResource(R.string.playlist_creation_dialog_ai_enabled_subtitle)
                     } else {
-                        "Requires Gemini API key configured in settings."
+                        stringResource(R.string.playlist_creation_dialog_ai_disabled_subtitle)
                     },
                     icon = {
                         Icon(
@@ -225,7 +227,7 @@ fun PlaylistCreationTypeDialog(
                     ) {
                         Icon(Icons.Rounded.Key, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Setup API Key")
+                        Text(stringResource(R.string.playlist_creation_dialog_setup_api_key))
                     }
                 }
             }
@@ -355,7 +357,8 @@ private fun CreateAiPlaylistContent(
     var maxSongsInput by rememberSaveable { mutableStateOf("24") }
     var selectedMood by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedActivity by rememberSaveable { mutableStateOf<String?>(null) }
-    var selectedEra by rememberSaveable { mutableStateOf("Any era") }
+    val anyEraLabel = stringResource(R.string.playlist_ai_any_era)
+    var selectedEra by rememberSaveable(anyEraLabel) { mutableStateOf(anyEraLabel) }
     var energyLevel by rememberSaveable { mutableIntStateOf(3) }
     var discoveryLevel by rememberSaveable { mutableIntStateOf(3) }
     var prioritizeFavorites by rememberSaveable { mutableStateOf(true) }
@@ -363,15 +366,31 @@ private fun CreateAiPlaylistContent(
     var localError by rememberSaveable { mutableStateOf<String?>(null) }
     val controlsEnabled = !isGenerating
 
-    val moodOptions = remember {
-        listOf("Chill", "Energetic", "Happy", "Dark", "Romantic", "Melancholic")
-    }
-    val activityOptions = remember {
-        listOf("Workout", "Focus", "Road trip", "Party", "Study", "Late night")
-    }
-    val eraOptions = remember {
-        listOf("Any era", "70s", "80s", "90s", "2000s", "2010s", "2020s")
-    }
+    val moodOptions = listOf(
+        stringResource(R.string.playlist_ai_mood_chill),
+        stringResource(R.string.playlist_ai_mood_energetic),
+        stringResource(R.string.playlist_ai_mood_happy),
+        stringResource(R.string.playlist_ai_mood_dark),
+        stringResource(R.string.playlist_ai_mood_romantic),
+        stringResource(R.string.playlist_ai_mood_melancholic)
+    )
+    val activityOptions = listOf(
+        stringResource(R.string.playlist_ai_activity_workout),
+        stringResource(R.string.playlist_ai_activity_focus),
+        stringResource(R.string.playlist_ai_activity_road_trip),
+        stringResource(R.string.playlist_ai_activity_party),
+        stringResource(R.string.playlist_ai_activity_study),
+        stringResource(R.string.playlist_ai_activity_late_night)
+    )
+    val eraOptions = listOf(
+        anyEraLabel,
+        stringResource(R.string.playlist_ai_era_70s),
+        stringResource(R.string.playlist_ai_era_80s),
+        stringResource(R.string.playlist_ai_era_90s),
+        stringResource(R.string.playlist_ai_era_2000s),
+        stringResource(R.string.playlist_ai_era_2010s),
+        stringResource(R.string.playlist_ai_era_2020s)
+    )
 
     val generatedPromptPreview = buildAiPlaylistPrompt(
         basePrompt = basePrompt,
@@ -384,7 +403,20 @@ private fun CreateAiPlaylistContent(
         energyLevel = energyLevel,
         discoveryLevel = discoveryLevel,
         prioritizeFavorites = prioritizeFavorites,
-        avoidExplicit = avoidExplicit
+        avoidExplicit = avoidExplicit,
+        anyEraText = anyEraLabel,
+        coreRequestLabel = stringResource(R.string.playlist_ai_prompt_core_request),
+        moodTargetLabel = stringResource(R.string.playlist_ai_prompt_mood_target),
+        activityContextLabel = stringResource(R.string.playlist_ai_prompt_activity_context),
+        eraFocusLabel = stringResource(R.string.playlist_ai_prompt_era_focus),
+        prioritizeGenresLabel = stringResource(R.string.playlist_ai_prompt_prioritize_genres),
+        avoidGenresLabel = stringResource(R.string.playlist_ai_prompt_avoid_genres),
+        preferredLanguageLabel = stringResource(R.string.playlist_ai_prompt_preferred_language),
+        energyTargetText = stringResource(R.string.playlist_ai_prompt_energy_target, energyLevel.coerceIn(1, 5)),
+        discoveryTargetText = stringResource(R.string.playlist_ai_prompt_discovery_target, discoveryLevel.coerceIn(1, 5)),
+        prioritizeFavoritesText = stringResource(R.string.playlist_ai_prompt_prioritize_favorites),
+        avoidExplicitText = stringResource(R.string.playlist_ai_prompt_avoid_explicit),
+        smoothTransitionsText = stringResource(R.string.playlist_ai_prompt_smooth_transitions)
     )
 
     val triggerGeneration: () -> Unit = generation@{
@@ -392,12 +424,12 @@ private fun CreateAiPlaylistContent(
         val maxSongs = maxSongsInput.toIntOrNull()
 
         if (generatedPromptPreview.isBlank()) {
-            localError = "Add at least one instruction for AI."
+            localError = stringResource(R.string.playlist_ai_error_missing_instruction)
             return@generation
         }
 
         if (minSongs == null || maxSongs == null) {
-            localError = "Set a valid song range."
+            localError = stringResource(R.string.playlist_ai_error_invalid_song_range)
             return@generation
         }
 
@@ -418,7 +450,7 @@ private fun CreateAiPlaylistContent(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "AI Playlist Lab",
+                        text = stringResource(R.string.playlist_ai_title),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontFamily = GoogleSansRounded,
                             fontWeight = FontWeight.ExtraBold,
@@ -440,7 +472,7 @@ private fun CreateAiPlaylistContent(
                             contentColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
-                        Icon(Icons.Rounded.Close, contentDescription = "Close")
+                        Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.close))
                     }
                 }
             )
@@ -469,7 +501,7 @@ private fun CreateAiPlaylistContent(
                             maxSongsInput = "24"
                             selectedMood = null
                             selectedActivity = null
-                            selectedEra = "Any era"
+                            selectedEra = anyEraLabel
                             energyLevel = 3
                             discoveryLevel = 3
                             prioritizeFavorites = true
@@ -480,7 +512,7 @@ private fun CreateAiPlaylistContent(
                         enabled = !isGenerating,
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp)
                     ) {
-                        Text("Reset")
+                        Text(stringResource(R.string.reset))
                     }
 
                     MediumExtendedFloatingActionButton(
@@ -500,11 +532,11 @@ private fun CreateAiPlaylistContent(
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Generating...")
+                            Text(stringResource(R.string.playlist_ai_generating))
                         } else {
                             Icon(Icons.Rounded.AutoAwesome, contentDescription = null)
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Generate")
+                            Text(stringResource(R.string.playlist_create_generate_with_ai))
                         }
                     }
                 }
@@ -526,13 +558,13 @@ private fun CreateAiPlaylistContent(
             HeroAiCard()
 
             AiSectionCard(
-                title = "Intent",
+                title = stringResource(R.string.playlist_ai_section_intent),
                 enabled = controlsEnabled
             ) {
                 OutlinedTextField(
                     value = playlistName,
                     onValueChange = { playlistName = it },
-                    label = { Text("Playlist name (optional)") },
+                    label = { Text(stringResource(R.string.playlist_ai_playlist_name_optional)) },
                     enabled = controlsEnabled,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -541,8 +573,8 @@ private fun CreateAiPlaylistContent(
                 OutlinedTextField(
                     value = basePrompt,
                     onValueChange = { basePrompt = it },
-                    label = { Text("What should this playlist feel like?") },
-                    placeholder = { Text("Example: sunset drive with warm synths") },
+                    label = { Text(stringResource(R.string.playlist_ai_prompt_label)) },
+                    placeholder = { Text(stringResource(R.string.playlist_ai_prompt_placeholder)) },
                     enabled = controlsEnabled,
                     minLines = 2,
                     maxLines = 4,
@@ -551,10 +583,10 @@ private fun CreateAiPlaylistContent(
             }
 
             AiSectionCard(
-                title = "Direction",
+                title = stringResource(R.string.playlist_ai_section_direction),
                 enabled = controlsEnabled
             ) {
-                Text("Mood", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.playlist_ai_mood), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                 ChipsSingleSelect(
                     options = moodOptions,
                     selected = selectedMood,
@@ -564,7 +596,7 @@ private fun CreateAiPlaylistContent(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Activity", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.playlist_ai_activity), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                 ChipsSingleSelect(
                     options = activityOptions,
                     selected = selectedActivity,
@@ -574,33 +606,33 @@ private fun CreateAiPlaylistContent(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Era", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.playlist_ai_era), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                 ChipsSingleSelect(
                     options = eraOptions,
                     selected = selectedEra,
                     enabled = controlsEnabled,
                     allowCustom = false,
-                    onSelectedChange = { selectedEra = it ?: "Any era" }
+                    onSelectedChange = { selectedEra = it ?: anyEraLabel }
                 )
             }
 
             AiSectionCard(
-                title = "Curation Engine",
+                title = stringResource(R.string.playlist_ai_section_curation_engine),
                 enabled = controlsEnabled
             ) {
                 LevelSelector(
-                    label = "Energy",
+                    label = stringResource(R.string.playlist_ai_energy),
                     selectedLevel = energyLevel,
                     enabled = controlsEnabled,
-                    description = "Controls the intensity and tempo of songs. 1 = calm/slow, 5 = high-energy/fast.",
+                    description = stringResource(R.string.playlist_ai_energy_description),
                     onLevelSelected = { energyLevel = it }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 LevelSelector(
-                    label = "Discovery",
+                    label = stringResource(R.string.playlist_ai_discovery),
                     selectedLevel = discoveryLevel,
                     enabled = controlsEnabled,
-                    description = "Controls how familiar the selections are. 1 = your most played favorites, 5 = rarely played deep cuts.",
+                    description = stringResource(R.string.playlist_ai_discovery_description),
                     onLevelSelected = { discoveryLevel = it }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -610,7 +642,7 @@ private fun CreateAiPlaylistContent(
                         onValueChange = { value: String ->
                             minSongsInput = value.filter { ch: Char -> ch.isDigit() }.take(3)
                         },
-                        label = { Text("Min songs") },
+                        label = { Text(stringResource(R.string.playlist_ai_min_songs)) },
                         enabled = controlsEnabled,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
@@ -621,7 +653,7 @@ private fun CreateAiPlaylistContent(
                         onValueChange = { value: String ->
                             maxSongsInput = value.filter { ch: Char -> ch.isDigit() }.take(3)
                         },
-                        label = { Text("Max songs") },
+                        label = { Text(stringResource(R.string.playlist_ai_max_songs)) },
                         enabled = controlsEnabled,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
@@ -631,14 +663,14 @@ private fun CreateAiPlaylistContent(
             }
 
             AiSectionCard(
-                title = "Filters",
+                title = stringResource(R.string.playlist_ai_section_filters),
                 enabled = controlsEnabled
             ) {
                 OutlinedTextField(
                     value = includeGenres,
                     onValueChange = { includeGenres = it },
-                    label = { Text("Prioritize genres (optional)") },
-                    placeholder = { Text("e.g. synthwave, indie pop") },
+                    label = { Text(stringResource(R.string.playlist_ai_prioritize_genres_optional)) },
+                    placeholder = { Text(stringResource(R.string.playlist_ai_prioritize_genres_placeholder)) },
                     enabled = controlsEnabled,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -647,8 +679,8 @@ private fun CreateAiPlaylistContent(
                 OutlinedTextField(
                     value = excludeGenres,
                     onValueChange = { excludeGenres = it },
-                    label = { Text("Avoid genres (optional)") },
-                    placeholder = { Text("e.g. metal, hard trap") },
+                    label = { Text(stringResource(R.string.playlist_ai_avoid_genres_optional)) },
+                    placeholder = { Text(stringResource(R.string.playlist_ai_avoid_genres_placeholder)) },
                     enabled = controlsEnabled,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -657,8 +689,8 @@ private fun CreateAiPlaylistContent(
                 OutlinedTextField(
                     value = preferredLanguage,
                     onValueChange = { preferredLanguage = it },
-                    label = { Text("Preferred language (optional)") },
-                    placeholder = { Text("e.g. English, Spanish, instrumental") },
+                    label = { Text(stringResource(R.string.playlist_ai_preferred_language_optional)) },
+                    placeholder = { Text(stringResource(R.string.playlist_ai_preferred_language_placeholder)) },
                     enabled = controlsEnabled,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -667,13 +699,13 @@ private fun CreateAiPlaylistContent(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 ToggleRow(
-                    title = "Prioritize favorites",
+                    title = stringResource(R.string.playlist_ai_prioritize_favorites),
                     checked = prioritizeFavorites,
                     enabled = controlsEnabled,
                     onCheckedChange = { prioritizeFavorites = it }
                 )
                 ToggleRow(
-                    title = "Avoid explicit lyrics",
+                    title = stringResource(R.string.playlist_ai_avoid_explicit),
                     checked = avoidExplicit,
                     enabled = controlsEnabled,
                     onCheckedChange = { avoidExplicit = it }
@@ -705,10 +737,10 @@ private fun CreateAiPlaylistContent(
                 }
             }
 
-            AiSectionCard(title = "Prompt Preview") {
+            AiSectionCard(title = stringResource(R.string.playlist_ai_section_prompt_preview)) {
                 Text(
                     text = generatedPromptPreview.ifBlank {
-                        "Your final prompt will appear here once you add preferences."
+                        stringResource(R.string.playlist_ai_prompt_preview_placeholder)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -767,13 +799,13 @@ private fun HeroAiCard() {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Curate With Precision",
+                        text = stringResource(R.string.playlist_ai_hero_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = "Define mood, activity, constraints and depth.",
+                        text = stringResource(R.string.playlist_ai_hero_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.82f)
                     )
@@ -784,7 +816,7 @@ private fun HeroAiCard() {
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.22f)
             )
             Text(
-                text = "The AI will only use songs from your local library.",
+                text = stringResource(R.string.playlist_ai_local_library_only),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
             )
@@ -927,7 +959,7 @@ private fun ChipsSingleSelect(
                 label = { 
                     Text(
                         if (isCustomSelection) selected!! 
-                        else "Custom…"
+                        else stringResource(R.string.playlist_ai_custom)
                     ) 
                 }
             )
@@ -939,12 +971,12 @@ private fun ChipsSingleSelect(
         AlertDialog(
             onDismissRequest = { showCustomDialog = false },
             icon = { Icon(Icons.Rounded.Add, null) },
-            title = { Text("Enter Custom Value") },
+            title = { Text(stringResource(R.string.playlist_ai_enter_custom_value)) },
             text = {
                 OutlinedTextField(
                     value = customInputValue,
                     onValueChange = { customInputValue = it },
-                    label = { Text("Enter your custom value") },
+                    label = { Text(stringResource(R.string.playlist_ai_enter_your_custom_value)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -959,7 +991,7 @@ private fun ChipsSingleSelect(
                         customInputValue = ""
                     }
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
@@ -967,7 +999,7 @@ private fun ChipsSingleSelect(
                     showCustomDialog = false
                     customInputValue = ""
                 }) {
-                    Text("Dismiss")
+                    Text(stringResource(R.string.dismiss))
                 }
             }
         )
@@ -1014,7 +1046,7 @@ private fun LevelSelector(
                 }
             }
             Text(
-                text = "$selectedLevel/5",
+                text = stringResource(R.string.playlist_ai_level_value, selectedLevel),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -1083,44 +1115,56 @@ private fun buildAiPlaylistPrompt(
     energyLevel: Int,
     discoveryLevel: Int,
     prioritizeFavorites: Boolean,
-    avoidExplicit: Boolean
+    avoidExplicit: Boolean,
+    anyEraText: String,
+    coreRequestLabel: String,
+    moodTargetLabel: String,
+    activityContextLabel: String,
+    eraFocusLabel: String,
+    prioritizeGenresLabel: String,
+    avoidGenresLabel: String,
+    preferredLanguageLabel: String,
+    energyTargetText: String,
+    discoveryTargetText: String,
+    prioritizeFavoritesText: String,
+    avoidExplicitText: String,
+    smoothTransitionsText: String
 ): String {
-    val anyEraText = "Any era"
     val promptParts = mutableListOf<String>()
 
     if (basePrompt.isNotBlank()) {
-        promptParts += "Core request: ${basePrompt.trim()}."
+        promptParts += "$coreRequestLabel ${basePrompt.trim()}."
     }
     if (!mood.isNullOrBlank()) {
-        promptParts += "Mood target: $mood."
+        promptParts += "$moodTargetLabel $mood."
     }
     if (!activity.isNullOrBlank()) {
-        promptParts += "Activity context: $activity."
+        promptParts += "$activityContextLabel $activity."
     }
     if (era != anyEraText) {
-        promptParts += "Era focus: $era."
+        promptParts += "$eraFocusLabel $era."
     }
     if (includeGenres.isNotBlank()) {
-        promptParts += "Prioritize genres: ${includeGenres.trim()}."
+        promptParts += "$prioritizeGenresLabel ${includeGenres.trim()}."
     }
     if (excludeGenres.isNotBlank()) {
-        promptParts += "Avoid genres: ${excludeGenres.trim()}."
+        promptParts += "$avoidGenresLabel ${excludeGenres.trim()}."
     }
     if (preferredLanguage.isNotBlank()) {
-        promptParts += "Preferred language: ${preferredLanguage.trim()}."
+        promptParts += "$preferredLanguageLabel ${preferredLanguage.trim()}."
     }
 
-    promptParts += "Energy level target: ${energyLevel.coerceIn(1, 5)}/5."
-    promptParts += "Discovery target: ${discoveryLevel.coerceIn(1, 5)}/5 where 1 is familiar and 5 is deep cuts."
+    promptParts += energyTargetText
+    promptParts += discoveryTargetText
 
     if (prioritizeFavorites) {
-        promptParts += "Prioritize songs closer to listener favorites when possible."
+        promptParts += prioritizeFavoritesText
     }
     if (avoidExplicit) {
-        promptParts += "Avoid explicit lyrics whenever alternatives exist."
+        promptParts += avoidExplicitText
     }
 
-    promptParts += "Keep transitions smooth and avoid repetitive artist clustering."
+    promptParts += smoothTransitionsText
 
     return promptParts.joinToString(separator = " ").trim()
 }

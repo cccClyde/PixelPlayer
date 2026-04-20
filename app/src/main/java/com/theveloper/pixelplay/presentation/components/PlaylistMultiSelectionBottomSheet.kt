@@ -51,11 +51,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Playlist
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import com.theveloper.pixelplay.utils.resolvePlaylistCoverContentColor
@@ -134,7 +136,7 @@ fun PlaylistMultiSelectionBottomSheet(
                     // Playlist count and label
                     Column {
                         Text(
-                            text = "${selectedPlaylists.size} PLAYLISTS",
+                            text = stringResource(R.string.multi_selection_playlists_title, selectedPlaylists.size),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             fontFamily = GoogleSansRounded,
@@ -142,7 +144,7 @@ fun PlaylistMultiSelectionBottomSheet(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "selected",
+                            text = stringResource(R.string.multi_selection_selected_label),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontFamily = GoogleSansRounded
@@ -183,10 +185,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Delete,
-                                    contentDescription = "Delete all"
+                                    contentDescription = stringResource(R.string.multi_selection_delete_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Delete")
+                                Text(stringResource(R.string.common_delete))
                             }
 
                             FilledTonalButton(
@@ -205,10 +207,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.FileDownload,
-                                    contentDescription = "Export all"
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_export_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Export")
+                                Text(stringResource(R.string.common_export))
                             }
                         }
                     }
@@ -238,10 +240,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Merge,
-                                    contentDescription = "Merge all"
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_merge_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Merge")
+                                Text(stringResource(R.string.library_merge_playlists_action))
                             }
 
                             FilledTonalButton(
@@ -260,10 +262,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Share,
-                                    contentDescription = "Share all"
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_share_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Share")
+                                Text(stringResource(R.string.common_share))
                             }
                         }
                     }

@@ -244,11 +244,11 @@ fun PlaylistDetailScreen(
                 subtitle = {
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
-                        text = "${formatSongCount(songsInPlaylist.size)} • ${
-                            formatTotalDuration(
-                                songsInPlaylist
-                            )
-                        }",
+                        text = stringResource(
+                            R.string.playlist_detail_meta_format,
+                            formatSongCount(songsInPlaylist.size),
+                            formatTotalDuration(songsInPlaylist)
+                        ),
                         style = MaterialTheme.typography.labelMedium.copy(fontFamily = GoogleSansRounded),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

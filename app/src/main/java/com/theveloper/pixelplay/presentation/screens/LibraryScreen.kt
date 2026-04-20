@@ -322,7 +322,7 @@ private fun WatchTransferProgressDialog(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "$progressPercent%",
+                        text = stringResource(R.string.common_percent_value, progressPercent),
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontSize = MaterialTheme.typography.labelLarge.fontSize * 1.4f
                         ),
@@ -348,7 +348,7 @@ private fun WatchTransferProgressDialog(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "$statusText • $bytesText",
+                    text = stringResource(R.string.library_status_with_bytes, statusText, bytesText),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -841,7 +841,7 @@ fun LibraryScreen(
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Text(
-                                        text = "$watchTransferPercent%",
+                                        text = stringResource(R.string.common_percent_value, watchTransferPercent),
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold
                                     )
