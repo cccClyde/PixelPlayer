@@ -283,7 +283,7 @@ object AlbumArtUtils {
         
         // Trigger async cache cleanup if needed
         appScope.launch {
-            AlbumArtCacheManager.cleanCacheIfNeeded(appContext)
+            AlbumArtCacheManager.cleanCacheIfNeeded(appContext, AlbumArtCacheManager.configuredCacheLimitMb)
         }
 
         return file
@@ -373,7 +373,7 @@ object AlbumArtUtils {
             } ?: return null
 
             appScope.launch {
-                AlbumArtCacheManager.cleanCacheIfNeeded(appContext)
+                AlbumArtCacheManager.cleanCacheIfNeeded(appContext, AlbumArtCacheManager.configuredCacheLimitMb)
             }
 
             targetFile

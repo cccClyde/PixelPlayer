@@ -24,7 +24,7 @@ object AlbumArtCacheManager {
     /**
      * Maximum cache size in bytes (200MB default)
      */
-    private const val MAX_CACHE_SIZE_BYTES = 200L * 1024 * 1024
+    const val DEFAULT_MAX_CACHE_SIZE_BYTES = 200L * 1024 * 1024
     
     /**
      * Prefix for album art cache files
@@ -51,6 +51,9 @@ object AlbumArtCacheManager {
      */
     @Volatile
     private var lastCleanupTime = 0L
+
+    @Volatile
+    var configuredCacheLimitMb: Long = 200L
     
     /**
      * Minimum interval between cleanups (5 minutes)
@@ -68,9 +71,15 @@ object AlbumArtCacheManager {
      * Uses LRU policy to remove the oldest 25% of files.
      * 
      * @param context Application context
+     * @param maxCacheSizeMb Maximum cache size limit in MB (default: 200MB)
      * @return Number of files deleted, or 0 if no cleanup was needed
      */
-    suspend fun cleanCacheIfNeeded(context: Context): Int = withContext(Dispatchers.IO) {
+    suspend fun cleanCacheIfNeeded(context: Context, maxCacheSizeMb: Long = 200L): Int {
+        val maxCacheSizeBytes = maxCacheSizeMb * 1024 * 1024
+        return cleanCacheIfNeededInternal(context, maxCacheSizeBytes)
+    }
+
+    private suspend fun cleanCacheIfNeededInternal(context: Context, maxCacheSizeBytes: Long): Int = withContext(Dispatchers.IO) {
         // Skip if cleaned recently
         val now = System.currentTimeMillis()
         if (now - lastCleanupTime < MIN_CLEANUP_INTERVAL_MS) {
@@ -92,7 +101,7 @@ object AlbumArtCacheManager {
             
             val currentSize = artFiles.sumOf { it.length() }
             
-            if (currentSize <= MAX_CACHE_SIZE_BYTES) {
+            if (currentSize <= maxCacheSizeBytes) {
                 return@withLock 0
             }
             

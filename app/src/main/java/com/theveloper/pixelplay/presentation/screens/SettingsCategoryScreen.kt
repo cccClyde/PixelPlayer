@@ -230,6 +230,9 @@ fun SettingsCategoryScreen(
     var minTracksPerAlbumDraft by remember(uiState.minTracksPerAlbum) {
         mutableStateOf(uiState.minTracksPerAlbum.toFloat())
     }
+    var albumArtCacheLimitDraft by remember(uiState.albumArtCacheLimitMb) {
+        mutableStateOf(uiState.albumArtCacheLimitMb.toFloat())
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -443,6 +446,20 @@ fun SettingsCategoryScreen(
                                         }
                                     },
                                     valueText = { value -> "${value.toInt()}" }
+                                )
+                                SliderSettingsItem(
+                                    label = stringResource(R.string.setcat_album_art_cache_limit),
+                                    value = albumArtCacheLimitDraft,
+                                    valueRange = 50f..1500f,
+                                    steps = 28, // 50, 100, 150, ... 1500 (30 stops)
+                                    onValueChange = { albumArtCacheLimitDraft = it },
+                                    onValueChangeFinished = {
+                                        val selectedLimit = albumArtCacheLimitDraft.toInt()
+                                        if (selectedLimit != uiState.albumArtCacheLimitMb) {
+                                            settingsViewModel.setAlbumArtCacheLimitMb(selectedLimit)
+                                        }
+                                    },
+                                    valueText = { value -> "${value.toInt()} MB" }
                                 )
                             }
 

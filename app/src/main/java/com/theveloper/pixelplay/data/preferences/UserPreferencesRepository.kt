@@ -201,6 +201,7 @@ constructor(
 
         // Developer Options
         val ALBUM_ART_QUALITY = stringPreferencesKey("album_art_quality")
+        val ALBUM_ART_CACHE_LIMIT_MB = intPreferencesKey("album_art_cache_limit_mb")
         val TAP_BACKGROUND_CLOSES_PLAYER = booleanPreferencesKey("tap_background_closes_player")
         val HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
         val IMMERSIVE_LYRICS_ENABLED = booleanPreferencesKey("immersive_lyrics_enabled")
@@ -1217,6 +1218,7 @@ constructor(
         val DEFAULT_ARTIST_DELIMITERS = listOf("/", ";", ",", "+", "&")
         /** Default word-based delimiters (matched case-insensitively with whitespace boundaries) */
         val DEFAULT_ARTIST_WORD_DELIMITERS = listOf("featuring", "feat.", "feat", "ft.", "ft", "vs.", "vs", "versus", "with", "prod.", "prod")
+        const val DEFAULT_ALBUM_ART_CACHE_LIMIT_MB = 200
     }
 
     val navBarCornerRadiusFlow: Flow<Int> =
@@ -1560,6 +1562,17 @@ constructor(
     suspend fun setAlbumArtQuality(quality: AlbumArtQuality) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ALBUM_ART_QUALITY] = quality.name
+        }
+    }
+
+    val albumArtCacheLimitMbFlow: Flow<Int> =
+        dataStore.data.map { preferences ->
+            preferences[PreferencesKeys.ALBUM_ART_CACHE_LIMIT_MB] ?: DEFAULT_ALBUM_ART_CACHE_LIMIT_MB
+        }
+
+    suspend fun setAlbumArtCacheLimitMb(limitMb: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ALBUM_ART_CACHE_LIMIT_MB] = limitMb.coerceIn(50, 1500)
         }
     }
 
