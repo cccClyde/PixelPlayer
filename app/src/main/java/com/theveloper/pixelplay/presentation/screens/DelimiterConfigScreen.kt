@@ -271,7 +271,7 @@ fun DelimiterConfigScreen(
                                             } else {
                                                 Toast.makeText(
                                                     context,
-                                                    "Delimiter already exists or is invalid",
+                                                    context.getString(R.string.delimiter_exists_or_invalid),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }

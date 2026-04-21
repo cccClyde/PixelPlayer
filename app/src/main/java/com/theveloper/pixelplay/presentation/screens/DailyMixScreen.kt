@@ -329,7 +329,7 @@ fun DailyMixScreen(
                             Icon(Icons.Rounded.Shuffle, contentDescription = "Shuffle", modifier = Modifier.size(
                                 ButtonDefaults.IconSize))
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text("Shuffle")
+                            Text(stringResource(R.string.shuffle))
                         }
                     }
                 }

@@ -146,7 +146,9 @@ fun RecentlyPlayedScreen(
     val groupedSongs = remember(recentlyPlayedSongs, selectedRange) {
         groupRecentlyPlayedSongs(
             songs = recentlyPlayedSongs,
-            range = selectedRange
+            range = selectedRange,
+            todayLabel = context.getString(R.string.recently_played_today),
+            yesterdayLabel = context.getString(R.string.recently_played_yesterday)
         )
     }
     val queueSongs = remember(recentlyPlayedSongs) {
@@ -208,12 +210,12 @@ fun RecentlyPlayedScreen(
                         RecentlyPlayedActions(
                             onPlay = {
                                 val firstSong = queueSongs.firstOrNull() ?: return@RecentlyPlayedActions
-                                playerViewModel.playSongs(queueSongs, firstSong, "Recently Played")
+                                playerViewModel.playSongs(queueSongs, firstSong, stringResource(R.string.recently_played_queue_name))
                             },
                             onShuffle = {
                                 playerViewModel.playSongsShuffled(
                                     songsToPlay = queueSongs,
-                                    queueName = "Recently Played",
+                                    queueName = stringResource(R.string.recently_played_queue_name),
                                     startAtZero = true,
                                 )
                             },
@@ -248,7 +250,7 @@ fun RecentlyPlayedScreen(
                                     playerViewModel.playSongs(
                                         songsToPlay = queueSongs,
                                         startSong = item.song,
-                                        queueName = "Recently Played"
+                                        queueName = stringResource(R.string.recently_played_queue_name)
                                     )
                                 },
                                 onMoreOptionsClick = { song ->
@@ -276,7 +278,7 @@ fun RecentlyPlayedScreen(
                 },
                 onPlaySong = {
                     if (queueSongs.isNotEmpty()) {
-                        playerViewModel.playSongs(queueSongs, song, "Recently Played")
+                        playerViewModel.playSongs(queueSongs, song, stringResource(R.string.recently_played_queue_name))
                     }
                     showSongInfoBottomSheet = false
                 },
@@ -351,7 +353,7 @@ fun RecentlyPlayedScreen(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = "Back"
+                contentDescription = stringResource(R.string.common_back)
             )
         }
     }
@@ -430,7 +432,7 @@ private fun ExpressiveRecentlyPlayedHeader(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Recently Played",
+                text = stringResource(R.string.recently_played_title),
                 style = titleStyle,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -495,7 +497,7 @@ private fun RecentlyPlayedActions(
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text("Play latest")
+            Text(stringResource(R.string.recently_played_play_latest))
         }
 
         FilledTonalButton(
@@ -516,7 +518,7 @@ private fun RecentlyPlayedActions(
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text("Shuffle")
+            Text(stringResource(R.string.recently_played_shuffle))
         }
     }
 }
@@ -632,12 +634,12 @@ private fun RecentlyPlayedEmptyState(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "No recent plays in ${range.displayName.lowercase()}",
+                text = stringResource(R.string.recently_played_empty_title, range.displayName.lowercase()),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Change the range or play more songs to fill this timeline.",
+                text = stringResource(R.string.recently_played_empty_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -654,7 +656,9 @@ private data class TimestampGroup(
 
 private fun groupRecentlyPlayedSongs(
     songs: List<RecentlyPlayedSongUiModel>,
-    range: StatsTimeRange
+    range: StatsTimeRange,
+    todayLabel: String,
+    yesterdayLabel: String
 ): List<TimestampGroup> {
     if (songs.isEmpty()) return emptyList()
     val zoneId = ZoneId.systemDefault()
@@ -670,7 +674,9 @@ private fun groupRecentlyPlayedSongs(
         val timeBucket = resolveTimestampBucket(
             timestamp = item.lastPlayedTimestamp,
             range = range,
-            zoneId = zoneId
+            zoneId = zoneId,
+            todayLabel = todayLabel,
+            yesterdayLabel = yesterdayLabel
         )
         if (currentBucketKey == null || currentBucketKey == timeBucket.key) {
             currentBucketKey = timeBucket.key
@@ -712,7 +718,9 @@ private data class TimestampBucket(
 private fun resolveTimestampBucket(
     timestamp: Long,
     range: StatsTimeRange,
-    zoneId: ZoneId
+    zoneId: ZoneId,
+    todayLabel: String,
+    yesterdayLabel: String
 ): TimestampBucket {
     val safeTimestamp = timestamp.coerceAtLeast(0L)
     val safeNow = System.currentTimeMillis().coerceAtLeast(0L)
@@ -736,14 +744,14 @@ private fun resolveTimestampBucket(
         date == nowDate -> {
             TimestampBucket(
                 key = date.toString(),
-                label = "Today",
+                label = todayLabel,
                 isHourBucket = false
             )
         }
         date == nowDate.minusDays(1) -> {
             TimestampBucket(
                 key = date.toString(),
-                label = "Yesterday",
+                label = yesterdayLabel,
                 isHourBucket = false
             )
         }

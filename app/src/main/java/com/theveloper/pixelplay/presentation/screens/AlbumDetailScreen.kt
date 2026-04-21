@@ -514,7 +514,7 @@ private fun SharedAlbumTopBarProbe(
         if (expandedContentAlpha > 0.01f) {
             SmartImage(
                 model = album.albumArtUriString,
-                contentDescription = "Cover of ${album.title}",
+                contentDescription = stringResource(R.string.album_cover_cd, album.title),
                 contentScale = ContentScale.Crop,
                 targetSize = headerImageRequestSize,
                 allowHardware = true,
@@ -579,7 +579,7 @@ private fun SharedAlbumTopBarProbe(
                     alpha = expandedContentAlpha
                 }
         ) {
-            Icon(Icons.Rounded.Shuffle, contentDescription = "Shuffle play album")
+            Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.album_shuffle_play_cd))
         }
     }
 }
@@ -660,7 +660,7 @@ private fun CollapsingAlbumTopBar(
             if (showExpandedArtwork) {
                 SmartImage(
                     model = album.albumArtUriString,
-                    contentDescription = "Cover of ${album.title}",
+                    contentDescription = stringResource(R.string.album_cover_cd, album.title),
                     contentScale = ContentScale.Crop,
                     targetSize = headerImageRequestSize,
                     allowHardware = true,
@@ -749,7 +749,7 @@ private fun CollapsingAlbumTopBar(
                             alpha = fabScale
                         }
                 ) {
-                    Icon(Icons.Rounded.Shuffle, contentDescription = "Shuffle play album")
+                    Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.album_shuffle_play_cd))
                 }
             }
         }

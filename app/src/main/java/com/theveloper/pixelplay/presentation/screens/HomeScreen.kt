@@ -509,7 +509,7 @@ fun YourMixHeader(
         ) {
             // Your Mix Title
             Text(
-                text = "Your\nMix",
+                text = stringResource(R.string.home_your_mix),
                 style = titleStyle,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -590,7 +590,7 @@ fun SongListItemFavs(
             ) {
                 SmartImage(
                     model = albumArtUrl,
-                    contentDescription = "Carátula de $title",
+                    contentDescription = stringResource(R.string.home_album_art_cd, title),
                     contentScale = ContentScale.Crop,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(48.dp)

@@ -339,7 +339,7 @@ fun ThemeSelectorItem(
                                 if (isSelected) {
                                     Icon(
                                         imageVector = Icons.Rounded.Check,
-                                        contentDescription = "Selected",
+                                        contentDescription = stringResource(R.string.selected),
                                         tint = contentColor
                                     )
                                 }
@@ -442,12 +442,12 @@ fun RefreshLibraryItem(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                            text = "Refresh Library",
+                            text = stringResource(R.string.refresh_library),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                            text = "Scan entire library for new and modified files.",
+                            text = stringResource(R.string.refresh_library_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -468,7 +468,7 @@ fun RefreshLibraryItem(
                         modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Full Rescan")
+                Text(stringResource(R.string.full_rescan))
             }
              
             Spacer(modifier = Modifier.height(8.dp))
@@ -489,7 +489,7 @@ fun RefreshLibraryItem(
                         modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Rebuild Database")
+                Text(stringResource(R.string.rebuild_database))
             }
 
             if (isSyncing) {
@@ -521,14 +521,15 @@ fun RefreshLibraryItem(
     }
 }
 
+@Composable
 private fun syncPhaseLabel(phase: SyncProgress.SyncPhase): String =
         when (phase) {
-            SyncProgress.SyncPhase.IDLE -> "Preparing sync"
-            SyncProgress.SyncPhase.FETCHING_MEDIASTORE -> "Reading MediaStore"
-            SyncProgress.SyncPhase.PROCESSING_FILES -> "Processing tracks"
-            SyncProgress.SyncPhase.SAVING_TO_DATABASE -> "Saving to database"
-            SyncProgress.SyncPhase.SCANNING_LRC -> "Scanning lyrics files"
-            SyncProgress.SyncPhase.COMPLETING -> "Completing sync"
+            SyncProgress.SyncPhase.IDLE -> stringResource(R.string.sync_phase_preparing)
+            SyncProgress.SyncPhase.FETCHING_MEDIASTORE -> stringResource(R.string.sync_phase_reading_mediastore)
+            SyncProgress.SyncPhase.PROCESSING_FILES -> stringResource(R.string.sync_phase_processing_tracks)
+            SyncProgress.SyncPhase.SAVING_TO_DATABASE -> stringResource(R.string.sync_phase_saving_database)
+            SyncProgress.SyncPhase.SCANNING_LRC -> stringResource(R.string.sync_phase_scanning_lyrics)
+            SyncProgress.SyncPhase.COMPLETING -> stringResource(R.string.sync_phase_completing)
         }
 
 @Composable
@@ -562,12 +563,12 @@ fun RefreshLyricsItem(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                            text = "Refresh Lyrics",
+                            text = stringResource(R.string.refresh_lyrics),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                            text = "Automatically fetch lyrics for all songs using lrclib.",
+                            text = stringResource(R.string.refresh_lyrics_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -583,7 +584,7 @@ fun RefreshLyricsItem(
                 ) {
                     Icon(
                             imageVector = Icons.Outlined.Sync,
-                            contentDescription = "Refresh lyrics",
+                            contentDescription = stringResource(R.string.refresh_lyrics),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
@@ -598,7 +599,7 @@ fun RefreshLyricsItem(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                         text =
-                                "Processing ${progress.currentCount} of ${progress.totalSongs} songs",
+                                stringResource(R.string.processing_songs_progress, progress.currentCount, progress.totalSongs),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -715,7 +716,7 @@ fun AiApiKeyItem(
                 value = localApiKey,
                 onValueChange = { localApiKey = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Enter API Key") },
+                placeholder = { Text(stringResource(R.string.enter_api_key)) },
                 singleLine = true,
                 visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
             )
@@ -732,11 +733,11 @@ fun AiApiKeyItem(
                     },
                     enabled = hasChanges
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
                 if (showSaved) {
                     Text(
-                        text = "Saved!",
+                        text = stringResource(R.string.saved_exclamation),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
@@ -761,12 +762,12 @@ fun AiSystemPromptItem(
     val isDefault = systemPrompt == defaultPrompt
     var showSaved by remember { mutableStateOf(false) }
     val presets = listOf(
-        "Professional Curator" to "You are 'Vibe-Engine', a world-class music curator and master of sonic flow. Your goal is to construct seamless, high-fidelity listening experiences. Prioritize harmonic compatibility, logical BPM transitions, and a sophisticated balance between familiar favorites and tasteful, logic-driven discovery.",
-        "Creative Maverick" to "You are an avant-garde music explorer specializing in 'unexpected cohesion'. Your mission is to break conventional genre boundaries by identifying non-obvious sonic parallels. Prioritize rare deep cuts, experimental textures, and artistic novelty while maintaining a surprising but undeniable transition logic.",
-        "Strict Librarian" to "You are a surgical music database architect. Your logic is driven by absolute metadata precision and rigid categorical adherence. Minimize algorithmic discovery in favor of strict genre consistency, energy-level matching, and maximizing the retrieval of highly specific user-defined preferences.",
-        "Atmospheric Guide" to "You are a master of ambient textures and low-energy flow. Focus exclusively on tracks that facilitate a 'deep focus' or 'tranquility' state. Prioritize acoustic warmth, minimalist arrangements, and gentle transitions, while strictly avoiding high-transient sounds or sudden shifts in dynamic range.",
-        "Sonic Enthusiast" to "You are an audiophile analyst focused on production complexity and instrumentation. Prioritize tracks characterized by high dynamic range, intricate polyrhythms, and superior soundstage quality. Favor active-listening pieces that reward the listener for paying attention to technical fidelity and arrangement detail.",
-        "Energy Catalyst" to "You are a high-momentum rhythm generator. Your philosophy centers on driving basslines, percussive intensity, and infectious grooves. Prioritize high-BPM club compatibility, syncopated energy, and continuous rhythmic tension to keep the listener's heart rate and motivation peak-level."
+        stringResource(R.string.ai_persona_professional_curator) to stringResource(R.string.ai_prompt_professional_curator),
+        stringResource(R.string.ai_persona_creative_maverick) to stringResource(R.string.ai_prompt_creative_maverick),
+        stringResource(R.string.ai_persona_strict_librarian) to stringResource(R.string.ai_prompt_strict_librarian),
+        stringResource(R.string.ai_persona_atmospheric_guide) to stringResource(R.string.ai_prompt_atmospheric_guide),
+        stringResource(R.string.ai_persona_sonic_enthusiast) to stringResource(R.string.ai_prompt_sonic_enthusiast),
+        stringResource(R.string.ai_persona_energy_catalyst) to stringResource(R.string.ai_prompt_energy_catalyst)
     )
 
     LaunchedEffect(showSaved) {
@@ -793,7 +794,7 @@ fun AiSystemPromptItem(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Preset Prompts",
+                text = stringResource(R.string.preset_prompts),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -818,7 +819,7 @@ fun AiSystemPromptItem(
                 value = localPrompt,
                 onValueChange = { localPrompt = it },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp, max = 200.dp),
-                placeholder = { Text("Enter system prompt...") },
+                placeholder = { Text(stringResource(R.string.enter_system_prompt)) },
                 minLines = 3,
                 maxLines = 6
             )
@@ -835,18 +836,18 @@ fun AiSystemPromptItem(
                     },
                     enabled = hasChanges
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
                 if (!isDefault) {
                     OutlinedButton(onClick = {
                         onReset()
                     }) {
-                        Text("Reset")
+                        Text(stringResource(R.string.reset))
                     }
                 }
                 if (showSaved) {
                     Text(
-                        text = "Saved!",
+                        text = stringResource(R.string.saved_exclamation),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
