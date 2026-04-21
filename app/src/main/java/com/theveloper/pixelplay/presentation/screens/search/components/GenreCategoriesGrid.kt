@@ -49,8 +49,6 @@ import com.theveloper.pixelplay.presentation.components.getNavigationBarHeight
 import com.theveloper.pixelplay.presentation.components.resolveNavBarOccupiedHeight
 import com.theveloper.pixelplay.presentation.utils.GenreIconProvider
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 @OptIn(UnstableApi::class)
@@ -66,7 +64,7 @@ fun GenreCategoriesGrid(
             modifier = modifier.fillMaxSize().padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(stringResource(R.string.no_genres_available), style = MaterialTheme.typography.bodyLarge)
+            Text("No genres available.", style = MaterialTheme.typography.bodyLarge)
         }
         return
     }
@@ -112,7 +110,7 @@ fun GenreCategoriesGrid(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.browse_by_genre),
+                    text = "Browse by genre",
                     style = MaterialTheme.typography.titleLarge
                 )
                 

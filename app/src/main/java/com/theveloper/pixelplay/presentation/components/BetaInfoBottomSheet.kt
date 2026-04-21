@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -70,7 +69,7 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
             item(key = "header") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = stringResource(R.string.presentation_batch_g_beta_sheet_version),
+                        text = "Beta 0.6.0",
                         fontFamily = GoogleSansRounded,
                         style = ExpTitleTypography.displaySmall,
                         color = MaterialTheme.colorScheme.onSurface
@@ -130,7 +129,7 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = stringResource(R.string.presentation_batch_h_beta_glyph),
+                                text = "β",
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Black
@@ -140,12 +139,12 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta_sheet_welcome_title),
+                                text = "Welcome to PixelPlayer 0.6.0-beta",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta_sheet_welcome_body),
+                                text = "This beta is now focused on stability, performance, and cross-device playback while shipping major new integrations.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -184,28 +183,28 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta_sheet_expect_title),
+                                text = "What to expect",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta_sheet_expect_1),
+                            text = "Faster daily use: smoother startup, navigation, and player interactions across the app.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta_sheet_expect_2),
+                            text = "Broader device support: Android Auto, Wear OS upgrades, and stronger Cast reliability.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta_sheet_expect_3),
+                            text = "Expanded cloud ecosystem: Telegram playlists, NetEase sync, QQ Music, and Google Drive streaming updates.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta_sheet_expect_4),
+                            text = "Large reliability pass: queue/shuffle logic, background playback behavior, and many UI fixes.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -243,13 +242,13 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta_sheet_report_title),
+                                text = "Report an issue",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta_sheet_report_body),
+                            text = "Share steps to reproduce, expected result, actual result, and your device/OS details. A short screen recording is very helpful.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -284,7 +283,7 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = stringResource(R.string.presentation_batch_g_beta_sheet_open_issues))
+                                Text(text = "Open GitHub issues")
                             }
                             FilledTonalButton(
                                 onClick = { launchUrl(context, reportUrl) },
@@ -308,7 +307,7 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(text = stringResource(R.string.presentation_batch_g_beta_sheet_report_bug))
+                                Text(text = "Report a bug")
                             }
                         }
                     }

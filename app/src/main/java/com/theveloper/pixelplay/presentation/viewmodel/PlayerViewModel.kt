@@ -606,7 +606,6 @@ class PlayerViewModel @Inject constructor(
 
     val isEndOfTrackTimerActive: StateFlow<Boolean> = sleepTimerStateHolder.isEndOfTrackTimerActive
     val activeTimerValueDisplay: StateFlow<String?> = sleepTimerStateHolder.activeTimerValueDisplay
-    val activeTimerDurationMinutes: StateFlow<Int?> = sleepTimerStateHolder.activeTimerDurationMinutes
     val playCount: StateFlow<Float> = sleepTimerStateHolder.playCount
 
     // Lyrics search UI state - managed by LyricsStateHolder
@@ -677,11 +676,11 @@ class PlayerViewModel @Inject constructor(
                 if (index != -1) {
                     _scrollToIndexEvent.emit(index)
                 } else {
-                    sendToast(context.getString(R.string.player_song_not_found_in_list))
+                    sendToast("Song not found in current list")
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Failed to locate current song")
-                sendToast(context.getString(R.string.player_could_not_locate_song))
+                sendToast("Could not locate song")
             }
         }
     }
@@ -1417,7 +1416,7 @@ class PlayerViewModel @Inject constructor(
                     playSongsShuffled(songs, "All Songs (Shuffled)", startAtZero = true)
                 } else {
                     Timber.w("[TileDebug] No songs found even after sync - library may be empty")
-                    sendToast(context.getString(R.string.player_no_songs_in_library_toast))
+                    sendToast("No songs found in library")
                 }
             }
         }
@@ -2691,12 +2690,10 @@ class PlayerViewModel @Inject constructor(
                             playerCtrl.pause()
 
                             val finishedSongTitle = libraryStateHolder.allSongsById.value[previousSongId]?.title
-                                ?: context.getString(R.string.player_default_track_title)
+                                ?: "Track"
 
                             viewModelScope.launch {
-                                _toastEvents.emit(
-                                    context.getString(R.string.player_playback_stopped_eot, finishedSongTitle),
-                                )
+                                _toastEvents.emit("Playback stopped: $finishedSongTitle finished (End of Track).")
                             }
                             cancelSleepTimer(suppressDefaultToast = true)
                         }
@@ -2934,7 +2931,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             val result = queueStateHolder.prepareShuffledQueueSuspending(songsToPlay, queueName, startAtZero)
             if (result == null) {
-                sendToast(context.getString(R.string.player_no_songs_to_shuffle))
+                sendToast("No songs to shuffle.")
                 return@launch
             }
 
@@ -3347,10 +3344,7 @@ class PlayerViewModel @Inject constructor(
     fun addSelectedToQueue(songs: List<Song>) {
         songs.forEach { addSongToQueue(it) }
         viewModelScope.launch {
-            val n = songs.size
-            _toastEvents.emit(
-                context.resources.getQuantityString(R.plurals.n_songs_added_to_queue, n, n),
-            )
+            _toastEvents.emit("${songs.size} songs added to queue")
         }
         multiSelectionStateHolder.clearSelection()
     }
@@ -3363,10 +3357,7 @@ class PlayerViewModel @Inject constructor(
     fun addSelectedAsNext(songs: List<Song>) {
         songs.reversed().forEach { addSongNextToQueue(it) }
         viewModelScope.launch {
-            val n = songs.size
-            _toastEvents.emit(
-                context.resources.getQuantityString(R.plurals.n_songs_will_play_next, n, n),
-            )
+            _toastEvents.emit("${songs.size} songs will play next")
         }
         multiSelectionStateHolder.clearSelection()
     }
@@ -3377,35 +3368,27 @@ class PlayerViewModel @Inject constructor(
             try {
                 val resolvedSelection = resolveSelectedAlbumSongs(albums)
                 if (resolvedSelection.songs.isEmpty()) {
-                    _toastEvents.emit(context.getString(R.string.player_no_playable_songs_in_albums))
+                    _toastEvents.emit("No playable songs found in selected albums")
                     return@launch
                 }
 
                 val queueName = if (resolvedSelection.albums.size == 1) {
                     resolvedSelection.albums.first().title
                 } else {
-                    context.getString(R.string.player_queue_name_selected_albums)
+                    "Selected Albums"
                 }
 
                 playSongs(resolvedSelection.songs, resolvedSelection.songs.first(), queueName, null)
                 _isSheetVisible.value = true
 
                 if (resolvedSelection.wasTrimmed) {
-                    _toastEvents.emit(
-                        context.getString(R.string.player_only_first_n_albums_queued, MAX_ALBUM_BATCH_SELECTION),
-                    )
+                    _toastEvents.emit("Only the first $MAX_ALBUM_BATCH_SELECTION albums will play")
                 } else {
-                    _toastEvents.emit(
-                        context.getString(
-                            R.string.player_albums_queued_format,
-                            resolvedSelection.albums.size,
-                            resolvedSelection.songs.size,
-                        ),
-                    )
+                    _toastEvents.emit("${resolvedSelection.albums.size} albums playing (${resolvedSelection.songs.size} songs)")
                 }
             } catch (e: Exception) {
                 Log.e("PlayerViewModel", "Error playing selected albums", e)
-                _toastEvents.emit(context.getString(R.string.player_could_not_queue_albums))
+                _toastEvents.emit("Could not play selected albums")
             }
         }
     }
@@ -3482,11 +3465,9 @@ class PlayerViewModel @Inject constructor(
                 }
             }
             if (likedCount > 0) {
-                _toastEvents.emit(
-                    context.resources.getQuantityString(R.plurals.n_songs_added_to_favorites, likedCount, likedCount),
-                )
+                _toastEvents.emit("$likedCount songs added to favorites")
             } else {
-                _toastEvents.emit(context.getString(R.string.player_all_songs_already_in_favorites))
+                _toastEvents.emit("All songs already in favorites")
             }
             multiSelectionStateHolder.clearSelection()
         }
@@ -3508,15 +3489,9 @@ class PlayerViewModel @Inject constructor(
                 }
             }
             if (unlikedCount > 0) {
-                _toastEvents.emit(
-                    context.resources.getQuantityString(
-                        R.plurals.n_songs_removed_from_favorites,
-                        unlikedCount,
-                        unlikedCount,
-                    ),
-                )
+                _toastEvents.emit("$unlikedCount songs removed from favorites")
             } else {
-                _toastEvents.emit(context.getString(R.string.player_no_songs_were_in_favorites))
+                _toastEvents.emit("No songs were in favorites")
             }
             multiSelectionStateHolder.clearSelection()
         }
@@ -3528,16 +3503,14 @@ class PlayerViewModel @Inject constructor(
      */
     fun shareSelectedAsZip(songs: List<Song>) {
         viewModelScope.launch {
-            _toastEvents.emit(context.getString(R.string.player_creating_zip))
+            _toastEvents.emit("Creating ZIP file...")
 
             val result = ZipShareHelper.createAndShareZip(context, songs)
 
             result.onSuccess {
                 multiSelectionStateHolder.clearSelection()
             }.onFailure { error ->
-                _toastEvents.emit(
-                    context.getString(R.string.player_share_zip_failed_format, error.localizedMessage ?: ""),
-                )
+                _toastEvents.emit("Failed to share: ${error.localizedMessage}")
                 println(
                     "Failed to share: ${error.localizedMessage}"
                 )
@@ -3590,7 +3563,7 @@ class PlayerViewModel @Inject constructor(
             val deletableSongs = songs.filter { it.id != currentSongId }
 
             if (deletableSongs.isEmpty()) {
-                _toastEvents.emit(context.getString(R.string.player_cannot_delete_currently_playing))
+                _toastEvents.emit("Cannot delete currently playing song")
                 return@launch
             }
 
@@ -3635,27 +3608,13 @@ class PlayerViewModel @Inject constructor(
 
             when {
                 successCount == deletableSongs.size && skippedCount == 0 ->
-                    _toastEvents.emit(
-                        context.resources.getQuantityString(R.plurals.n_files_deleted, successCount, successCount),
-                    )
+                    _toastEvents.emit("$successCount files deleted")
                 successCount == deletableSongs.size && skippedCount > 0 ->
-                    _toastEvents.emit(
-                        context.getString(
-                            R.string.player_batch_delete_files_deleted_skipped_format,
-                            successCount,
-                            skippedCount,
-                        ),
-                    )
+                    _toastEvents.emit("$successCount files deleted ($skippedCount skipped - playing)")
                 successCount > 0 ->
-                    _toastEvents.emit(
-                        context.getString(
-                            R.string.player_batch_delete_partial_format,
-                            successCount,
-                            deletableSongs.size,
-                        ),
-                    )
+                    _toastEvents.emit("$successCount of ${deletableSongs.size} files deleted")
                 else ->
-                    _toastEvents.emit(context.getString(R.string.player_delete_files_failed))
+                    _toastEvents.emit("Failed to delete files")
             }
 
             multiSelectionStateHolder.clearSelection()
@@ -3673,18 +3632,12 @@ class PlayerViewModel @Inject constructor(
                 val userChoice = CompletableDeferred<Boolean>()
 
                 val dialog = MaterialAlertDialogBuilder(activity)
-                    .setTitle(
-                        context.resources.getQuantityString(
-                            R.plurals.delete_songs_confirmation_title,
-                            count,
-                            count,
-                        ),
-                    )
-                    .setMessage(context.getString(R.string.delete_songs_permanent_message))
-                    .setPositiveButton(context.getString(R.string.delete_action)) { _, _ ->
+                    .setTitle("Delete $count songs?")
+                    .setMessage("These songs will be permanently deleted from your device and cannot be recovered.")
+                    .setPositiveButton("Delete") { _, _ ->
                         userChoice.complete(true)
                     }
-                    .setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
+                    .setNegativeButton("Cancel") { _, _ ->
                         userChoice.complete(false)
                     }
                     .setOnCancelListener {
@@ -3705,7 +3658,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             // Failsafe: Prevent deleting the currently playing song
             if (playbackStateHolder.stablePlayerState.value.currentSong?.id == song.id) {
-                _toastEvents.emit(context.getString(R.string.player_cannot_delete_currently_playing))
+                _toastEvents.emit("Cannot delete currently playing song")
                 onResult(false)
                 return@launch
             }
@@ -3735,12 +3688,12 @@ class PlayerViewModel @Inject constructor(
 
             val success = songRemovalStateHolder.deleteSongFile(song)
             if (success) {
-                _toastEvents.emit(context.getString(R.string.player_file_deleted))
+                _toastEvents.emit("File deleted")
                 removeFromMediaControllerQueue(song.id)
                 removeSong(song)
                 onResult(true)
             } else {
-                _toastEvents.emit(context.getString(R.string.player_delete_file_not_found))
+                _toastEvents.emit("Can't delete the file or file not found")
                 onResult(false)
             }
         }
@@ -3765,20 +3718,12 @@ class PlayerViewModel @Inject constructor(
                     }
                     val count = batchSongs.size
                     if (skippedCount > 0) {
-                        _toastEvents.emit(
-                            context.getString(
-                                R.string.player_batch_delete_files_deleted_skipped_format,
-                                count,
-                                skippedCount,
-                            ),
-                        )
+                        _toastEvents.emit("$count files deleted ($skippedCount skipped - playing)")
                     } else {
-                        _toastEvents.emit(
-                            context.resources.getQuantityString(R.plurals.n_files_deleted, count, count),
-                        )
+                        _toastEvents.emit("$count files deleted")
                     }
                 } else {
-                    _toastEvents.emit(context.getString(R.string.player_deletion_cancelled))
+                    _toastEvents.emit("Deletion cancelled")
                 }
                 multiSelectionStateHolder.clearSelection()
                 onComplete?.invoke()
@@ -3794,7 +3739,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             if (granted) {
                 // The system already deleted the file — just clean up the library
-                _toastEvents.emit(context.getString(R.string.player_file_deleted))
+                _toastEvents.emit("File deleted")
                 removeFromMediaControllerQueue(song.id)
                 removeSong(song)
                 callback?.invoke(true)
@@ -4421,9 +4366,7 @@ class PlayerViewModel @Inject constructor(
         if (batchGenre != null) {
             pendingBatchGenreEdit = null
             if (!granted) {
-                viewModelScope.launch {
-                    _toastEvents.emit(context.getString(R.string.player_permission_denied_edit_files))
-                }
+                viewModelScope.launch { _toastEvents.emit("Permission denied – cannot edit files") }
                 return
             }
             viewModelScope.launch { performBatchEditGenre(batchGenre.first, batchGenre.second) }
@@ -4435,9 +4378,7 @@ class PlayerViewModel @Inject constructor(
         if (pendingLyrics != null) {
             pendingLyricsSave = null
             if (!granted) {
-                viewModelScope.launch {
-                    _toastEvents.emit(context.getString(R.string.player_permission_denied_save_lyrics))
-                }
+                viewModelScope.launch { _toastEvents.emit("Permission denied – cannot save lyrics") }
                 return
             }
             performLyricsSave(pendingLyrics.song, pendingLyrics.lyrics, pendingLyrics.preferSynced)
@@ -4449,7 +4390,7 @@ class PlayerViewModel @Inject constructor(
         pendingMetadataEdit = null
         if (!granted) {
             viewModelScope.launch {
-                _toastEvents.emit(context.getString(R.string.player_permission_denied_edit_this_file))
+                _toastEvents.emit("Permission denied – cannot edit this file")
             }
             return
         }
@@ -4602,7 +4543,7 @@ class PlayerViewModel @Inject constructor(
 
             // No need for full library sync - file, MediaStore, and local DB are already updated
             // syncManager.sync() was removed to avoid unnecessary wait time
-            _toastEvents.emit(context.getString(R.string.metadata_updated_successfully))
+            _toastEvents.emit("Metadata updated successfully")
         } else {
             val errorMessage = result.getUserFriendlyErrorMessage()
             Log.e("PlayerViewModel", "METADATA_EDIT_VM: Failed - ${result.error}: $errorMessage")
@@ -4773,7 +4714,7 @@ class PlayerViewModel @Inject constructor(
 
     private suspend fun performBatchEditGenre(songs: List<Song>, newGenre: String) {
             Log.d("PlayerViewModel", "Starting batch genre update for ${songs.size} songs to '$newGenre'")
-            _toastEvents.emit(context.getString(R.string.player_updating_n_songs, songs.size))
+            _toastEvents.emit("Updating ${songs.size} songs...")
 
             var successCount = 0
             var failCount = 0
@@ -4823,11 +4764,9 @@ class PlayerViewModel @Inject constructor(
             }
 
             if (failCount == 0) {
-                _toastEvents.emit(context.getString(R.string.player_batch_genre_updated_all, successCount))
+                _toastEvents.emit("Successfully updated $successCount songs!")
             } else {
-                _toastEvents.emit(
-                    context.getString(R.string.player_batch_genre_updated_partial, successCount, failCount),
-                )
+                _toastEvents.emit("Updated $successCount songs. Failed: $failCount")
             }
     }
 

@@ -2,15 +2,15 @@ package com.theveloper.pixelplay.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,13 +108,18 @@ fun AiUsageLogItem(
             // Provider and Model
             Column {
                 Text(
-                    text = stringResource(R.string.presentation_batch_h_ai_usage_provider_model, usage.provider, usage.model),
+                    text = usage.provider,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontFamily = GoogleSansRounded,
                         letterSpacing = 0.2.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = usage.model,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -125,20 +130,20 @@ fun AiUsageLogItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TokenChip(
-                    label = "In", 
+                    label = stringResource(R.string.tokens_in), 
                     count = usage.promptTokens, 
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 TokenChip(
-                    label = "Out", 
+                    label = stringResource(R.string.tokens_out), 
                     count = usage.outputTokens, 
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 if (usage.thoughtTokens > 0) {
                     TokenChip(
-                        label = "Th", 
+                        label = stringResource(R.string.tokens_thought), 
                         count = usage.thoughtTokens, 
                         containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -161,7 +166,7 @@ private fun TokenChip(
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
-            text = "$label: ${String.format(Locale.US, "%,d", count)}",
+            text = "$label: ${String.format("%, d", count)}",
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall,
             color = contentColor,
@@ -170,15 +175,16 @@ private fun TokenChip(
     }
 }
 
+@Composable
 private fun formatPromptType(type: String): String {
     return when (type) {
-        "PLAYLIST" -> "Playlist"
-        "METADATA" -> "Metadata"
-        "TAGGING" -> "Tagging"
-        "MOOD_ANALYSIS" -> "Analysis"
-        "PERSONA" -> "Persona"
-        "DAILY_MIX" -> "Daily Mix"
-        "GENERAL" -> "General"
+        "PLAYLIST" -> stringResource(R.string.ai_type_playlist)
+        "METADATA" -> stringResource(R.string.ai_type_metadata)
+        "TAGGING" -> stringResource(R.string.ai_type_tagging)
+        "MOOD_ANALYSIS" -> stringResource(R.string.ai_type_analysis)
+        "PERSONA" -> stringResource(R.string.ai_type_persona)
+        "DAILY_MIX" -> stringResource(R.string.ai_type_daily_mix)
+        "GENERAL" -> stringResource(R.string.ai_type_general)
         else -> type.lowercase().replaceFirstChar { it.uppercase() }
     }
 }

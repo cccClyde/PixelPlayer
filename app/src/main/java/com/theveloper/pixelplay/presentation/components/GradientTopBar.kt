@@ -38,7 +38,6 @@ import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import com.theveloper.pixelplay.ui.theme.PixelPlayStatusBarStyle
 import kotlinx.collections.immutable.toImmutableList
-import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +77,7 @@ fun GenreGradientTopBar(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(R.string.auth_cd_back),
+                    contentDescription = "Back",
                     tint = startColor
                 )
             }
@@ -160,12 +159,12 @@ fun HomeGradientTopBar(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_topbar_beta_letter),
+                            text = "β",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Black
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_topbar_beta),
+                            text = "Beta",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -188,7 +187,7 @@ fun HomeGradientTopBar(
                 ) {
                     Icon(
                          imageVector = Icons.Rounded.Cloud,
-                         contentDescription = stringResource(R.string.presentation_batch_g_topbar_cd_telegram)
+                         contentDescription = "Telegram"
                     )
                 }
                 //Spacer(Modifier.size(8.dp))
@@ -202,7 +201,7 @@ fun HomeGradientTopBar(
                     Icon(
                         //modifier = Modifier.size(18.dp),
                         painter = painterResource(R.drawable.round_newspaper_24),
-                        contentDescription = stringResource(R.string.presentation_batch_g_topbar_cd_changelog)
+                        contentDescription = "Changelog"
                     )
                 }
                 //Spacer(Modifier.size(8.dp))
@@ -215,7 +214,7 @@ fun HomeGradientTopBar(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_settings_24),
-                        contentDescription = stringResource(R.string.settings_top_bar_title)
+                        contentDescription = "Settings"
                     )
                 }
             }

@@ -56,6 +56,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,7 +65,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import androidx.compose.ui.res.stringResource
 import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.presentation.components.CollapsibleCommonTopBar
 import com.theveloper.pixelplay.presentation.components.MiniPlayerHeight
@@ -166,30 +166,30 @@ fun DeviceCapabilitiesScreen(
                  // Audio Capabilities
                  item {
                      state.audioCapabilities?.let { audio ->
-                         CapabilitySection(title = stringResource(R.string.presentation_batch_g_device_section_audio_output), icon = Icons.Rounded.Speaker) {
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_sample_rate), stringResource(R.string.presentation_batch_g_device_value_hz, audio.outputSampleRate))
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_frames_per_buffer), "${audio.outputFramesPerBuffer}")
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_low_latency), if (audio.isLowLatencySupported) stringResource(R.string.presentation_batch_g_yes) else stringResource(R.string.presentation_batch_g_no))
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_pro_audio), if (audio.isProAudioSupported) stringResource(R.string.presentation_batch_g_yes) else stringResource(R.string.presentation_batch_g_no))
-                         }
+                        CapabilitySection(title = stringResource(R.string.device_audio_output), icon = Icons.Rounded.Speaker) {
+                            InfoRow(stringResource(R.string.device_sample_rate), "${audio.outputSampleRate} Hz")
+                            InfoRow(stringResource(R.string.device_frames_per_buffer), "${audio.outputFramesPerBuffer}")
+                            InfoRow(stringResource(R.string.device_low_latency_support), if (audio.isLowLatencySupported) stringResource(R.string.device_yes) else stringResource(R.string.device_no))
+                            InfoRow(stringResource(R.string.device_pro_audio_support), if (audio.isProAudioSupported) stringResource(R.string.device_yes) else stringResource(R.string.device_no))
+                        }
                      }
                  }
                  
                  // ExoPlayer Info
                  item {
                      state.exoPlayerInfo?.let { exo ->
-                         CapabilitySection(title = stringResource(R.string.presentation_batch_g_device_section_exoplayer), icon = Icons.Rounded.Memory) {
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_version), exo.version)
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_active_renderers), exo.renderers)
-                             InfoRow(stringResource(R.string.presentation_batch_g_device_label_decoder_counters), exo.decoderCounters)
-                         }
+                        CapabilitySection(title = stringResource(R.string.device_exoplayer_engine), icon = Icons.Rounded.Memory) {
+                            InfoRow(stringResource(R.string.device_version), exo.version)
+                            InfoRow(stringResource(R.string.device_active_renderers), exo.renderers)
+                            InfoRow(stringResource(R.string.device_decoder_counters), exo.decoderCounters)
+                        }
                      }
                  }
 
                  // Codecs Header
                  item {
                      Text(
-                         text = stringResource(R.string.presentation_batch_g_device_supported_codecs_title),
+                         text = stringResource(R.string.device_supported_audio_codecs),
                          style = MaterialTheme.typography.titleLarge,
                          color = MaterialTheme.colorScheme.onSurface,
                          fontWeight = FontWeight.Bold,
@@ -208,7 +208,7 @@ fun DeviceCapabilitiesScreen(
         
         // Top Bar
         CollapsibleCommonTopBar(
-            title = stringResource(R.string.settings_category_device_capabilities_title),
+            title = stringResource(R.string.device_capabilities_title),
             collapseFraction = collapseFraction,
             headerHeight = currentTopBarHeightDp,
             onBackClick = { navController.popBackStack() },
@@ -311,39 +311,8 @@ fun InfoRow(label: String, value: String) {
 @Composable
 fun DeviceInfoExpressiveSection(deviceInfo: Map<String, String>) {
     val orderedEntries = remember(deviceInfo) { orderedDeviceInfoEntries(deviceInfo) }
-    val lManufacturer = stringResource(R.string.presentation_batch_g_device_key_manufacturer)
-    val lModel = stringResource(R.string.presentation_batch_g_device_key_model)
-    val lBrand = stringResource(R.string.presentation_batch_g_device_key_brand)
-    val lDevice = stringResource(R.string.presentation_batch_g_device_key_device)
-    val lAndroid = stringResource(R.string.presentation_batch_g_device_key_android_version)
-    val lSdk = stringResource(R.string.presentation_batch_g_device_key_sdk_version)
-    val lHardware = stringResource(R.string.presentation_batch_g_device_key_hardware)
-    val localized = remember(
-        orderedEntries,
-        lManufacturer,
-        lModel,
-        lBrand,
-        lDevice,
-        lAndroid,
-        lSdk,
-        lHardware
-    ) {
-        orderedEntries.map { (k, v) ->
-            val label = when (k) {
-                "Manufacturer" -> lManufacturer
-                "Model" -> lModel
-                "Brand" -> lBrand
-                "Device" -> lDevice
-                "Android Version" -> lAndroid
-                "SDK Version" -> lSdk
-                "Hardware" -> lHardware
-                else -> k
-            }
-            label to v
-        }
-    }
-    val heroEntries = localized.take(2)
-    val detailEntries = localized.drop(2)
+    val heroEntries = orderedEntries.take(2)
+    val detailEntries = orderedEntries.drop(2)
     val sectionShape = AbsoluteSmoothCornerShape(30.dp, 60)
 
     Card(
@@ -385,7 +354,7 @@ fun DeviceInfoExpressiveSection(deviceInfo: Map<String, String>) {
                     }
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = stringResource(R.string.presentation_batch_g_device_info_title),
+                        text = stringResource(R.string.device_info_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -399,7 +368,7 @@ fun DeviceInfoExpressiveSection(deviceInfo: Map<String, String>) {
                     ) {
                         heroEntries.forEach { (label, value) ->
                             DeviceInfoHeroTile(
-                                label = label,
+                                label = localizedDeviceInfoLabel(label),
                                 value = value,
                                 modifier = Modifier.weight(1f)
                             )
@@ -416,19 +385,19 @@ fun DeviceInfoExpressiveSection(deviceInfo: Map<String, String>) {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             DeviceInfoStatTile(
-                                label = rowEntries[0].first,
+                                label = localizedDeviceInfoLabel(rowEntries[0].first),
                                 value = rowEntries[0].second,
                                 modifier = Modifier.weight(1f)
                             )
                             DeviceInfoStatTile(
-                                label = rowEntries[1].first,
+                                label = localizedDeviceInfoLabel(rowEntries[1].first),
                                 value = rowEntries[1].second,
                                 modifier = Modifier.weight(1f)
                             )
                         }
                     } else {
                         DeviceInfoStatTile(
-                            label = rowEntries[0].first,
+                            label = localizedDeviceInfoLabel(rowEntries[0].first),
                             value = rowEntries[0].second,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -569,7 +538,7 @@ fun CodecCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.CheckCircle,
-                                contentDescription = stringResource(R.string.presentation_batch_g_device_cd_hw_accelerated),
+                                contentDescription = stringResource(R.string.device_hw_accelerated_cd),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.padding(4.dp).size(16.dp)
                             )
@@ -608,6 +577,20 @@ private fun settingsSegmentShape(
             bottomEnd = outerCorner
         )
         else -> RoundedCornerShape(innerCorner)
+    }
+}
+
+@Composable
+private fun localizedDeviceInfoLabel(label: String): String {
+    return when (label) {
+        "Manufacturer" -> stringResource(R.string.device_manufacturer)
+        "Model" -> stringResource(R.string.device_model)
+        "Brand" -> stringResource(R.string.device_brand)
+        "Device" -> stringResource(R.string.device_device)
+        "Android Version" -> stringResource(R.string.device_android_version)
+        "SDK Version" -> stringResource(R.string.device_sdk_version)
+        "Hardware" -> stringResource(R.string.device_hardware)
+        else -> label
     }
 }
 

@@ -37,10 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.theveloper.pixelplay.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import com.theveloper.pixelplay.data.model.Song
@@ -116,11 +114,7 @@ fun PlaylistBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        if (songs.size > 1) {
-                            stringResource(R.string.playlist_picker_add_songs_title, songs.size)
-                        } else {
-                            stringResource(R.string.playlist_picker_select_playlists)
-                        },
+                        if (songs.size > 1) "Add ${songs.size} Songs to..." else "Select Playlists",
                         style = MaterialTheme.typography.displaySmall,
                         fontFamily = GoogleSansRounded
                     )
@@ -138,7 +132,7 @@ fun PlaylistBottomSheet(
                         focusedSupportingTextColor = Color.Transparent,
                     ),
                     onValueChange = { searchQuery = it },
-                    label = { Text(stringResource(R.string.search_playlists_hint)) },
+                    label = { Text("Search for playlists...") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),

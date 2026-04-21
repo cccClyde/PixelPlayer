@@ -99,6 +99,7 @@ fun AccountsScreen(
     viewModel: AccountsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val accountsTitle = stringResource(R.string.accounts_title)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val density = LocalDensity.current
@@ -189,7 +190,7 @@ fun AccountsScreen(
             if (uiState.connectedAccounts.isNotEmpty()) {
                 item {
                     Text(
-                        text = stringResource(R.string.presentation_batch_b_accounts_linked_services),
+                        text = stringResource(R.string.accounts_linked_services_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -245,7 +246,7 @@ fun AccountsScreen(
         }
 
         CollapsibleCommonTopBar(
-            title = stringResource(R.string.settings_accounts_row_title),
+            title = accountsTitle,
             collapseFraction = collapseFraction,
             headerHeight = currentTopBarHeightDp,
             onBackClick = onBackClick,
@@ -260,10 +261,6 @@ private fun AccountsHeroSection(
     connectedCount: Int,
     disconnectedCount: Int
 ) {
-    val connectedHeroTitle = stringResource(R.string.presentation_batch_b_accounts_connected_hero_title)
-    val connectedHeroBody = stringResource(R.string.presentation_batch_b_accounts_connected_hero_body)
-    val statActive = stringResource(R.string.presentation_batch_b_accounts_stat_active)
-    val statAvailable = stringResource(R.string.presentation_batch_b_accounts_stat_available)
     val sectionShape = AbsoluteSmoothCornerShape(30.dp, 60)
     Card(
         shape = sectionShape,
@@ -276,13 +273,13 @@ private fun AccountsHeroSection(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = connectedHeroTitle,
+                text = stringResource(R.string.accounts_connected_accounts_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = connectedHeroBody,
+                text = stringResource(R.string.accounts_connected_accounts_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -291,12 +288,12 @@ private fun AccountsHeroSection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 HeroStatTile(
-                    title = statActive,
+                    title = stringResource(R.string.accounts_active_label),
                     value = connectedCount.toString(),
                     modifier = Modifier.weight(1f)
                 )
                 HeroStatTile(
-                    title = statAvailable,
+                    title = stringResource(R.string.accounts_available_label),
                     value = (connectedCount + disconnectedCount).toString(),
                     modifier = Modifier.weight(1f)
                 )
@@ -342,14 +339,14 @@ private fun ConnectedAccountCard(
     onLogout: () -> Unit,
     painter: androidx.compose.ui.graphics.painter.Painter? = null
 ) {
-    val statusSoon = stringResource(R.string.presentation_batch_b_accounts_status_soon)
-    val statusConnected = stringResource(R.string.presentation_batch_b_accounts_status_connected)
-    val openService = stringResource(R.string.presentation_batch_b_accounts_open_service)
-    val comingSoonShort = stringResource(R.string.presentation_batch_b_accounts_coming_soon_short)
-    val loggingOut = stringResource(R.string.presentation_batch_b_accounts_logging_out)
-    val logOut = stringResource(R.string.cd_logout)
     val palette = servicePalette(account.service)
     val isComingSoon = account.service == ExternalServiceAccount.GOOGLE_DRIVE
+    val connectedLabel = stringResource(R.string.accounts_status_connected)
+    val soonLabel = stringResource(R.string.accounts_status_soon)
+    val openServiceLabel = stringResource(R.string.accounts_open_service)
+    val comingSoonLabel = stringResource(R.string.accounts_coming_soon)
+    val loggingOutLabel = stringResource(R.string.accounts_logging_out)
+    val logOutLabel = stringResource(R.string.accounts_log_out)
     val cardShape = AbsoluteSmoothCornerShape(28.dp, 60)
 
     Card(
@@ -429,7 +426,7 @@ private fun ConnectedAccountCard(
         }
     ) {
         Text(
-            text = if (isComingSoon) statusSoon else statusConnected,
+            text = if (isComingSoon) soonLabel else connectedLabel,
             style = MaterialTheme.typography.labelMedium,
             color = if (isComingSoon) {
                 MaterialTheme.colorScheme.onSecondaryContainer
@@ -485,7 +482,7 @@ private fun ConnectedAccountCard(
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = if (isComingSoon) comingSoonShort else openService,
+                    text = if (isComingSoon) comingSoonLabel else openServiceLabel,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -510,7 +507,7 @@ private fun ConnectedAccountCard(
                 }
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = if (account.isLoggingOut) loggingOut else logOut,
+                    text = if (account.isLoggingOut) loggingOutLabel else logOutLabel,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -523,10 +520,8 @@ private fun EmptyAccountsCard(
     disconnectedServices: List<ExternalServiceAccount>,
     onConnect: (ExternalServiceAccount) -> Unit
 ) {
-    val noLinkedTitle = stringResource(R.string.presentation_batch_b_accounts_no_linked_title)
-    val noLinkedBody = stringResource(R.string.presentation_batch_b_accounts_no_linked_body)
-    val connectTemplate = stringResource(R.string.presentation_batch_b_accounts_connect_service)
-    val serviceSoonTemplate = stringResource(R.string.presentation_batch_b_accounts_service_paren_coming_soon)
+    val noLinkedAccountsTitle = stringResource(R.string.accounts_empty_title)
+    val noLinkedAccountsSubtitle = stringResource(R.string.accounts_empty_subtitle)
     Card(
         shape = AbsoluteSmoothCornerShape(28.dp, 60),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -538,12 +533,12 @@ private fun EmptyAccountsCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = noLinkedTitle,
+                text = noLinkedAccountsTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = noLinkedBody,
+                text = noLinkedAccountsSubtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -581,9 +576,15 @@ private fun EmptyAccountsCard(
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         text = if (isComingSoon) {
-                            serviceSoonTemplate.format(serviceDisplayName(service))
+                            stringResource(
+                                R.string.accounts_connect_service_coming_soon,
+                                stringResource(serviceTitleRes(service))
+                            )
                         } else {
-                            connectTemplate.format(serviceDisplayName(service))
+                            stringResource(
+                                R.string.accounts_connect_service,
+                                stringResource(serviceTitleRes(service))
+                            )
                         }
                     )
                 }
@@ -709,15 +710,14 @@ private fun ServiceIcon(service: ExternalServiceAccount, tint: Color, modifier: 
     }
 }
 
-@Composable
-private fun serviceDisplayName(service: ExternalServiceAccount): String {
+private fun serviceTitleRes(service: ExternalServiceAccount): Int {
     return when (service) {
-        ExternalServiceAccount.TELEGRAM -> stringResource(R.string.presentation_batch_b_service_telegram)
-        ExternalServiceAccount.GOOGLE_DRIVE -> stringResource(R.string.auth_gdrive_title)
-        ExternalServiceAccount.NETEASE -> stringResource(R.string.presentation_batch_b_service_netease)
-        ExternalServiceAccount.QQ_MUSIC -> stringResource(R.string.screen_qq_music_dashboard_title)
-        ExternalServiceAccount.NAVIDROME -> stringResource(R.string.cd_subsonic_logo)
-        ExternalServiceAccount.JELLYFIN -> stringResource(R.string.auth_jellyfin_title)
+        ExternalServiceAccount.TELEGRAM -> R.string.accounts_service_telegram
+        ExternalServiceAccount.GOOGLE_DRIVE -> R.string.accounts_service_google_drive
+        ExternalServiceAccount.NETEASE -> R.string.accounts_service_netease
+        ExternalServiceAccount.QQ_MUSIC -> R.string.accounts_service_qq_music
+        ExternalServiceAccount.NAVIDROME -> R.string.accounts_service_subsonic
+        ExternalServiceAccount.JELLYFIN -> R.string.accounts_service_jellyfin
     }
 }
 
@@ -738,7 +738,7 @@ private fun openService(
             )
         }
         ExternalServiceAccount.GOOGLE_DRIVE -> {
-            Toast.makeText(context, context.getString(R.string.accounts_google_drive_soon), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.accounts_google_drive_coming_soon), Toast.LENGTH_SHORT).show()
         }
         ExternalServiceAccount.NETEASE -> {
             if (preferNeteaseDashboard) {
@@ -789,6 +789,6 @@ private fun safeStartActivity(
 ) {
     runCatching { context.startActivity(intent) }
         .onFailure {
-            Toast.makeText(context, context.getString(R.string.accounts_unable_open_screen), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.accounts_open_screen_failed), Toast.LENGTH_SHORT).show()
         }
 }

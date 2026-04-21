@@ -50,8 +50,6 @@ import androidx.compose.ui.zIndex
 import coil.size.Size
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.presentation.components.SmartImage
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 
 /**
@@ -118,7 +116,7 @@ fun SelectionHeader(
                     )
                 }
                 Text(
-                    text = if (selectedSongs.size == 1) stringResource(R.string.presentation_batch_g_selection_one_song) else stringResource(R.string.presentation_batch_g_selection_n_songs),
+                    text = if (selectedSongs.size == 1) "song selected" else "songs selected",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = GoogleSansRounded
@@ -142,7 +140,7 @@ fun SelectionHeader(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Share,
-                    contentDescription = stringResource(R.string.presentation_batch_g_selection_cd_share),
+                    contentDescription = "Share selected",
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -158,7 +156,7 @@ fun SelectionHeader(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Favorite,
-                    contentDescription = stringResource(R.string.presentation_batch_g_selection_cd_like),
+                    contentDescription = "Like selected",
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -177,7 +175,7 @@ fun SelectionHeader(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = stringResource(R.string.presentation_batch_g_selection_play),
+                    text = "Play",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = GoogleSansRounded
@@ -249,10 +247,7 @@ private fun StackedCoverArts(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(
-                        R.string.presentation_batch_g_selection_overflow_count,
-                        totalCount - songs.size
-                    ),
+                    text = "+${totalCount - songs.size}",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onTertiaryContainer,

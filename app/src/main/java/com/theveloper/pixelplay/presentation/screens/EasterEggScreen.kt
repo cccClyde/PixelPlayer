@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.theveloper.pixelplay.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.theveloper.pixelplay.presentation.components.brickbreaker.BrickBreakerOverlay
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
@@ -37,7 +36,7 @@ fun EasterEggScreen(
 
     LaunchedEffect(hasShownFanToast) {
         if (hasShownFanToast) return@LaunchedEffect
-        Toast.makeText(context, context.getString(R.string.easter_egg_thank_you), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Thank you for using PixelPlayer!", Toast.LENGTH_SHORT).show()
         hasShownFanToast = true
     }
 

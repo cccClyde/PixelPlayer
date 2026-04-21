@@ -82,8 +82,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -256,7 +254,7 @@ fun FileExplorerContent(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Close,
-                            contentDescription = stringResource(R.string.presentation_batch_g_file_explorer_cd_close)
+                            contentDescription = "Close"
                         )
                     }
                 },
@@ -271,7 +269,7 @@ fun FileExplorerContent(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Refresh,
-                            contentDescription = stringResource(R.string.presentation_batch_g_file_explorer_cd_refresh)
+                            contentDescription = "Refresh"
                         )
                     }
                 }
@@ -288,11 +286,11 @@ fun FileExplorerContent(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Done,
-                    contentDescription = stringResource(R.string.presentation_batch_g_file_explorer_cd_done),
+                    contentDescription = "Done",
                     tint = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                Text(text = stringResource(R.string.presentation_batch_g_file_explorer_done))
+                Text(text = "Done")
             }
         }
     ) { innerPadding ->
@@ -340,7 +338,7 @@ fun FileExplorerContent(
             }
 
             Text(
-                text = stringResource(R.string.presentation_batch_g_file_explorer_hint),
+                text = "Everything is allowed by default. Tap a folder to mark it as excluded from scans.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
@@ -381,7 +379,7 @@ fun FileExplorerContent(
                             supportingText = loadingHint
                         )
 
-                        children.isEmpty() -> ExplorerEmptyState(text = stringResource(R.string.presentation_batch_g_file_explorer_empty_folders))
+                        children.isEmpty() -> ExplorerEmptyState(text = "No subfolders here")
 
                         else -> {
                             LazyColumn(
@@ -694,7 +692,7 @@ private fun FileExplorerHeader(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = stringResource(R.string.presentation_batch_g_file_explorer_cd_navigate_up),
+                        contentDescription = "Navigate up",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -777,7 +775,7 @@ private fun FileExplorerHeader(
                                 if (isRoot) {
                                     Icon(
                                         imageVector = Icons.Rounded.Home,
-                                        contentDescription = stringResource(R.string.presentation_batch_g_file_explorer_cd_go_root),
+                                        contentDescription = "Go to root",
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier
                                             .padding(end = 4.dp)

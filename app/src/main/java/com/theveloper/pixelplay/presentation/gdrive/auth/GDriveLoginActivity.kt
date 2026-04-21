@@ -44,8 +44,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 
 @AndroidEntryPoint
 class GDriveLoginActivity : ComponentActivity() {
@@ -81,7 +79,7 @@ fun GDriveLoginScreen(
     LaunchedEffect(loginState) {
         when (loginState) {
             is GDriveLoginState.Success -> {
-                Toast.makeText(context, context.getString(R.string.auth_gdrive_toast_connected), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Google Drive connected!", Toast.LENGTH_SHORT).show()
                 onClose()
             }
             is GDriveLoginState.Error -> {
@@ -108,7 +106,7 @@ fun GDriveLoginScreen(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            stringResource(R.string.auth_gdrive_title),
+                            "Google Drive",
                             fontFamily = GoogleSansRounded,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -122,7 +120,7 @@ fun GDriveLoginScreen(
                             onClose()
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.auth_cd_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -159,7 +157,7 @@ fun GDriveLoginScreen(
                             )
                             Spacer(Modifier.height(16.dp))
                             Text(
-                                stringResource(R.string.auth_gdrive_setting_up),
+                                "Setting up Google Drive...",
                                 fontFamily = GoogleSansRounded,
                                 style = MaterialTheme.typography.bodyLarge
                             )
@@ -232,7 +230,7 @@ private fun SignInContent(
         Spacer(Modifier.height(24.dp))
 
         Text(
-            stringResource(R.string.auth_gdrive_connect_title),
+            "Connect Google Drive",
             style = MaterialTheme.typography.headlineSmall,
             fontFamily = GoogleSansRounded,
             fontWeight = FontWeight.Bold,
@@ -242,7 +240,7 @@ private fun SignInContent(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            stringResource(R.string.auth_gdrive_connect_subtitle),
+            "Stream music files directly from your Google Drive",
             style = MaterialTheme.typography.bodyMedium,
             fontFamily = GoogleSansRounded,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -263,7 +261,7 @@ private fun SignInContent(
                 .height(56.dp)
         ) {
             Text(
-                stringResource(R.string.auth_gdrive_sign_in_with_google),
+                "Sign in with Google",
                 fontFamily = GoogleSansRounded,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium
@@ -304,7 +302,7 @@ private fun FolderSetupContent(
     ) {
         // Header
         Text(
-            text = stringResource(R.string.auth_gdrive_select_music_folder_title),
+            text = "Select a music folder",
             style = MaterialTheme.typography.titleMedium,
             fontFamily = GoogleSansRounded,
             fontWeight = FontWeight.Bold,
@@ -312,7 +310,7 @@ private fun FolderSetupContent(
         )
 
         Text(
-            text = stringResource(R.string.auth_gdrive_select_music_folder_subtitle),
+            text = "Choose or create a folder to use as your music source",
             style = MaterialTheme.typography.bodySmall,
             fontFamily = GoogleSansRounded,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -381,14 +379,14 @@ private fun FolderSetupContent(
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = stringResource(R.string.auth_gdrive_create_pixelplay_music_title),
+                        text = "Create \"PixelPlay Music\"",
                         style = MaterialTheme.typography.titleSmall,
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
-                        text = stringResource(R.string.auth_gdrive_create_folder_here_hint),
+                        text = "Create a new folder here for your music",
                         style = MaterialTheme.typography.bodySmall,
                         fontFamily = GoogleSansRounded,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
@@ -421,7 +419,7 @@ private fun FolderSetupContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.auth_gdrive_no_folders_here),
+                    text = "No folders here",
                     style = MaterialTheme.typography.bodyLarge,
                     fontFamily = GoogleSansRounded,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -507,7 +505,7 @@ private fun FolderCard(
                 )
             ) {
                 Text(
-                    stringResource(R.string.auth_gdrive_use_this_folder),
+                    "Use",
                     fontFamily = GoogleSansRounded,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.labelMedium
@@ -518,7 +516,7 @@ private fun FolderCard(
 
             Icon(
                 Icons.Rounded.ChevronRight,
-                contentDescription = stringResource(R.string.auth_gdrive_cd_open_folder),
+                contentDescription = "Open folder",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 modifier = Modifier.size(20.dp)
             )

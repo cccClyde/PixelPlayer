@@ -23,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -41,7 +40,6 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.horologist.compose.layout.ScalingLazyColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.presentation.components.AlwaysOnScalingPositionIndicator
 import com.theveloper.pixelplay.presentation.components.PlayingEqIcon
 import com.theveloper.pixelplay.presentation.components.WearTopTimeText
@@ -223,7 +221,7 @@ fun QueueScreen(
                             is BrowseUiState.Error -> {
                                 item {
                                     Text(
-                                        text = stringResource(R.string.wear_queue_unavailable),
+                                        text = "Queue unavailable",
                                         style = MaterialTheme.typography.title3,
                                         color = palette.textPrimary,
                                         textAlign = TextAlign.Center,
@@ -249,7 +247,7 @@ fun QueueScreen(
                                 if (state.items.isEmpty()) {
                                     item {
                                         Text(
-                                            text = stringResource(R.string.wear_queue_empty),
+                                            text = "Queue is empty",
                                             style = MaterialTheme.typography.body2,
                                             color = palette.textSecondary,
                                             textAlign = TextAlign.Center,

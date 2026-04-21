@@ -2,7 +2,6 @@
 
 package com.theveloper.pixelplay.presentation.telegram.dashboard
 
-import android.content.Context
 import android.text.format.DateUtils
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -85,10 +84,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.platform.LocalContext
-import com.theveloper.pixelplay.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.theveloper.pixelplay.data.database.TelegramChannelEntity
@@ -256,7 +251,7 @@ fun TelegramDashboardScreen(
         }
 
         CollapsibleCommonTopBar(
-            title = stringResource(R.string.presentation_batch_f_telegram_channels_title),
+            title = "Telegram Channels",
             collapseFraction = collapseFraction,
             headerHeight = currentTopBarHeightDp,
             onBackClick = onBack,
@@ -281,7 +276,7 @@ fun TelegramDashboardScreen(
                 onClick = onAddChannel,
                 text = {
                     Text(
-                        stringResource(R.string.presentation_batch_f_add_channel_fab),
+                        "Add Channel",
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -341,7 +336,6 @@ private fun ExpressiveChannelItem(
     onOpenActions: () -> Unit,
     onToggleExpand: () -> Unit
 ) {
-    val context = LocalContext.current
     val cardShape = AbsoluteSmoothCornerShape(
         cornerRadiusTR = 28.dp,
         cornerRadiusTL = 28.dp,
@@ -370,10 +364,7 @@ private fun ExpressiveChannelItem(
             ?.takeIf { it.isNotEmpty() }
             ?.let { if (it.startsWith("@")) it else "@$it" }
     }
-    val publicChannelFallback = stringResource(R.string.presentation_batch_f_public_channel_fallback)
-    val lastSyncLabel = remember(channel.lastSyncTime, context) {
-        formatLastSyncLabel(context, channel.lastSyncTime)
-    }
+    val lastSyncLabel = remember(channel.lastSyncTime) { formatLastSyncLabel(channel.lastSyncTime) }
 
     Surface(
         shape = cardShape,
@@ -440,7 +431,7 @@ private fun ExpressiveChannelItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = usernameLabel ?: publicChannelFallback,
+                        text = usernameLabel ?: "Public Telegram channel",
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = GoogleSansRounded,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -457,11 +448,7 @@ private fun ExpressiveChannelItem(
             ) {
                 ChannelMetaPill(
                     icon = Icons.Rounded.MusicNote,
-                    label = pluralStringResource(
-                        R.plurals.presentation_batch_f_n_songs,
-                        channel.songCount,
-                        channel.songCount
-                    )
+                    label = "${channel.songCount} songs"
                 )
                 ChannelMetaPill(
                     icon = Icons.Rounded.AccessTime,
@@ -470,11 +457,7 @@ private fun ExpressiveChannelItem(
                 if (topics.isNotEmpty()) {
                     ChannelMetaPill(
                         icon = Icons.Rounded.Topic,
-                        label = pluralStringResource(
-                            R.plurals.presentation_batch_f_n_topics,
-                            topics.size,
-                            topics.size
-                        )
+                        label = "${topics.size} topics"
                     )
                 }
             }
@@ -501,7 +484,7 @@ private fun ExpressiveChannelItem(
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Spacer(modifier = Modifier.size(8.dp))
-                        Text(stringResource(R.string.presentation_batch_f_syncing))
+                        Text("Syncing")
                     } else {
                         Icon(
                             imageVector = Icons.Rounded.Sync,
@@ -509,7 +492,7 @@ private fun ExpressiveChannelItem(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
-                        Text(stringResource(R.string.presentation_batch_f_sync_now))
+                        Text("Sync now")
                     }
                 }
 
@@ -524,11 +507,7 @@ private fun ExpressiveChannelItem(
                     ) {
                         Icon(
                             imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-                            contentDescription = if (isExpanded) {
-                                stringResource(R.string.presentation_batch_f_cd_collapse_topics)
-                            } else {
-                                stringResource(R.string.presentation_batch_f_cd_show_topics)
-                            }
+                            contentDescription = if (isExpanded) "Collapse topics" else "Show topics"
                         )
                     }
                 }
@@ -542,7 +521,7 @@ private fun ExpressiveChannelItem(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = stringResource(R.string.presentation_batch_f_cd_channel_options)
+                        contentDescription = "Channel options"
                     )
                 }
             }
@@ -563,7 +542,7 @@ private fun ExpressiveChannelItem(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = stringResource(R.string.presentation_batch_f_topics_heading),
+                        text = "Topics",
                         style = MaterialTheme.typography.labelMedium,
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.SemiBold,
@@ -583,11 +562,6 @@ private fun ExpressiveChannelItem(
 
 @Composable
 private fun TopicRow(topic: TelegramTopicEntity) {
-    val songsLabel = pluralStringResource(
-        R.plurals.presentation_batch_f_n_songs,
-        topic.songCount,
-        topic.songCount
-    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -626,7 +600,7 @@ private fun TopicRow(topic: TelegramTopicEntity) {
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = songsLabel,
+                text = "${topic.songCount} songs",
                 style = MaterialTheme.typography.labelSmall,
                 fontFamily = GoogleSansRounded,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -668,7 +642,6 @@ private fun ChannelActionsBottomSheet(
     onDelete: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val publicChannelFallback = stringResource(R.string.presentation_batch_f_public_channel_fallback)
     val usernameLabel = remember(channel.username) {
         channel.username
             ?.trim()
@@ -698,7 +671,7 @@ private fun ChannelActionsBottomSheet(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = usernameLabel ?: publicChannelFallback,
+                text = usernameLabel ?: "Public Telegram channel",
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = GoogleSansRounded,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -707,15 +680,11 @@ private fun ChannelActionsBottomSheet(
             )
             Spacer(modifier = Modifier.height(14.dp))
             ChannelActionCard(
-                title = if (isSyncing) {
-                    stringResource(R.string.presentation_batch_f_syncing_channel)
-                } else {
-                    stringResource(R.string.presentation_batch_f_sync_now)
-                },
+                title = if (isSyncing) "Syncing channel" else "Sync now",
                 subtitle = if (isSyncing) {
-                    stringResource(R.string.presentation_batch_f_updating_songs_from_telegram)
+                    "Updating songs from Telegram"
                 } else {
-                    stringResource(R.string.presentation_batch_f_fetch_latest_songs)
+                    "Fetch latest songs from this channel"
                 },
                 icon = Icons.Rounded.Sync,
                 onClick = onSync,
@@ -736,8 +705,8 @@ private fun ChannelActionsBottomSheet(
             )
             Spacer(modifier = Modifier.height(14.dp))
             ChannelActionCard(
-                title = stringResource(R.string.presentation_batch_f_remove_channel),
-                subtitle = stringResource(R.string.presentation_batch_f_remove_channel_subtitle),
+                title = "Remove channel",
+                subtitle = "Stop syncing and remove cached songs",
                 icon = Icons.Rounded.Delete,
                 onClick = onDelete,
                 containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -902,7 +871,7 @@ private fun ExpressiveEmptyState(
         Spacer(modifier = Modifier.height(28.dp))
 
         Text(
-            text = stringResource(R.string.presentation_batch_f_no_channels_synced),
+            text = "No Channels Synced",
             style = MaterialTheme.typography.headlineSmall,
             fontFamily = GoogleSansRounded,
             fontWeight = FontWeight.Bold,
@@ -912,7 +881,7 @@ private fun ExpressiveEmptyState(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = stringResource(R.string.presentation_batch_f_no_channels_body),
+            text = "Add public Telegram channels to sync\nyour music library",
             style = MaterialTheme.typography.bodyLarge,
             fontFamily = GoogleSansRounded,
             textAlign = TextAlign.Center,
@@ -928,18 +897,18 @@ private fun ExpressiveEmptyState(
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.size(8.dp))
-            Text(stringResource(R.string.presentation_batch_f_add_channel_button))
+            Text("Add channel")
         }
     }
 }
 
-private fun formatLastSyncLabel(context: Context, lastSyncTime: Long): String {
-    if (lastSyncTime <= 0L) return context.getString(R.string.presentation_batch_f_never_synced)
+private fun formatLastSyncLabel(lastSyncTime: Long): String {
+    if (lastSyncTime <= 0L) return "Never synced"
     val relative = DateUtils.getRelativeTimeSpanString(
         lastSyncTime,
         System.currentTimeMillis(),
         DateUtils.MINUTE_IN_MILLIS,
         DateUtils.FORMAT_ABBREV_RELATIVE
-    ).toString()
-    return context.getString(R.string.presentation_batch_f_synced_relative, relative)
+    )
+    return "Synced $relative"
 }

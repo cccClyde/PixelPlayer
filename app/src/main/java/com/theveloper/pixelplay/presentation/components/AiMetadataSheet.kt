@@ -34,8 +34,6 @@ import com.theveloper.pixelplay.data.ai.SongMetadata
 import com.theveloper.pixelplay.ui.theme.ExpTitleTypography
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -146,20 +144,12 @@ fun AiMetadataSheet(
                 }
                 Column {
                     Text(
-                        text = if (isSuccess) {
-                            stringResource(R.string.ai_metadata_headline_success)
-                        } else {
-                            stringResource(R.string.ai_metadata_headline_default)
-                        },
+                        text = if (isSuccess) "Perfectly Tagged!" else "AI Metadata",
                         style = ExpTitleTypography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
                         color = colors.onSurface
                     )
                     Text(
-                        text = if (isGenerating) {
-                            stringResource(R.string.ai_metadata_subtitle_generating)
-                        } else {
-                            stringResource(R.string.ai_metadata_subtitle_review)
-                        },
+                        text = if (isGenerating) "Consulting the Daily Mix guide..." else "Review and refine generated details",
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = GoogleSansRounded,
                         color = colors.onSurfaceVariant
@@ -186,10 +176,10 @@ fun AiMetadataSheet(
 
             // Editable Fields
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                MetadataField(stringResource(R.string.song_field_title), title) { title = it }
-                MetadataField(stringResource(R.string.song_field_artist), artist) { artist = it }
-                MetadataField(stringResource(R.string.song_field_album), album) { album = it }
-                MetadataField(stringResource(R.string.song_field_genre), genre) { genre = it }
+                MetadataField("Title", title) { title = it }
+                MetadataField("Artist", artist) { artist = it }
+                MetadataField("Album", album) { album = it }
+                MetadataField("Genre", genre) { genre = it }
             }
 
             // Error Display & Retry
@@ -213,7 +203,7 @@ fun AiMetadataSheet(
                         shape = smoothCornerShape,
                         colors = ButtonDefaults.buttonColors(containerColor = colors.error)
                     ) {
-                        Text(stringResource(R.string.action_try_again))
+                        Text("Try Again")
                     }
                 }
             }
@@ -230,7 +220,7 @@ fun AiMetadataSheet(
                 ) {
                     Icon(Icons.Rounded.Close, null)
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.cancel))
+                    Text("Cancel")
                 }
                 Button(
                     onClick = {
@@ -242,7 +232,7 @@ fun AiMetadataSheet(
                 ) {
                     Icon(Icons.Rounded.Check, null)
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.action_apply_changes))
+                    Text("Apply Changes")
                 }
             }
         }

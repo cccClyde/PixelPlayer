@@ -21,8 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,7 +36,6 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.horologist.compose.layout.ScalingLazyColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.presentation.components.AlwaysOnScalingPositionIndicator
 import com.theveloper.pixelplay.presentation.components.PlayingEqIcon
 import com.theveloper.pixelplay.presentation.components.WearTopTimeText
@@ -169,11 +166,11 @@ fun SongListScreen(
                     }
                     item {
                         Chip(
-                            label = { Text(stringResource(R.string.wear_retry), color = palette.textPrimary) },
+                            label = { Text("Retry", color = palette.textPrimary) },
                             icon = {
                                 Icon(
                                     Icons.Rounded.Refresh,
-                                    contentDescription = stringResource(R.string.wear_cd_retry),
+                                    contentDescription = "Retry",
                                     tint = palette.textSecondary,
                                     modifier = Modifier.size(18.dp),
                                 )
@@ -235,7 +232,7 @@ fun SongListScreen(
                     if (state.items.isEmpty()) {
                         item {
                             Text(
-                                text = stringResource(R.string.wear_no_songs),
+                                text = "No songs",
                                 style = MaterialTheme.typography.body2,
                                 color = palette.textSecondary.copy(alpha = 0.7f),
                                 textAlign = TextAlign.Center,
@@ -382,16 +379,13 @@ private fun SongChip(
     onClick: () -> Unit,
     onMenuClick: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val palette = LocalWearPalette.current
     val isTransferring = transfer != null &&
         transfer.status == WearTransferProgress.STATUS_TRANSFERRING
     val secondaryText = when {
         isTransferring -> "${(transfer!!.progress * 100).toInt()}%"
         isCurrentSong -> {
-            val stateLabel = context.getString(
-                if (isPlayingSong) R.string.wear_status_playing else R.string.wear_status_current
-            )
+            val stateLabel = if (isPlayingSong) "Playing" else "Current"
             if (song.subtitle.isNotEmpty()) "$stateLabel · ${song.subtitle}" else stateLabel
         }
         song.subtitle.isNotEmpty() -> song.subtitle
@@ -440,7 +434,7 @@ private fun SongChip(
                     )
                     isDownloaded -> Icon(
                         imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = stringResource(R.string.wear_cd_downloaded),
+                        contentDescription = "Downloaded",
                         tint = palette.shuffleActive,
                         modifier = Modifier.size(18.dp),
                     )
@@ -481,7 +475,7 @@ private fun SongChip(
         ) {
             Icon(
                 imageVector = Icons.Rounded.MoreVert,
-                contentDescription = stringResource(R.string.wear_cd_more_options),
+                contentDescription = "More options",
                 tint = palette.textPrimary,
                 modifier = Modifier.size(18.dp),
             )
@@ -559,7 +553,7 @@ private fun SongActionScreen(
             item {
                 SongActionChip(
                     icon = Icons.Rounded.PlayArrow,
-                    label = stringResource(R.string.wear_play_now),
+                    label = "Play now",
                     backgroundColor = playNowColor,
                     onClick = onPlayNow,
                 )
@@ -568,7 +562,7 @@ private fun SongActionScreen(
             item {
                 SongActionChip(
                     icon = Icons.Rounded.SkipNext,
-                    label = stringResource(R.string.wear_play_next),
+                    label = "Play next",
                     backgroundColor = playNextColor,
                     onClick = onPlayNext,
                 )
@@ -577,7 +571,7 @@ private fun SongActionScreen(
             item {
                 SongActionChip(
                     icon = Icons.AutoMirrored.Rounded.QueueMusic,
-                    label = stringResource(R.string.wear_add_to_queue),
+                    label = "Add to queue",
                     backgroundColor = addToQueueColor,
                     onClick = onAddToQueue,
                 )
@@ -588,9 +582,9 @@ private fun SongActionScreen(
                     SongActionChip(
                         icon = Icons.Rounded.Download,
                         label = when {
-                            isDownloaded -> stringResource(R.string.wear_saved_on_watch)
-                            isTransferring -> stringResource(R.string.wear_saving)
-                            else -> stringResource(R.string.wear_save_to_watch)
+                            isDownloaded -> "Saved on watch"
+                            isTransferring -> "Saving..."
+                            else -> "Save to watch"
                         },
                         backgroundColor = saveToWatchColor,
                         enabled = canSaveToWatch && !isDownloaded && !isTransferring,
@@ -602,7 +596,7 @@ private fun SongActionScreen(
             item {
                 SongActionChip(
                     icon = Icons.Rounded.Close,
-                    label = stringResource(R.string.wear_back),
+                    label = "Back",
                     backgroundColor = cancelColor,
                     onClick = onDismiss,
                 )
@@ -664,7 +658,7 @@ private fun ConfirmSaveToWatchScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_save_song_on_watch_title),
+                    text = "Save this song on watch?",
                     color = palette.textSecondary.copy(alpha = 0.84f),
                     style = MaterialTheme.typography.caption2,
                     textAlign = TextAlign.Center,
@@ -677,7 +671,7 @@ private fun ConfirmSaveToWatchScreen(
             item {
                 SongActionChip(
                     icon = Icons.Rounded.Download,
-                    label = stringResource(R.string.wear_confirm_save),
+                    label = "Confirm save",
                     backgroundColor = confirmColor,
                     onClick = onConfirm,
                 )
@@ -686,7 +680,7 @@ private fun ConfirmSaveToWatchScreen(
             item {
                 SongActionChip(
                     icon = Icons.Rounded.Close,
-                    label = stringResource(R.string.wear_cancel),
+                    label = "Cancel",
                     backgroundColor = cancelColor,
                     onClick = onDismiss,
                 )

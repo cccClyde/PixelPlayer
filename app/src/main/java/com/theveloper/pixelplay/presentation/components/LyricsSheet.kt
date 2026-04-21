@@ -762,7 +762,7 @@ fun LyricsSheet(
                                 Icon(
                                     modifier = Modifier.size(32.dp),
                                     imageVector = Icons.Rounded.PlayArrow,
-                                    contentDescription = stringResource(R.string.cd_play),
+                                    contentDescription = "Play",
                                     tint = onTertiaryColor
                                 )
                             }

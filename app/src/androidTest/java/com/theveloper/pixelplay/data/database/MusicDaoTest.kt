@@ -106,7 +106,7 @@ class MusicDaoTest {
         )
         musicDao.insertAlbums(albumList)
         
-        val retrievedAlbums = musicDao.getAlbums(emptyList(), false, 0, 1).first()
+        val retrievedAlbums = musicDao.getAlbums(emptyList(), false, 0).first()
         // getAlbums uses INNER JOIN with songs, so only albums with songs are returned
         // My createSongEntity uses albumId 201L (Album X).
         // So Album Y (202L) should NOT be returned if logic holds (INNER JOIN songs ON albums.id = songs.album_id)

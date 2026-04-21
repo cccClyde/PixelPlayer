@@ -19,7 +19,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
-import com.theveloper.pixelplay.R
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -63,7 +62,6 @@ fun WavyLinearProgressIndicator(
     waveFrequency: Float = 0.08f
 ) {
     val context = LocalContext.current
-    val progressPercent = (progress * 100f).toInt().coerceIn(0, 100)
     // El componente en Glance es simplemente una Imagen. El Bitmap se genera bajo demanda.
     Image(
         provider = ImageProvider(
@@ -83,7 +81,7 @@ fun WavyLinearProgressIndicator(
                 bitmapHeight = (height.value * context.resources.displayMetrics.density).toInt()
             )
         ),
-        contentDescription = context.getString(R.string.widget_wavy_progress_bar_desc, progressPercent),
+        contentDescription = "Barra de progreso con valor ${"%.0f".format(progress * 100)}%",
         modifier = modifier.height(height) // Se aplica la altura al modifier
     )
 }

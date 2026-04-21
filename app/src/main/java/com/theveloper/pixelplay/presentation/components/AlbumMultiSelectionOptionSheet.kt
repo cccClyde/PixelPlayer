@@ -37,11 +37,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.compose.ui.res.stringResource
 import coil.size.Size
 import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Album
@@ -86,13 +86,13 @@ fun AlbumMultiSelectionOptionSheet(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.presentation_batch_g_album_sel_count, selectedAlbums.size),
+                        text = stringResource(R.string.multi_selection_albums_title, selectedAlbums.size),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         fontFamily = GoogleSansRounded
                     )
                     Text(
-                        text = stringResource(R.string.presentation_batch_g_album_sel_selected),
+                        text = stringResource(R.string.multi_selection_selected_label),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontFamily = GoogleSansRounded
@@ -103,12 +103,12 @@ fun AlbumMultiSelectionOptionSheet(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = stringResource(R.string.presentation_batch_g_album_sel_queue_hint),
+                text = stringResource(R.string.album_multi_selection_queue_behavior),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = stringResource(R.string.presentation_batch_g_album_sel_limit, maxSelection),
+                text = stringResource(R.string.album_multi_selection_queue_limit, maxSelection),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -130,10 +130,10 @@ fun AlbumMultiSelectionOptionSheet(
                 icon = {
                     Icon(
                         imageVector = Icons.Rounded.PlayArrow,
-                        contentDescription = "Play selected albums"
+                        contentDescription = stringResource(R.string.album_multi_selection_play_selected_albums_cd)
                     )
                 },
-                text = "Play"
+                text = stringResource(R.string.playlist_play)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -160,10 +160,10 @@ fun AlbumMultiSelectionOptionSheet(
                     icon = {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.QueueMusic,
-                            contentDescription = "Play selected albums next"
+                            contentDescription = stringResource(R.string.album_multi_selection_play_selected_albums_next_cd)
                         )
                     },
-                    text = "Next"
+                    text = stringResource(R.string.song_info_next)
                 )
 
                 AlbumSelectionActionButton(
@@ -181,10 +181,10 @@ fun AlbumMultiSelectionOptionSheet(
                     icon = {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
-                            contentDescription = "Add selected albums to queue"
+                            contentDescription = stringResource(R.string.album_multi_selection_add_selected_albums_to_queue_cd)
                         )
                     },
-                    text = "Add to Queue"
+                    text = stringResource(R.string.song_info_add_to_queue)
                 )
             }
 

@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentCallbacks2
-import android.content.Context
 import android.os.Build
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -18,7 +17,6 @@ import com.theveloper.pixelplay.data.telegram.TelegramRepository
 import com.theveloper.pixelplay.presentation.viewmodel.LibraryStateHolder
 import com.theveloper.pixelplay.presentation.viewmodel.ThemeStateHolder
 import com.theveloper.pixelplay.utils.CrashHandler
-import com.theveloper.pixelplay.utils.AppLocaleManager
 import com.theveloper.pixelplay.utils.MediaMetadataRetrieverPool
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -68,10 +66,6 @@ class PixelPlayApplication : Application(), ImageLoaderFactory, Configuration.Pr
         }
     }
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(AppLocaleManager.wrapContext(base))
-    }
-
     override fun onCreate() {
         super.onCreate()
 
@@ -91,7 +85,7 @@ class PixelPlayApplication : Application(), ImageLoaderFactory, Configuration.Pr
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                "PixelPlayer Music Playback",
+                getString(R.string.notification_channel_playback),
                 NotificationManager.IMPORTANCE_LOW
             )
             val notificationManager = getSystemService(NotificationManager::class.java)

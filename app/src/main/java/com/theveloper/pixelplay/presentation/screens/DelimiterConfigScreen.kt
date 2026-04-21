@@ -180,7 +180,7 @@ fun DelimiterConfigScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.delimiter_section_title),
+                            text = stringResource(R.string.current_delimiters),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -189,7 +189,7 @@ fun DelimiterConfigScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = stringResource(R.string.delimiter_section_subtitle),
+                            text = stringResource(R.string.current_delimiters_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -210,7 +210,7 @@ fun DelimiterConfigScreen(
                                         } else {
                                             Toast.makeText(
                                                 context,
-                                                context.getString(R.string.delimiter_toast_at_least_one),
+                                                context.getString(R.string.at_least_one_delimiter_required),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -233,7 +233,7 @@ fun DelimiterConfigScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.delimiter_add_title),
+                            text = stringResource(R.string.add_new_delimiter),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -250,7 +250,7 @@ fun DelimiterConfigScreen(
                                 onValueChange = { newDelimiter = it },
                                 placeholder = {
                                     Text(
-                                        text = stringResource(R.string.delimiter_hint),
+                                        text = stringResource(R.string.delimiter_hint_example),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 },
@@ -265,13 +265,13 @@ fun DelimiterConfigScreen(
                                                 keyboardController?.hide()
                                                 Toast.makeText(
                                                     context,
-                                                    context.getString(R.string.delimiter_toast_added),
+                                                    context.getString(R.string.delimiter_added),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             } else {
                                                 Toast.makeText(
                                                     context,
-                                                    context.getString(R.string.delimiter_toast_invalid),
+                                                    context.getString(R.string.delimiter_exists_or_invalid),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }
@@ -297,13 +297,13 @@ fun DelimiterConfigScreen(
                                             keyboardController?.hide()
                                             Toast.makeText(
                                                 context,
-                                                context.getString(R.string.delimiter_toast_added),
+                                                context.getString(R.string.delimiter_added),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         } else {
                                             Toast.makeText(
                                                 context,
-                                                context.getString(R.string.delimiter_toast_invalid),
+                                                context.getString(R.string.delimiter_invalid_or_exists),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -317,7 +317,7 @@ fun DelimiterConfigScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.Add,
-                                    contentDescription = stringResource(R.string.cd_add_path_delimiter)
+                                    contentDescription = stringResource(R.string.add_delimiter)
                                 )
                             }
                         }
@@ -336,7 +336,7 @@ fun DelimiterConfigScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.delimiter_defaults_title),
+                            text = stringResource(R.string.default_delimiters),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -355,7 +355,7 @@ fun DelimiterConfigScreen(
         }
 
         CollapsibleCommonTopBar(
-            title = stringResource(R.string.path_delimiters_toolbar_title),
+            title = stringResource(R.string.delimiters_title),
             collapseFraction = collapseFraction,
             headerHeight = currentTopBarHeightDp,
             onBackClick = { navController.popBackStack() },
@@ -379,7 +379,7 @@ fun DelimiterConfigScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.RestartAlt,
-                            contentDescription = stringResource(R.string.cd_reset_defaults),
+                            contentDescription = stringResource(R.string.reset_defaults),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -392,14 +392,14 @@ fun DelimiterConfigScreen(
                 onDismissRequest = { showResetDialog = false },
                 title = {
                     Text(
-                        text = stringResource(R.string.delimiter_reset_title),
+                        text = stringResource(R.string.reset_delimiters_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                 },
                 text = {
                     Text(
-                        text = stringResource(R.string.delimiter_reset_message),
+                        text = stringResource(R.string.reset_delimiters_message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -415,7 +415,7 @@ fun DelimiterConfigScreen(
                     Button(
                         onClick = {
                             viewModel.resetDelimitersToDefault()
-                            Toast.makeText(context, context.getString(R.string.delimiter_toast_reset), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.delimiters_reset_to_defaults), Toast.LENGTH_SHORT).show()
                             showResetDialog = false
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -423,7 +423,7 @@ fun DelimiterConfigScreen(
                             contentColor = MaterialTheme.colorScheme.onError
                         )
                     ) {
-                        Text(stringResource(R.string.action_reset))
+                        Text(stringResource(R.string.reset_defaults))
                     }
                 },
                 dismissButton = {
@@ -452,7 +452,7 @@ private fun DelimiterChip(
         onClick = onRemove,
         label = {
             Text(
-                text = if (delimiter == " ") stringResource(R.string.delimiter_label_space) else "\"$delimiter\"",
+                text = if (delimiter == " ") stringResource(R.string.space_label) else "\"$delimiter\"",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -461,7 +461,7 @@ private fun DelimiterChip(
             {
                 Icon(
                     imageVector = Icons.Rounded.Close,
-                    contentDescription = stringResource(R.string.cd_remove),
+                    contentDescription = stringResource(R.string.common_remove),
                     modifier = Modifier.size(18.dp)
                 )
             }

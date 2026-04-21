@@ -27,7 +27,6 @@ import androidx.media3.decoder.Decoder
 import androidx.media3.decoder.DecoderInputBuffer
 import androidx.media3.decoder.SimpleDecoderOutputBuffer
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.repository.MusicRepository
 import com.theveloper.pixelplay.utils.AlbumArtUtils
@@ -278,7 +277,7 @@ class MediaFileHttpServerService : Service() {
     private fun startForegroundService() {
         runCatching {
             val channelId = "pixelplay_cast_server"
-            val channelName = getString(R.string.cast_server_channel_name)
+            val channelName = "Cast Media Server"
             
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 val channel = android.app.NotificationChannel(
@@ -291,8 +290,8 @@ class MediaFileHttpServerService : Service() {
             }
 
             val notification = androidx.core.app.NotificationCompat.Builder(this, channelId)
-                .setContentTitle(getString(R.string.cast_server_notification_title))
-                .setContentText(getString(R.string.cast_server_notification_text))
+                .setContentTitle("Casting to device")
+                .setContentText("Serving media to Cast device")
                 .setSmallIcon(android.R.drawable.ic_menu_upload) // Placeholder, ideally use app icon
                 .setPriority(androidx.core.app.NotificationCompat.PRIORITY_LOW)
                 .build()
@@ -308,11 +307,7 @@ class MediaFileHttpServerService : Service() {
             }
         }.onFailure { throwable ->
             lastFailureReason = FailureReason.FOREGROUND_START_EXCEPTION
-            lastFailureMessage = getString(
-                R.string.cast_server_foreground_error,
-                throwable.javaClass.simpleName,
-                throwable.message ?: getString(R.string.error_unknown),
-            )
+            lastFailureMessage = "${throwable.javaClass.simpleName}: ${throwable.message ?: "Unknown"}"
             Timber.e(throwable, "Failed to enter foreground mode for cast HTTP server")
             stopSelf()
         }

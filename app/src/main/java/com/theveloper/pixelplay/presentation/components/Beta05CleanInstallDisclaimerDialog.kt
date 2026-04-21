@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.theveloper.pixelplay.R
@@ -89,7 +88,7 @@ fun Beta05CleanInstallDisclaimerDialog(
                                 color = MaterialTheme.colorScheme.secondaryContainer,
                             ) {
                                 Text(
-                                    text = stringResource(R.string.presentation_batch_g_beta05_title),
+                                    text = "Beta 0.5.0 upgrade",
                                     modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.SemiBold,
@@ -113,13 +112,13 @@ fun Beta05CleanInstallDisclaimerDialog(
                         }
 
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta05_clean_install_title),
+                            text = "Clean install recommended",
                             style = MaterialTheme.typography.titleLarge,
                             fontFamily = GoogleSansRounded,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta05_clean_install_body),
+                            text = "If you're coming from beta 0.5.0, this update may need fresh library data instead of older cached state.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -149,12 +148,12 @@ fun Beta05CleanInstallDisclaimerDialog(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                         ) {
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta05_if_wrong_meta_title),
+                                text = "If metadata or library entries look wrong",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = stringResource(R.string.presentation_batch_g_beta05_if_wrong_meta_body),
+                                text = "Wrong song metadata, mismatched artists or albums, or duplicate-looking entries usually mean a clean install is the fix.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -180,7 +179,7 @@ fun Beta05CleanInstallDisclaimerDialog(
                             onCheckedChange = { dontShowAgain = it },
                         )
                         Text(
-                            text = stringResource(R.string.presentation_batch_g_beta05_dont_show),
+                            text = "Don't show again",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                         )
@@ -196,7 +195,7 @@ fun Beta05CleanInstallDisclaimerDialog(
                             modifier = Modifier.size(18.dp),
                         )
                         Spacer(modifier = Modifier.size(6.dp))
-                        Text(text = stringResource(R.string.presentation_batch_g_beta05_got_it))
+                        Text(text = "Got it")
                     }
                 }
             }

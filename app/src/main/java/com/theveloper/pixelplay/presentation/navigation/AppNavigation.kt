@@ -21,8 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
@@ -385,7 +383,7 @@ fun AppNavigation(
                         )
                     }
                 } else {
-                    Text(stringResource(R.string.nav_error_genre_id_missing), modifier = Modifier)
+                    Text("Error: Genre ID missing", modifier = Modifier)
                 }
             }
             composable(

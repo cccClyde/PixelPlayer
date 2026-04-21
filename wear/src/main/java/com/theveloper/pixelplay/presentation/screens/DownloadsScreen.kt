@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -171,7 +170,7 @@ fun DownloadsScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_watch_library_title),
+                    text = "Watch Library",
                     style = MaterialTheme.typography.title2,
                     fontFamily = watchLibraryTitleFont,
                     fontWeight = FontWeight(780),
@@ -217,7 +216,7 @@ fun DownloadsScreen(
             if (transferringStates.isNotEmpty()) {
                 item {
                     DownloadsSectionHeader(
-                        title = stringResource(R.string.wear_transferring_from_phone),
+                        title = "Transferring from phone",
                         color = sectionAccentColor,
                     )
                 }
@@ -227,12 +226,12 @@ fun DownloadsScreen(
                     val progressText = if (transfer.totalBytes > 0L) {
                         "${(transfer.progress * 100f).toInt().coerceIn(0, 100)}%"
                     } else {
-                        context.getString(R.string.wear_transfer_starting)
+                        "Starting..."
                     }
                     Chip(
                         label = {
                             Text(
-                                text = transfer.songTitle.ifBlank { context.getString(R.string.wear_preparing_transfer) },
+                                text = transfer.songTitle.ifBlank { "Preparing transfer..." },
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = palette.textPrimary,
@@ -267,7 +266,7 @@ fun DownloadsScreen(
             if (failedTransfers.isNotEmpty()) {
                 item {
                     DownloadsSectionHeader(
-                        title = stringResource(R.string.wear_transfer_issues),
+                        title = "Transfer issues",
                         color = palette.textError,
                     )
                 }
@@ -275,13 +274,13 @@ fun DownloadsScreen(
                 items(failedTransfers.size) { index ->
                     val transfer = failedTransfers[index]
                     val statusText = when (transfer.status) {
-                        WearTransferProgress.STATUS_CANCELLED -> context.getString(R.string.wear_transfer_cancelled)
-                        else -> transfer.error?.ifBlank { null } ?: context.getString(R.string.wear_transfer_failed)
+                        WearTransferProgress.STATUS_CANCELLED -> "Cancelled"
+                        else -> transfer.error?.ifBlank { null } ?: "Transfer failed"
                     }
                     Chip(
                         label = {
                             Text(
-                                text = transfer.songTitle.ifBlank { context.getString(R.string.wear_transfer_failed) },
+                                text = transfer.songTitle.ifBlank { "Transfer failed" },
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = palette.textPrimary,
@@ -316,7 +315,7 @@ fun DownloadsScreen(
             if (localSongs.isNotEmpty()) {
                 item {
                     DownloadsSectionHeader(
-                        title = stringResource(R.string.wear_saved_from_phone),
+                        title = "Saved from phone",
                         color = sectionAccentColor,
                     )
                 }
@@ -356,7 +355,7 @@ fun DownloadsScreen(
             if (deviceSongs.isNotEmpty()) {
                 item {
                     DownloadsSectionHeader(
-                        title = stringResource(R.string.wear_songs_watch_storage),
+                        title = "Songs on watch storage",
                         color = sectionAccentColor,
                         topPadding = 10.dp,
                     )
@@ -368,13 +367,13 @@ fun DownloadsScreen(
                     Chip(
                         label = {
                             Text(
-                                text = stringResource(R.string.wear_allow_audio_access),
+                                text = "Allow audio access",
                                 color = palette.textPrimary,
                             )
                         },
                         secondaryLabel = {
                             Text(
-                                text = stringResource(R.string.wear_read_watch_library),
+                                text = "Read watch library",
                                 color = palette.textSecondary.copy(alpha = 0.8f),
                             )
                         },
@@ -397,7 +396,7 @@ fun DownloadsScreen(
             } else if (isDeviceLibraryLoading) {
                 item {
                     Text(
-                        text = stringResource(R.string.wear_scanning_watch_storage),
+                        text = "Scanning watch storage...",
                         style = MaterialTheme.typography.body2,
                         color = palette.textSecondary.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
@@ -411,7 +410,7 @@ fun DownloadsScreen(
                     Chip(
                         label = {
                             Text(
-                                text = stringResource(R.string.wear_retry_scan),
+                                text = "Retry scan",
                                 color = palette.textPrimary,
                             )
                         },
@@ -442,7 +441,7 @@ fun DownloadsScreen(
             } else if (deviceSongs.isEmpty()) {
                 item {
                     Text(
-                        text = stringResource(R.string.wear_no_local_songs),
+                        text = "No local songs found",
                         style = MaterialTheme.typography.body2,
                         color = palette.textSecondary.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
@@ -476,15 +475,14 @@ fun DownloadsScreen(
                         },
                         secondaryLabel = if (secondaryText.isNotEmpty() || isCurrentSong) {
                             {
-                                val statusWord = stringResource(
-                                    if (isPlayingSong) R.string.wear_status_playing else R.string.wear_status_current
-                                )
                                 Text(
                                     text = if (isCurrentSong) {
                                         if (secondaryText.isNotEmpty()) {
-                                            "$statusWord · $secondaryText"
+                                            "${if (isPlayingSong) "Playing" else "Current"} · $secondaryText"
+                                        } else if (isPlayingSong) {
+                                            "Playing"
                                         } else {
-                                            statusWord
+                                            "Current"
                                         }
                                     } else {
                                         secondaryText
@@ -640,15 +638,14 @@ private fun DownloadedSongChip(
             },
             secondaryLabel = if (secondaryText.isNotEmpty() || isCurrentSong) {
                 {
-                    val statusWord = stringResource(
-                        if (isPlayingSong) R.string.wear_status_playing else R.string.wear_status_current
-                    )
                     Text(
                         text = if (isCurrentSong) {
                             if (secondaryText.isNotEmpty()) {
-                                "$statusWord · $secondaryText"
+                                "${if (isPlayingSong) "Playing" else "Current"} · $secondaryText"
+                            } else if (isPlayingSong) {
+                                "Playing"
                             } else {
-                                statusWord
+                                "Current"
                             }
                         } else {
                             secondaryText
@@ -704,7 +701,7 @@ private fun DownloadedSongChip(
         ) {
             Icon(
                 imageVector = Icons.Rounded.MoreVert,
-                contentDescription = stringResource(R.string.wear_cd_more_options),
+                contentDescription = "More options",
                 tint = palette.textPrimary,
                 modifier = Modifier.size(18.dp),
             )
@@ -774,9 +771,9 @@ private fun DownloadedSongActionScreen(
                 DownloadsActionChip(
                     icon = Icons.Rounded.PlayArrow,
                     label = when {
-                        isCurrentWatchSong && isPlayingWatchSong -> stringResource(R.string.wear_playing_on_watch)
-                        isCurrentWatchSong -> stringResource(R.string.wear_current_on_watch)
-                        else -> stringResource(R.string.wear_play_on_watch)
+                        isCurrentWatchSong && isPlayingWatchSong -> "Playing on watch"
+                        isCurrentWatchSong -> "Current on watch"
+                        else -> "Play on watch"
                     },
                     backgroundColor = palette.shuffleActive.copy(alpha = 0.38f),
                     onClick = onPlayOnWatch,
@@ -787,9 +784,9 @@ private fun DownloadedSongActionScreen(
                 DownloadsActionChip(
                     icon = Icons.Rounded.PhoneAndroid,
                     label = when {
-                        isPhonePlaybackPending -> stringResource(R.string.wear_starting_on_phone)
-                        !canPlayOnPhone -> stringResource(R.string.wear_phone_disconnected)
-                        else -> stringResource(R.string.wear_play_on_phone)
+                        isPhonePlaybackPending -> "Starting on phone..."
+                        !canPlayOnPhone -> "Phone disconnected"
+                        else -> "Play on phone"
                     },
                     backgroundColor = if (canPlayOnPhone && !isPhonePlaybackPending) {
                         palette.repeatActive.copy(alpha = 0.38f)
@@ -804,7 +801,7 @@ private fun DownloadedSongActionScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.Delete,
-                    label = stringResource(R.string.wear_delete_from_watch),
+                    label = "Delete from watch",
                     backgroundColor = palette.favoriteActive.copy(alpha = 0.38f),
                     onClick = onDeleteFromWatch,
                 )
@@ -813,7 +810,7 @@ private fun DownloadedSongActionScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.Close,
-                    label = stringResource(R.string.wear_back),
+                    label = "Back",
                     backgroundColor = palette.surfaceContainerColor(),
                     onClick = onDismiss,
                 )
@@ -858,7 +855,7 @@ private fun ConfirmDeleteDownloadedSongScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_delete_from_watch_confirm_title),
+                    text = "Delete from watch?",
                     style = MaterialTheme.typography.title3,
                     color = palette.textPrimary,
                     textAlign = TextAlign.Center,
@@ -884,7 +881,7 @@ private fun ConfirmDeleteDownloadedSongScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_delete_watch_copy_message),
+                    text = "This only removes the downloaded copy from this watch.",
                     style = MaterialTheme.typography.caption2,
                     color = palette.textSecondary.copy(alpha = 0.78f),
                     textAlign = TextAlign.Center,
@@ -897,7 +894,7 @@ private fun ConfirmDeleteDownloadedSongScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.Delete,
-                    label = stringResource(R.string.wear_delete),
+                    label = "Delete",
                     backgroundColor = palette.favoriteActive.copy(alpha = 0.38f),
                     onClick = onConfirm,
                 )
@@ -906,7 +903,7 @@ private fun ConfirmDeleteDownloadedSongScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.Close,
-                    label = stringResource(R.string.wear_cancel),
+                    label = "Cancel",
                     backgroundColor = palette.surfaceContainerColor(),
                     onClick = onDismiss,
                 )
@@ -934,7 +931,6 @@ private fun ConfirmCancelTransferScreen(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-    val context = LocalContext.current
     val palette = LocalWearPalette.current
     val columnState = rememberResponsiveColumnState()
 
@@ -952,7 +948,7 @@ private fun ConfirmCancelTransferScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_cancel_transfer_title),
+                    text = "Cancel transfer?",
                     style = MaterialTheme.typography.title3,
                     color = palette.textPrimary,
                     textAlign = TextAlign.Center,
@@ -964,7 +960,7 @@ private fun ConfirmCancelTransferScreen(
 
             item {
                 Text(
-                    text = transfer.songTitle.ifBlank { context.getString(R.string.wear_current_transfer_fallback) },
+                    text = transfer.songTitle.ifBlank { "Current transfer" },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.body2,
@@ -978,7 +974,7 @@ private fun ConfirmCancelTransferScreen(
 
             item {
                 Text(
-                    text = stringResource(R.string.wear_cancel_transfer_body),
+                    text = "Any partial copy on this watch will be discarded.",
                     style = MaterialTheme.typography.caption2,
                     color = palette.textSecondary.copy(alpha = 0.78f),
                     textAlign = TextAlign.Center,
@@ -991,7 +987,7 @@ private fun ConfirmCancelTransferScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.Close,
-                    label = stringResource(R.string.wear_yes_cancel_transfer),
+                    label = "Yes, cancel",
                     backgroundColor = MaterialTheme.colors.error,
                     contentColor = MaterialTheme.colors.onError,
                     onClick = onConfirm,
@@ -1001,7 +997,7 @@ private fun ConfirmCancelTransferScreen(
             item {
                 DownloadsActionChip(
                     icon = Icons.Rounded.PlayArrow,
-                    label = stringResource(R.string.wear_keep_sending),
+                    label = "Keep sending",
                     backgroundColor = palette.surfaceContainerColor(),
                     onClick = onDismiss,
                 )

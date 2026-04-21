@@ -1,10 +1,10 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.serialization)
+    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 android {

@@ -98,8 +98,10 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import com.theveloper.pixelplay.R
@@ -123,7 +125,6 @@ import kotlinx.coroutines.withContext
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import timber.log.Timber
 import com.theveloper.pixelplay.presentation.components.subcomps.EnhancedSongListItem
-import androidx.compose.ui.res.stringResource
 
 private data class SearchUiSlice(
     val selectedSearchFilter: SearchFilterType = SearchFilterType.ALL,
@@ -280,7 +281,7 @@ fun SearchScreen(
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Search,
-                                    contentDescription = stringResource(R.string.cd_search_icon),
+                                    contentDescription = stringResource(R.string.search_icon_cd),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -301,7 +302,7 @@ fun SearchScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Rounded.Close,
-                                            contentDescription = stringResource(R.string.cd_clear_search_query),
+                                            contentDescription = stringResource(R.string.search_clear_cd),
                                             tint = MaterialTheme.colorScheme.primary
                                         )
                                     }
@@ -527,13 +528,13 @@ fun SearchHistoryList(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                stringResource(R.string.recent_searches),
+                stringResource(R.string.search_recent_searches),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
             if (historyItems.isNotEmpty()) {
                 TextButton(onClick = onClearAllHistory) {
-                    Text(stringResource(R.string.clear_all))
+                    Text(stringResource(R.string.search_clear_all))
                 }
             }
         }
@@ -572,7 +573,7 @@ fun SearchHistoryListItem(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
             Icon(
                 imageVector = Icons.Rounded.History,
-                contentDescription = stringResource(R.string.cd_search_history_icon),
+                contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -587,7 +588,7 @@ fun SearchHistoryListItem(
         IconButton(onClick = { onHistoryDelete(item.query) }) {
             Icon(
                 imageVector = Icons.Rounded.DeleteForever,
-                contentDescription = stringResource(R.string.cd_delete_search_history_item),
+                contentDescription = stringResource(R.string.search_delete_history_item_cd),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
             )
         }
@@ -605,7 +606,7 @@ fun EmptySearchResults(searchQuery: String, colorScheme: ColorScheme) {
     ) {
         Icon(
             imageVector = Icons.Rounded.Search,
-            contentDescription = stringResource(R.string.cd_no_search_results),
+            contentDescription = null,
             modifier = Modifier
                 .size(80.dp)
                 .padding(bottom = 16.dp),
@@ -614,7 +615,7 @@ fun EmptySearchResults(searchQuery: String, colorScheme: ColorScheme) {
 
         Text(
             text = if (searchQuery.isNotBlank()) {
-                stringResource(R.string.search_no_results_for_query, searchQuery)
+                stringResource(R.string.search_no_results_for, searchQuery)
             } else {
                 stringResource(R.string.search_nothing_found)
             },
@@ -626,7 +627,7 @@ fun EmptySearchResults(searchQuery: String, colorScheme: ColorScheme) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.search_try_different_or_filters),
+            text = stringResource(R.string.search_try_different_term),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
@@ -648,6 +649,7 @@ fun SearchResultsList(
     navController: NavHostController
 ) {
     val localDensity = LocalDensity.current
+    val context = LocalContext.current
     val playerStableState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
 
     if (results.isEmpty()) {
@@ -681,11 +683,13 @@ fun SearchResultsList(
                 }
         }
     }
-    val searchQueueName = remember(searchQuery) {
+    val searchQueuePrefix = stringResource(R.string.search_queue_name_prefix)
+    val searchResultsTitle = stringResource(R.string.search_results_title)
+    val searchQueueName = remember(searchQuery, searchQueuePrefix, searchResultsTitle) {
         searchQuery.trim()
             .takeIf { it.isNotEmpty() }
-            ?.let { "Search: $it" }
-            ?: "Search Results"
+            ?.let { "$searchQueuePrefix $it" }
+            ?: searchResultsTitle
     }
     val onSongResultClick = remember(playerViewModel, onItemSelected, songResultsQueue, searchQueueName) {
         { song: Song ->
@@ -730,11 +734,11 @@ fun SearchResultsList(
                 item(key = "header_${filterType.name}") {
                     SearchResultSectionHeader(
                         title = when (filterType) {
-                            SearchFilterType.SONGS -> "Songs"
-                            SearchFilterType.ALBUMS -> "Albums"
-                            SearchFilterType.ARTISTS -> "Artists"
-                            SearchFilterType.PLAYLISTS -> "Playlists"
-                            else -> "Results"
+                            SearchFilterType.SONGS -> stringResource(R.string.search_section_songs)
+                            SearchFilterType.ALBUMS -> stringResource(R.string.search_section_albums)
+                            SearchFilterType.ARTISTS -> stringResource(R.string.search_section_artists)
+                            SearchFilterType.PLAYLISTS -> stringResource(R.string.search_section_playlists)
+                            else -> stringResource(R.string.search_section_results)
                         }
                     )
                 }
@@ -838,7 +842,7 @@ fun SearchResultsList(
                                             )
                                             if (playerStableState.isShuffleEnabled) playerViewModel.toggleShuffle()
                                         } else {
-                                            playerViewModel.sendToast("Empty playlist")
+                                            playerViewModel.sendToast(context.getString(R.string.search_empty_playlist))
                                         }
                                         onItemSelected()
                                     }
@@ -903,7 +907,7 @@ fun SearchResultAlbumItem(
         ) {
             SmartImage(
                 model = album.albumArtUriString,
-                contentDescription = "Album Art: ${album.title}",
+                contentDescription = stringResource(R.string.search_album_art_cd, album.title),
                 targetSize = SmartImageListTargetSize,
                 modifier = Modifier
                     .size(56.dp)
@@ -938,7 +942,7 @@ fun SearchResultAlbumItem(
                     contentColor = MaterialTheme.colorScheme.onSecondary
                 )
             ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.cd_play_album), modifier = Modifier.size(24.dp))
+                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.search_play_album_cd), modifier = Modifier.size(24.dp))
             }
         }
     }
@@ -981,7 +985,7 @@ fun SearchResultArtistItem(
             if (!artist.effectiveImageUrl.isNullOrBlank()) {
                 SmartImage(
                     model = artist.effectiveImageUrl,
-                    contentDescription = "Artist: ${artist.name}",
+                    contentDescription = stringResource(R.string.search_artist_image_cd, artist.name),
                     targetSize = SmartImageListTargetSize,
                     modifier = Modifier
                         .size(56.dp)
@@ -990,7 +994,7 @@ fun SearchResultArtistItem(
             } else {
                 Icon(
                     painter = painterResource(id = R.drawable.rounded_artist_24),
-                    contentDescription = "Artist",
+                    contentDescription = stringResource(R.string.search_artist_icon_cd),
                     modifier = Modifier
                         .size(56.dp)
                         .background(MaterialTheme.colorScheme.tertiaryContainer, CircleShape)
@@ -1022,7 +1026,7 @@ fun SearchResultArtistItem(
                     contentColor = MaterialTheme.colorScheme.onTertiary
                 )
             ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = "Play Artist", modifier = Modifier.size(24.dp))
+                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.search_play_artist_cd), modifier = Modifier.size(24.dp))
             }
         }
     }
@@ -1092,7 +1096,7 @@ fun SearchResultPlaylistItem(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = "Play Playlist", modifier = Modifier.size(24.dp))
+                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.search_play_playlist_cd), modifier = Modifier.size(24.dp))
             }
         }
     }
@@ -1111,7 +1115,17 @@ fun SearchFilterChip(
     FilterChip(
         selected = selected,
         onClick = { playerViewModel.updateSearchFilter(filterType) },
-        label = { Text(filterType.name.lowercase().replaceFirstChar { it.titlecase() }) },
+        label = {
+            Text(
+                when (filterType) {
+                    SearchFilterType.ALL -> stringResource(R.string.search_filter_all)
+                    SearchFilterType.SONGS -> stringResource(R.string.search_section_songs)
+                    SearchFilterType.ALBUMS -> stringResource(R.string.search_section_albums)
+                    SearchFilterType.ARTISTS -> stringResource(R.string.search_section_artists)
+                    SearchFilterType.PLAYLISTS -> stringResource(R.string.search_section_playlists)
+                }
+            )
+        },
         modifier = modifier,
         shape = CircleShape,
         border = BorderStroke(
@@ -1129,7 +1143,7 @@ fun SearchFilterChip(
              {
                  Icon(
                      painter = painterResource(R.drawable.rounded_check_circle_24),
-                     contentDescription = "Selected",
+                     contentDescription = stringResource(R.string.search_selected_filter_cd),
                      tint = MaterialTheme.colorScheme.onPrimary,
                      modifier = Modifier.size(FilterChipDefaults.IconSize)
                  )

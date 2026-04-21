@@ -23,7 +23,6 @@ import com.theveloper.pixelplay.data.preferences.AiPreferencesRepository
 import com.theveloper.pixelplay.data.preferences.AlbumArtQuality
 import com.theveloper.pixelplay.data.preferences.AlbumArtColorAccuracy
 import com.theveloper.pixelplay.data.preferences.AlbumArtPaletteStyle
-import com.theveloper.pixelplay.data.preferences.AppLanguage
 import com.theveloper.pixelplay.data.preferences.CollagePattern
 import com.theveloper.pixelplay.data.preferences.FullPlayerLoadingTweaks
 import com.theveloper.pixelplay.data.preferences.ThemePreferencesRepository
@@ -41,7 +40,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.preferences.NavBarStyle
 import com.theveloper.pixelplay.data.ai.GeminiModel
 import com.theveloper.pixelplay.data.ai.provider.AiClientFactory
@@ -49,12 +47,10 @@ import com.theveloper.pixelplay.data.ai.provider.AiProvider
 import com.theveloper.pixelplay.data.preferences.LaunchTab
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.service.player.HiFiCapabilityChecker
-import com.theveloper.pixelplay.utils.AppLocaleManager
 import java.io.File
 
 data class SettingsUiState(
     val isLoadingDirectories: Boolean = false,
-    val appLanguageTag: String = AppLanguage.SYSTEM,
     val appThemeMode: String = AppThemeMode.FOLLOW_SYSTEM,
     val playerThemePreference: String = ThemePreference.ALBUM_ART,
     val albumArtPaletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default,
@@ -88,7 +84,6 @@ data class SettingsUiState(
     val showPlayerFileInfo: Boolean = true,
     // Developer Options
     val albumArtQuality: AlbumArtQuality = AlbumArtQuality.MEDIUM,
-    val albumArtCacheLimitMb: Int = 200,
     val tapBackgroundClosesPlayer: Boolean = false,
     val hapticsEnabled: Boolean = true,
     val immersiveLyricsEnabled: Boolean = false,
@@ -105,7 +100,6 @@ data class SettingsUiState(
     val collagePattern: CollagePattern = CollagePattern.default,
     val collageAutoRotate: Boolean = false,
     val minSongDuration: Int = 10000,
-    val minTracksPerAlbum: Int = 1,
     val replayGainEnabled: Boolean = false,
     val replayGainUseAlbumGain: Boolean = false,
     val isSafeTokenLimitEnabled: Boolean = true
@@ -475,12 +469,7 @@ class SettingsViewModel @Inject constructor(
 
     init {
         // One-time device capability check — result is cached inside HiFiCapabilityChecker
-        _uiState.update {
-            it.copy(
-                hiFiModeDeviceSupported = HiFiCapabilityChecker.isSupported(),
-                appLanguageTag = AppLocaleManager.currentLanguageTag(context)
-            )
-        }
+        _uiState.update { it.copy(hiFiModeDeviceSupported = HiFiCapabilityChecker.isSupported()) }
 
         // Consolidated collectors using combine() to reduce coroutine overhead
         // Instead of 20 separate coroutines, we use 2 combined flows
@@ -642,12 +631,6 @@ class SettingsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userPreferencesRepository.albumArtCacheLimitMbFlow.collect { limitMb ->
-                _uiState.update { it.copy(albumArtCacheLimitMb = limitMb) }
-            }
-        }
-
-        viewModelScope.launch {
             userPreferencesRepository.tapBackgroundClosesPlayerFlow.collect { enabled ->
                 _uiState.update { it.copy(tapBackgroundClosesPlayer = enabled) }
             }
@@ -656,12 +639,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.minSongDurationFlow.collect { duration ->
                 _uiState.update { it.copy(minSongDuration = duration) }
-            }
-        }
-
-        viewModelScope.launch {
-            userPreferencesRepository.minTracksPerAlbumFlow.collect { minTracks ->
-                _uiState.update { it.copy(minTracksPerAlbum = minTracks) }
             }
         }
 
@@ -794,12 +771,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             themePreferencesRepository.setAppThemeMode(mode)
         }
-    }
-
-    fun setAppLanguage(languageTag: String) {
-        val normalized = AppLanguage.normalize(languageTag)
-        AppLocaleManager.applyLanguage(context, normalized)
-        _uiState.update { it.copy(appLanguageTag = normalized) }
     }
 
     fun setNavBarStyle(style: String) {
@@ -1026,12 +997,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setMinTracksPerAlbum(minTracks: Int) {
-        viewModelScope.launch {
-            userPreferencesRepository.setMinTracksPerAlbum(minTracks)
-        }
-    }
-
     fun setReplayGainEnabled(enabled: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.setReplayGainEnabled(enabled)
@@ -1148,12 +1113,7 @@ class SettingsViewModel @Inject constructor(
                     aiPreferencesRepository.setModel(provider, firstModel)
                 }
             } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isLoadingModels = false,
-                        modelsFetchError = e.message ?: context.getString(R.string.models_fetch_failed),
-                    )
-                }
+                _uiState.update { it.copy(isLoadingModels = false, modelsFetchError = e.message ?: "Failed to load models") }
             }
         }
     }
@@ -1179,7 +1139,7 @@ class SettingsViewModel @Inject constructor(
      * This should only be used for testing in Developer Options.
      */
     fun triggerTestCrash() {
-        throw RuntimeException(context.getString(R.string.dev_test_crash_message))
+        throw RuntimeException("Test crash triggered from Developer Options - This is intentional for testing the crash reporting system")
     }
 
     fun resetSetupFlow() {
@@ -1202,13 +1162,6 @@ class SettingsViewModel @Inject constructor(
     fun setAlbumArtQuality(quality: AlbumArtQuality) {
         viewModelScope.launch {
             userPreferencesRepository.setAlbumArtQuality(quality)
-        }
-    }
-
-    fun setAlbumArtCacheLimitMb(limitMb: Int) {
-        viewModelScope.launch {
-            userPreferencesRepository.setAlbumArtCacheLimitMb(limitMb)
-            com.theveloper.pixelplay.utils.AlbumArtCacheManager.configuredCacheLimitMb = limitMb.toLong()
         }
     }
 
@@ -1244,22 +1197,15 @@ class SettingsViewModel @Inject constructor(
                 operation = BackupOperationType.EXPORT,
                 step = 0,
                 totalSteps = 1,
-                title = context.getString(R.string.backup_progress_preparing_backup),
-                detail = context.getString(R.string.backup_progress_starting_backup_task),
+                title = "Preparing backup",
+                detail = "Starting backup task."
             )
             val result = backupManager.export(uri, sections) { progress ->
                 _dataTransferProgress.value = progress
             }
             result.fold(
-                onSuccess = { _dataTransferEvents.emit(context.getString(R.string.data_exported_successfully)) },
-                onFailure = {
-                    _dataTransferEvents.emit(
-                        context.getString(
-                            R.string.export_failed_format,
-                            it.localizedMessage ?: context.getString(R.string.error_unknown),
-                        ),
-                    )
-                },
+                onSuccess = { _dataTransferEvents.emit("Data exported successfully") },
+                onFailure = { _dataTransferEvents.emit("Export failed: ${it.localizedMessage ?: "Unknown error"}") }
             )
             delay(300)
             _uiState.update { it.copy(isDataTransferInProgress = false) }
@@ -1277,12 +1223,7 @@ class SettingsViewModel @Inject constructor(
                     _uiState.update { it.copy(restorePlan = plan, isInspectingBackup = false) }
                 },
                 onFailure = { error ->
-                    _dataTransferEvents.emit(
-                        context.getString(
-                            R.string.backup_invalid_format,
-                            error.localizedMessage ?: context.getString(R.string.error_unknown),
-                        ),
-                    )
+                    _dataTransferEvents.emit("Invalid backup: ${error.localizedMessage ?: "Unknown error"}")
                     _uiState.update { it.copy(isInspectingBackup = false) }
                 }
             )
@@ -1306,28 +1247,28 @@ class SettingsViewModel @Inject constructor(
                 operation = BackupOperationType.IMPORT,
                 step = 0,
                 totalSteps = 1,
-                title = context.getString(R.string.backup_progress_preparing_restore),
-                detail = context.getString(R.string.backup_progress_starting_task),
+                title = "Preparing restore",
+                detail = "Starting restore task."
             )
             val result = backupManager.restore(uri, plan) { progress ->
                 _dataTransferProgress.value = progress
             }
             when (result) {
                 is RestoreResult.Success -> {
-                    _dataTransferEvents.emit(context.getString(R.string.data_restored_successfully))
+                    _dataTransferEvents.emit("Data restored successfully")
                     syncManager.sync()
                 }
                 is RestoreResult.PartialFailure -> {
                     val failedNames = result.failed.entries.joinToString { "${it.key.label}: ${it.value}" }
                     _dataTransferEvents.emit(
-                        context.getString(R.string.restore_partial_unresolved_format, failedNames),
+                        "Restore completed with unresolved issues. Failed: $failedNames"
                     )
                     if (result.succeeded.isNotEmpty() || !result.rolledBack) {
                         syncManager.sync()
                     }
                 }
                 is RestoreResult.TotalFailure -> {
-                    _dataTransferEvents.emit(context.getString(R.string.restore_failed_format, result.error))
+                    _dataTransferEvents.emit("Restore failed: ${result.error}")
                 }
             }
             delay(300)

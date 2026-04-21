@@ -194,8 +194,7 @@ class MusicRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getPaginatedAlbums(
         sortOption: SortOption,
-        storageFilter: StorageFilter,
-        minTracks: Int
+        storageFilter: StorageFilter
     ): Flow<PagingData<Album>> {
         return combine(
             userPreferencesRepository.allowedDirectoriesFlow,
@@ -214,8 +213,7 @@ class MusicRepositoryImpl @Inject constructor(
                                 allowedParentDirs = allowedParentDirs,
                                 applyDirectoryFilter = applyDirectoryFilter,
                                 filterMode = storageFilter.toFilterMode(),
-                                sortOrder = sortOption.storageKey,
-                                minTracks = minTracks
+                                sortOrder = sortOption.storageKey
                             )
                         }
                     ).flow
@@ -319,8 +317,7 @@ class MusicRepositoryImpl @Inject constructor(
         limit: Int,
         offset: Int,
         sortOption: SortOption,
-        storageFilter: StorageFilter,
-        minTracks: Int
+        storageFilter: StorageFilter
     ): List<Album> = withContext(Dispatchers.IO) {
         val filter = cachedDirFilter.value
         musicDao.getAlbumsPage(
@@ -328,7 +325,6 @@ class MusicRepositoryImpl @Inject constructor(
             applyDirectoryFilter = filter.applyFilter,
             sortOrder = sortOption.storageKey,
             filterMode = storageFilter.toFilterMode(),
-            minTracks = minTracks,
             limit = limit,
             offset = offset
         ).map { it.toAlbum() }
@@ -412,7 +408,7 @@ class MusicRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAlbums(storageFilter: StorageFilter, minTracks: Int): Flow<List<Album>> {
+    override fun getAlbums(storageFilter: StorageFilter): Flow<List<Album>> {
         return combine(
             userPreferencesRepository.allowedDirectoriesFlow,
             userPreferencesRepository.blockedDirectoriesFlow
@@ -420,7 +416,7 @@ class MusicRepositoryImpl @Inject constructor(
             allowedDirs to blockedDirs
         }.flatMapLatest { (allowedDirs, blockedDirs) ->
             val (allowedParentDirs, applyFilter) = computeAllowedDirs(allowedDirs, blockedDirs)
-            musicDao.getAlbums(allowedParentDirs, applyFilter, storageFilter.toFilterMode(), minTracks)
+            musicDao.getAlbums(allowedParentDirs, applyFilter, storageFilter.toFilterMode())
                 .map { entities -> entities.map { it.toAlbum() } }
                 .distinctUntilChanged()
         }.conflate().flowOn(Dispatchers.IO)
@@ -558,9 +554,9 @@ class MusicRepositoryImpl @Inject constructor(
     }
 
 
-    override fun searchAlbums(query: String, minTracks: Int): Flow<List<Album>> {
+    override fun searchAlbums(query: String): Flow<List<Album>> {
         if (query.isBlank()) return flowOf(emptyList())
-        return musicDao.searchAlbums(query, emptyList(), false, minTracks).map { entities ->
+        return musicDao.searchAlbums(query, emptyList(), false).map { entities ->
             entities.map { it.toAlbum() }
         }.flowOn(Dispatchers.IO)
     }
@@ -584,32 +580,26 @@ class MusicRepositoryImpl @Inject constructor(
         if (query.isBlank()) return flowOf(emptyList())
         val playlistsFlow = flow { emit(searchPlaylists(query)) }
 
-        return combine(
-            userPreferencesRepository.minTracksPerAlbumFlow
-        ) { (minTracks) ->
-            minTracks
-        }.flatMapLatest { minTracks ->
-            when (filterType) {
-                SearchFilterType.ALL -> {
-                    combine(
-                        searchSongs(query),
-                        searchAlbums(query, minTracks),
-                        searchArtists(query),
-                        playlistsFlow
-                    ) { songs, albums, artists, playlists ->
-                        mutableListOf<SearchResultItem>().apply {
-                            songs.forEach { add(SearchResultItem.SongItem(it)) }
-                            albums.forEach { add(SearchResultItem.AlbumItem(it)) }
-                            artists.forEach { add(SearchResultItem.ArtistItem(it)) }
-                            playlists.forEach { add(SearchResultItem.PlaylistItem(it)) }
-                        }
+        return when (filterType) {
+            SearchFilterType.ALL -> {
+                combine(
+                    searchSongs(query),
+                    searchAlbums(query),
+                    searchArtists(query),
+                    playlistsFlow
+                ) { songs, albums, artists, playlists ->
+                    mutableListOf<SearchResultItem>().apply {
+                        songs.forEach { add(SearchResultItem.SongItem(it)) }
+                        albums.forEach { add(SearchResultItem.AlbumItem(it)) }
+                        artists.forEach { add(SearchResultItem.ArtistItem(it)) }
+                        playlists.forEach { add(SearchResultItem.PlaylistItem(it)) }
                     }
                 }
-                SearchFilterType.SONGS -> searchSongs(query).map { songs -> songs.map { SearchResultItem.SongItem(it) } }
-                SearchFilterType.ALBUMS -> searchAlbums(query, minTracks).map { albums -> albums.map { SearchResultItem.AlbumItem(it) } }
-                SearchFilterType.ARTISTS -> searchArtists(query).map { artists -> artists.map { SearchResultItem.ArtistItem(it) } }
-                SearchFilterType.PLAYLISTS -> playlistsFlow.map { playlists -> playlists.map { SearchResultItem.PlaylistItem(it) } }
             }
+            SearchFilterType.SONGS -> searchSongs(query).map { songs -> songs.map { SearchResultItem.SongItem(it) } }
+            SearchFilterType.ALBUMS -> searchAlbums(query).map { albums -> albums.map { SearchResultItem.AlbumItem(it) } }
+            SearchFilterType.ARTISTS -> searchArtists(query).map { artists -> artists.map { SearchResultItem.ArtistItem(it) } }
+            SearchFilterType.PLAYLISTS -> playlistsFlow.map { playlists -> playlists.map { SearchResultItem.PlaylistItem(it) } }
         }.flowOn(Dispatchers.Default)
     }
 
@@ -750,16 +740,11 @@ class MusicRepositoryImpl @Inject constructor(
         }.distinctUntilChanged().flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getAllAlbumsOnce(storageFilter: StorageFilter, minTracks: Int): List<Album> = withContext(Dispatchers.IO) {
+    override suspend fun getAllAlbumsOnce(): List<Album> = withContext(Dispatchers.IO) {
         val filter = cachedDirFilter.value
-        musicDao.getAlbumsPage(
+        musicDao.getAllAlbumsList(
             allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = SortOption.AlbumTitleAZ.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            minTracks = minTracks,
-            limit = Int.MAX_VALUE,
-            offset = 0
+            applyDirectoryFilter = filter.applyFilter
         ).map { it.toAlbum() }
     }
 

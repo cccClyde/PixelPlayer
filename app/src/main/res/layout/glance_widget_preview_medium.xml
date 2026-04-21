@@ -28,7 +28,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/widget_preview_song_title"
+            android:text="Título de Canción"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/widget_preview_artist"
+            android:text="Artista"
             android:textColor="#E0E0E0"
             android:textSize="12sp" />
     </LinearLayout>

@@ -147,31 +147,6 @@ fun PlaylistDetailScreen(
     val uiState by playlistViewModel.uiState.collectAsStateWithLifecycle()
     val playerStableState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val fallbackPlaylistName = stringResource(R.string.shortcut_playlist_short)
-    val sortSongsLabel = stringResource(R.string.presentation_batch_b_sort_songs)
-    val moreOptionsLabel = stringResource(R.string.presentation_batch_b_more_options)
-    val playItLabel = stringResource(R.string.presentation_batch_b_play_it)
-    val shuffleLabel = stringResource(R.string.shortcut_shuffle_short)
-    val addSongsCd = stringResource(R.string.presentation_batch_b_add_songs)
-    val addLabel = stringResource(R.string.presentation_batch_b_add)
-    val removeLabel = stringResource(R.string.cd_remove)
-    val removeSongsCd = stringResource(R.string.presentation_batch_b_remove_songs)
-    val reorderLabel = stringResource(R.string.presentation_batch_b_reorder)
-    val reorderSongsCd = stringResource(R.string.presentation_batch_b_reorder_songs)
-    val reorderSongCd = stringResource(R.string.presentation_batch_b_reorder_song)
-    val playlistEmptyTitle = stringResource(R.string.presentation_batch_b_playlist_empty_title)
-    val playlistEmptyFolder = stringResource(R.string.presentation_batch_b_playlist_empty_folder_body)
-    val playlistEmptyAddHint = stringResource(R.string.presentation_batch_b_playlist_empty_add_hint)
-    val playlistOptionsTitle = stringResource(R.string.presentation_batch_b_playlist_options_title)
-    val editPlaylistLabel = stringResource(R.string.presentation_batch_b_edit_playlist)
-    val deletePlaylistLabel = stringResource(R.string.presentation_batch_b_delete_playlist)
-    val setDefaultTransitionLabel = stringResource(R.string.presentation_batch_b_set_default_transition)
-    val exportPlaylistLabel = stringResource(R.string.presentation_batch_b_export_playlist)
-    val deletePlaylistConfirmTitle = stringResource(R.string.presentation_batch_b_delete_playlist_confirm_title)
-    val deletePlaylistConfirmBody = stringResource(R.string.presentation_batch_b_delete_playlist_confirm_body)
-    val sortSheetTitle = stringResource(R.string.presentation_batch_b_sort_songs)
-    val toastAddedToQueue = stringResource(R.string.toast_added_to_queue)
-    val toastPlayingNext = stringResource(R.string.toast_playing_next)
     val currentPlaylist = uiState.currentPlaylistDetails
     val isFolderPlaylist = currentPlaylist?.id?.startsWith(FOLDER_PLAYLIST_PREFIX) == true
     val songsInPlaylist = uiState.currentPlaylistSongs
@@ -256,7 +231,7 @@ fun PlaylistDetailScreen(
                 title = {
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
-                        text = currentPlaylist?.name ?: fallbackPlaylistName,
+                        text = currentPlaylist?.name ?: stringResource(R.string.playlist_fallback_name),
                         fontFamily = GoogleSansRounded,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -270,7 +245,7 @@ fun PlaylistDetailScreen(
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
                         text = stringResource(
-                            R.string.presentation_batch_f_status_bullet_step,
+                            R.string.playlist_detail_meta_format,
                             formatSongCount(songsInPlaylist.size),
                             formatTotalDuration(songsInPlaylist)
                         ),
@@ -287,7 +262,7 @@ fun PlaylistDetailScreen(
                         ),
                         onClick = onBackClick
                     ) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.auth_cd_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.common_back))
                     }
                 },
                 actions = {
@@ -298,7 +273,7 @@ fun PlaylistDetailScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Sort,
-                            contentDescription = sortSongsLabel
+                            contentDescription = stringResource(R.string.playlist_sort_songs)
                         )
                     }
                     if (!isFolderPlaylist) {
@@ -309,7 +284,7 @@ fun PlaylistDetailScreen(
                                 contentColor = MaterialTheme.colorScheme.onSurface
                             ),
                             onClick = { showPlaylistOptionsSheet = true }
-                        ) { Icon(Icons.Filled.MoreVert, moreOptionsLabel) }
+                        ) { Icon(Icons.Filled.MoreVert, stringResource(R.string.playlist_more_options_cd)) }
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -378,11 +353,11 @@ fun PlaylistDetailScreen(
                     ) {
                         Icon(
                             Icons.Rounded.PlayArrow,
-                            contentDescription = stringResource(R.string.cd_play),
+                            contentDescription = stringResource(R.string.playlist_play_cd),
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(playItLabel)
+                        Text(stringResource(R.string.playlist_play))
                     }
                     FilledTonalButton(
                         onClick = {
@@ -412,11 +387,11 @@ fun PlaylistDetailScreen(
                     ) {
                         Icon(
                             Icons.Rounded.Shuffle,
-                            contentDescription = shuffleLabel,
+                            contentDescription = stringResource(R.string.shortcut_shuffle_short),
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(shuffleLabel)
+                        Text(stringResource(R.string.shortcut_shuffle_short))
                     }
                 }
 
@@ -469,12 +444,12 @@ fun PlaylistDetailScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Add,
-                                contentDescription = addSongsCd,
+                                contentDescription = stringResource(R.string.playlist_add_songs_cd),
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                text = addLabel,
+                                text = stringResource(R.string.playlist_add),
                                 style = MaterialTheme.typography.labelLarge
                             )
                         }
@@ -496,13 +471,13 @@ fun PlaylistDetailScreen(
                             Icon(
                                 modifier = Modifier.size(18.dp),
                                 imageVector = Icons.Default.RemoveCircleOutline,
-                                contentDescription = removeSongsCd,
+                                contentDescription = stringResource(R.string.playlist_remove_songs_cd),
                                 tint = removeIconColor
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 modifier = Modifier.padding(end = 4.dp),
-                                text = removeLabel,
+                                text = stringResource(R.string.common_remove),
                                 color = removeIconColor,
                                 style = MaterialTheme.typography.labelMedium
                             )
@@ -525,13 +500,13 @@ fun PlaylistDetailScreen(
                             Icon(
                                 modifier = Modifier.size(22.dp),
                                 painter = painterResource(R.drawable.drag_order_icon),
-                                contentDescription = reorderSongsCd,
+                                contentDescription = stringResource(R.string.playlist_reorder_songs_cd),
                                 tint = reorderIconColor
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 modifier = Modifier.padding(end = 4.dp),
-                                text = reorderLabel,
+                                text = stringResource(R.string.playlist_reorder),
                                 color = reorderIconColor,
                                 style = MaterialTheme.typography.labelMedium
                             )
@@ -546,11 +521,11 @@ fun PlaylistDetailScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(Icons.Filled.MusicOff, null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(Modifier.height(8.dp))
-                            Text(playlistEmptyTitle, style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.playlist_empty), style = MaterialTheme.typography.titleMedium)
                             val emptyMessage = if (isFolderPlaylist) {
-                                playlistEmptyFolder
+                                stringResource(R.string.playlist_folder_empty)
                             } else {
-                                playlistEmptyAddHint
+                                stringResource(R.string.playlist_tap_add_songs)
                             }
                             Text(emptyMessage, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -658,7 +633,7 @@ fun PlaylistDetailScreen(
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Rounded.DragIndicator,
-                                                    contentDescription = reorderSongCd,
+                                                    contentDescription = stringResource(R.string.queue_reorder_song_cd),
                                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
@@ -720,7 +695,7 @@ fun PlaylistDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = playlistOptionsTitle,
+                        text = stringResource(R.string.playlist_options_title),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -734,7 +709,7 @@ fun PlaylistDetailScreen(
                 }
                 PlaylistActionItem(
                     icon = painterResource(R.drawable.rounded_edit_24),
-                    label = editPlaylistLabel,
+                    label = stringResource(R.string.playlist_edit),
                     onClick = {
                         showPlaylistOptionsSheet = false
                         showEditPlaylistDialog = true
@@ -742,7 +717,7 @@ fun PlaylistDetailScreen(
                 )
                 PlaylistActionItem(
                     icon = painterResource(R.drawable.rounded_delete_24),
-                    label = deletePlaylistLabel,
+                    label = stringResource(R.string.playlist_delete),
                     onClick = {
                         showPlaylistOptionsSheet = false
                         showDeleteConfirmation = true
@@ -750,7 +725,7 @@ fun PlaylistDetailScreen(
                 )
                 PlaylistActionItem(
                     icon = painterResource(R.drawable.outline_graph_1_24),
-                    label = setDefaultTransitionLabel,
+                    label = stringResource(R.string.playlist_set_default_transition),
                     onClick = {
                         showPlaylistOptionsSheet = false
                         navController.navigateSafely(Screen.EditTransition.createRoute(playlistId))
@@ -758,10 +733,10 @@ fun PlaylistDetailScreen(
                 )
                 PlaylistActionItem(
                     icon = painterResource(R.drawable.rounded_attach_file_24),
-                    label = exportPlaylistLabel,
+                    label = stringResource(R.string.playlist_export),
                     onClick = {
                         showPlaylistOptionsSheet = false
-                        m3uExportLauncher.launch("${currentPlaylist?.name ?: fallbackPlaylistName}.m3u")
+                        m3uExportLauncher.launch("${currentPlaylist?.name ?: "playlist"}.m3u")
                     }
                 )
             }
@@ -810,9 +785,9 @@ fun PlaylistDetailScreen(
     if (showDeleteConfirmation && currentPlaylist != null) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text(deletePlaylistConfirmTitle) },
+            title = { Text(stringResource(R.string.playlist_delete_confirm_title)) },
             text = {
-                Text(deletePlaylistConfirmBody)
+                Text(stringResource(R.string.playlist_delete_confirm_message))
             },
             confirmButton = {
                 TextButton(
@@ -822,7 +797,7 @@ fun PlaylistDetailScreen(
                         showDeleteConfirmation = false
                     }
                 ) {
-                    Text(stringResource(R.string.delete_action))
+                    Text(stringResource(R.string.common_delete))
                 }
             },
             dismissButton = {
@@ -861,12 +836,12 @@ fun PlaylistDetailScreen(
                 onAddToQueue = {
                     playerViewModel.addSongToQueue(currentSong) // Assumes such a method exists or will be added
                     showSongInfoBottomSheet = false
-                    playerViewModel.sendToast(toastAddedToQueue)
+                    playerViewModel.sendToast(context.getString(R.string.playlist_added_to_queue))
                 },
                 onAddNextToQueue = {
                     playerViewModel.addSongNextToQueue(currentSong)
                     showSongInfoBottomSheet = false
-                    playerViewModel.sendToast(toastPlayingNext)
+                    playerViewModel.sendToast(context.getString(R.string.playlist_will_play_next))
                 },
                 onAddToPlayList = {
                     showPlaylistBottomSheet = true;
@@ -956,7 +931,7 @@ fun PlaylistDetailScreen(
         )
 
         LibrarySortBottomSheet(
-            title = sortSheetTitle,
+            title = stringResource(R.string.playlist_sort_title),
             options = songSortOptions,
             selectedOption = currentSortOption,
             onDismiss = { playerViewModel.hideSortingSheet() },
@@ -1025,17 +1000,14 @@ private fun PlaylistActionItem(
 // SongPickerBottomSheet moved to com.theveloper.pixelplay.presentation.components
 fun RenamePlaylistDialog(currentName: String, onDismiss: () -> Unit, onRename: (String) -> Unit) {
     var newName by remember { mutableStateOf(TextFieldValue(currentName)) }
-    val renameTitle = stringResource(R.string.presentation_batch_b_rename_playlist_dialog_title)
-    val newNameLabel = stringResource(R.string.presentation_batch_b_new_name)
-    val renameAction = stringResource(R.string.action_rename)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(renameTitle) },
+        title = { Text(stringResource(R.string.playlist_rename_title)) },
         text = {
             OutlinedTextField(
                 value = newName,
                 onValueChange = { newName = it },
-                label = { Text(newNameLabel) },
+                label = { Text(stringResource(R.string.playlist_new_name)) },
                 shape = CircleShape,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -1045,7 +1017,7 @@ fun RenamePlaylistDialog(currentName: String, onDismiss: () -> Unit, onRename: (
             Button(
                 onClick = { if (newName.text.isNotBlank()) onRename(newName.text) },
                 enabled = newName.text.isNotBlank() && newName.text != currentName
-            ) { Text(renameAction) }
+            ) { Text(stringResource(R.string.playlist_rename_action)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )

@@ -38,8 +38,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.theveloper.pixelplay.utils.CrashLogData
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 
 /**
  * Material3 Expressive styled dialog that displays crash information
@@ -64,7 +62,7 @@ fun CrashReportDialog(
         },
         title = {
             Text(
-                text = stringResource(R.string.crash_report_title),
+                text = "Oops! Something went wrong",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -76,7 +74,7 @@ fun CrashReportDialog(
                     .verticalScroll(rememberScrollState())
             ) {
                 Text(
-                    text = stringResource(R.string.crash_report_subtitle),
+                    text = "The app crashed during your last session. Help us fix this by sharing the crash report.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -91,7 +89,7 @@ fun CrashReportDialog(
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
-                            text = stringResource(R.string.crash_report_date_line, crashLog.formattedDate),
+                            text = "Date: ${crashLog.formattedDate}",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -99,7 +97,7 @@ fun CrashReportDialog(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = stringResource(R.string.crash_report_error_label),
+                            text = "Error:",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.error
@@ -119,7 +117,7 @@ fun CrashReportDialog(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = stringResource(R.string.crash_report_stack_preview_label),
+                            text = "Stack trace (preview):",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -149,12 +147,9 @@ fun CrashReportDialog(
                     FilledTonalButton(
                         onClick = {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText(
-                                context.getString(R.string.crash_report_clipboard_label),
-                                crashLog.getFullLog(),
-                            )
+                            val clip = ClipData.newPlainText("Crash Log", crashLog.getFullLog())
                             clipboard.setPrimaryClip(clip)
-                            Toast.makeText(context, context.getString(R.string.toast_crash_log_copied), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Crash log copied to clipboard", Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.weight(1f)
                     ) {
@@ -164,19 +159,17 @@ fun CrashReportDialog(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(stringResource(R.string.action_copy))
+                        Text("Copy")
                     }
 
                     FilledTonalButton(
                         onClick = {
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.crash_report_share_subject))
+                                putExtra(Intent.EXTRA_SUBJECT, "PixelPlayer Crash Report")
                                 putExtra(Intent.EXTRA_TEXT, crashLog.getFullLog())
                             }
-                            context.startActivity(
-                                Intent.createChooser(shareIntent, context.getString(R.string.crash_report_share_chooser)),
-                            )
+                            context.startActivity(Intent.createChooser(shareIntent, "Share crash report"))
                         },
                         modifier = Modifier.weight(1f)
                     ) {
@@ -186,7 +179,7 @@ fun CrashReportDialog(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(stringResource(R.string.action_share))
+                        Text("Share")
                     }
                 }
             }
@@ -194,7 +187,7 @@ fun CrashReportDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dismiss))
+                Text("Dismiss")
             }
         }
     )

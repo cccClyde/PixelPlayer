@@ -57,6 +57,7 @@ import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,6 @@ import com.theveloper.pixelplay.data.media.CoverArtUpdate
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import java.io.ByteArrayOutputStream
 import java.util.Locale
-import androidx.compose.ui.res.stringResource
 
 private fun formatReplayGainForInput(gainDb: Float?): String {
     return gainDb?.let { String.format(Locale.US, "%.2f", it) }.orEmpty()
@@ -267,12 +267,12 @@ private fun EditSongContent(
     if (showInfoDialog) {
         AlertDialog(
             onDismissRequest = { showInfoDialog = false },
-            icon = { Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.cd_info_icon)) },
+            icon = { Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.edit_song_info_icon_cd)) },
             title = { Text(stringResource(R.string.edit_song_info_dialog_title)) },
-            text = { Text(stringResource(R.string.edit_song_info_dialog_body)) },
+            text = { Text(stringResource(R.string.edit_song_info_dialog_message)) },
             confirmButton = {
                 TextButton(onClick = { showInfoDialog = false }) {
-                    Text(stringResource(R.string.edit_song_got_it))
+                    Text(stringResource(R.string.got_it))
                 }
             }
         )
@@ -288,7 +288,7 @@ private fun EditSongContent(
                 title = {
                     Text(
                         modifier = Modifier.padding(start = 10.dp),
-                        text = stringResource(R.string.edit_song_toolbar_title),
+                        text = stringResource(R.string.edit_song_title),
                         fontFamily = GoogleSansRounded,
                         style = MaterialTheme.typography.displaySmall
                     )
@@ -299,7 +299,7 @@ private fun EditSongContent(
                         onClick = { showInfoDialog = true },
                         shape = CircleShape
                     ) {
-                        Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.cd_show_metadata_info))
+                        Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.edit_song_show_info_cd))
                     }
                 }
             )
@@ -354,7 +354,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_title),
+                        text = stringResource(R.string.edit_song_field_title),
                         color = MaterialTheme.colorScheme.tertiary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -363,8 +363,8 @@ private fun EditSongContent(
                         shape = textFieldShape,
                         colors = textFieldColors,
                         onValueChange = { title = it },
-                        placeholder = { Text(stringResource(R.string.song_field_title)) },
-                        leadingIcon = { Icon(Icons.Rounded.MusicNote, tint = MaterialTheme.colorScheme.tertiary,contentDescription = stringResource(R.string.cd_song_title_icon)) },
+                        placeholder = { Text(stringResource(R.string.edit_song_field_title)) },
+                        leadingIcon = { Icon(Icons.Rounded.MusicNote, tint = MaterialTheme.colorScheme.tertiary,contentDescription = stringResource(R.string.edit_song_title_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -377,7 +377,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_track_number),
+                        text = stringResource(R.string.edit_song_field_track_number),
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -386,8 +386,8 @@ private fun EditSongContent(
                         shape = textFieldShape,
                         colors = textFieldColors,
                         onValueChange = { trackNumber = it },
-                        placeholder = { Text(stringResource(R.string.song_field_track_number)) },
-                        leadingIcon = { Icon(Icons.Rounded.FormatListNumbered, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.cd_track_number_icon)) },
+                        placeholder = { Text(stringResource(R.string.edit_song_field_track_number)) },
+                        leadingIcon = { Icon(Icons.Rounded.FormatListNumbered, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.edit_song_track_number_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -401,7 +401,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_disc_number),
+                        text = stringResource(R.string.edit_song_field_disc_number),
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -410,8 +410,8 @@ private fun EditSongContent(
                         shape = textFieldShape,
                         colors = textFieldColors,
                         onValueChange = { discNumber = it },
-                        placeholder = { Text(stringResource(R.string.song_field_disc_number)) },
-                        leadingIcon = { Icon(Icons.Rounded.FormatListNumbered, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.cd_disc_number_icon)) },
+                        placeholder = { Text(stringResource(R.string.edit_song_field_disc_number)) },
+                        leadingIcon = { Icon(Icons.Rounded.FormatListNumbered, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.edit_song_disc_number_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -425,7 +425,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_replaygain_track_db),
+                        text = stringResource(R.string.edit_song_field_replaygain_track),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -434,12 +434,12 @@ private fun EditSongContent(
                         shape = textFieldShape,
                         colors = textFieldColors,
                         onValueChange = { replayGainTrackGainDb = it },
-                        placeholder = { Text(stringResource(R.string.placeholder_replaygain_track_example)) },
+                        placeholder = { Text(stringResource(R.string.edit_song_replaygain_track_placeholder)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Rounded.RepeatOne,
                                 tint = MaterialTheme.colorScheme.primary,
-                                contentDescription = stringResource(R.string.cd_replaygain_track)
+                                contentDescription = stringResource(R.string.edit_song_replaygain_track_icon_cd)
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -455,7 +455,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_replaygain_album_db),
+                        text = stringResource(R.string.edit_song_field_replaygain_album),
                         color = MaterialTheme.colorScheme.tertiary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -464,12 +464,12 @@ private fun EditSongContent(
                         shape = textFieldShape,
                         colors = textFieldColors,
                         onValueChange = { replayGainAlbumGainDb = it },
-                        placeholder = { Text(stringResource(R.string.placeholder_replaygain_album_example)) },
+                        placeholder = { Text(stringResource(R.string.edit_song_replaygain_album_placeholder)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Rounded.Repeat,
                                 tint = MaterialTheme.colorScheme.tertiary,
-                                contentDescription = stringResource(R.string.cd_replaygain_album)
+                                contentDescription = stringResource(R.string.edit_song_replaygain_album_icon_cd)
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -486,7 +486,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_artist),
+                        text = stringResource(R.string.song_info_artist),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -495,8 +495,8 @@ private fun EditSongContent(
                         colors = textFieldColors,
                         shape = textFieldShape,
                         onValueChange = { artist = it },
-                        placeholder = { Text(stringResource(R.string.song_field_artist)) },
-                        leadingIcon = { Icon(Icons.Rounded.Person, tint = MaterialTheme.colorScheme.primary, contentDescription = stringResource(R.string.song_field_artist)) },
+                        placeholder = { Text(stringResource(R.string.song_info_artist)) },
+                        leadingIcon = { Icon(Icons.Rounded.Person, tint = MaterialTheme.colorScheme.primary, contentDescription = stringResource(R.string.edit_song_artist_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -510,7 +510,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_album),
+                        text = stringResource(R.string.song_info_album),
                         color = MaterialTheme.colorScheme.tertiary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -519,8 +519,8 @@ private fun EditSongContent(
                         colors = textFieldColors,
                         shape = textFieldShape,
                         onValueChange = { album = it },
-                        placeholder = { Text(stringResource(R.string.song_field_album)) },
-                        leadingIcon = { Icon(Icons.Rounded.Album, tint = MaterialTheme.colorScheme.tertiary, contentDescription = stringResource(R.string.song_field_album)) },
+                        placeholder = { Text(stringResource(R.string.song_info_album)) },
+                        leadingIcon = { Icon(Icons.Rounded.Album, tint = MaterialTheme.colorScheme.tertiary, contentDescription = stringResource(R.string.edit_song_album_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -534,7 +534,7 @@ private fun EditSongContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = stringResource(R.string.song_field_genre),
+                        text = stringResource(R.string.song_info_genre),
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -543,8 +543,8 @@ private fun EditSongContent(
                         colors = textFieldColors,
                         shape = textFieldShape,
                         onValueChange = { genre = it },
-                        placeholder = { Text(stringResource(R.string.song_field_genre)) },
-                        leadingIcon = { Icon(Icons.Rounded.Category, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.song_field_genre)) },
+                        placeholder = { Text(stringResource(R.string.song_info_genre)) },
+                        leadingIcon = { Icon(Icons.Rounded.Category, tint = MaterialTheme.colorScheme.secondary, contentDescription = stringResource(R.string.edit_song_genre_icon_cd)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -572,7 +572,7 @@ private fun EditSongContent(
                             shape = textFieldShape,
                             onValueChange = { lyrics = it },
                             placeholder = { Text(stringResource(R.string.lyrics)) },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Notes, tint = MaterialTheme.colorScheme.primary, contentDescription = stringResource(R.string.lyrics)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Notes, tint = MaterialTheme.colorScheme.primary, contentDescription = stringResource(R.string.edit_song_lyrics_icon_cd)) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(150.dp)
@@ -589,7 +589,7 @@ private fun EditSongContent(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.rounded_search_24),
-                                contentDescription = stringResource(R.string.cd_search_lyrics_lrclib)
+                                contentDescription = stringResource(R.string.edit_song_search_lyrics_cd)
                             )
                         }
                     }
@@ -645,7 +645,7 @@ private fun EditSongContent(
                             },
                             modifier = Modifier.height(48.dp)
                         ) {
-                            Text(stringResource(R.string.action_save))
+                            Text(stringResource(R.string.save))
                         }
                     }
                 )
@@ -688,7 +688,7 @@ private fun CoverArtEditorCard(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Text(
-                text = stringResource(R.string.edit_song_cover_art_heading),
+                text = stringResource(R.string.edit_song_cover_art_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -718,7 +718,7 @@ private fun CoverArtEditorCard(
                         preview != null -> {
                             Image(
                                 bitmap = preview,
-                                contentDescription = stringResource(R.string.cd_cover_art_preview),
+                                contentDescription = stringResource(R.string.edit_song_cover_art_preview_cd),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
@@ -727,7 +727,7 @@ private fun CoverArtEditorCard(
                         albumArtUri != null -> {
                             SmartImage(
                                 model = albumArtUri,
-                                contentDescription = stringResource(R.string.cd_current_song_cover_art),
+                                contentDescription = stringResource(R.string.edit_song_cover_art_current_cd),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                                 placeholderResId = R.drawable.rounded_music_note_24,
@@ -760,7 +760,7 @@ private fun CoverArtEditorCard(
             }
 
             Text(
-                text = stringResource(R.string.edit_song_cover_art_hint),
+                text = stringResource(R.string.edit_song_cover_art_helper),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -781,7 +781,7 @@ private fun CoverArtEditorCard(
                     TextButton(onClick = onReset) {
                         Icon(Icons.Rounded.Restore, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(stringResource(R.string.action_reset))
+                        Text(stringResource(R.string.reset))
                     }
                 } else if (albumArtUri != null) {
                     FilledTonalButton(
@@ -831,7 +831,7 @@ private fun CoverArtCropperDialog(
         if (bitmap != null) {
             loadedBitmap = bitmap.asImageBitmap()
         } else {
-            loadError = context.getString(R.string.edit_song_unable_to_load_image)
+            loadError = context.getString(R.string.edit_song_cover_art_load_error)
         }
         isLoading = false
         scale = 1f
@@ -872,7 +872,7 @@ private fun CoverArtCropperDialog(
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.edit_song_crop_dialog_title),
+                    text = stringResource(R.string.edit_song_adjust_cover_art_title),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center
                 )
@@ -976,7 +976,7 @@ private fun CoverArtCropperDialog(
                 }
 
                 Text(
-                    text = stringResource(R.string.edit_song_crop_dialog_hint),
+                    text = stringResource(R.string.edit_song_cover_art_gesture_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center

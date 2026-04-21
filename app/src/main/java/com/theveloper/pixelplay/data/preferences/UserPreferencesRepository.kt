@@ -25,7 +25,6 @@ import javax.inject.Singleton
 import kotlin.text.get
 import kotlin.text.set
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -201,7 +200,6 @@ constructor(
 
         // Developer Options
         val ALBUM_ART_QUALITY = stringPreferencesKey("album_art_quality")
-        val ALBUM_ART_CACHE_LIMIT_MB = intPreferencesKey("album_art_cache_limit_mb")
         val TAP_BACKGROUND_CLOSES_PLAYER = booleanPreferencesKey("tap_background_closes_player")
         val HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
         val IMMERSIVE_LYRICS_ENABLED = booleanPreferencesKey("immersive_lyrics_enabled")
@@ -226,9 +224,6 @@ constructor(
 
         // Smart Duration Filtering
         val MIN_SONG_DURATION = intPreferencesKey("min_song_duration_ms")
-
-        // Album Tracks Filtering
-        val MIN_TRACKS_PER_ALBUM = intPreferencesKey("min_tracks_per_album")
 
         // ReplayGain
         val REPLAYGAIN_ENABLED = booleanPreferencesKey("replaygain_enabled")
@@ -746,21 +741,6 @@ constructor(
 
     // ===== End Smart Duration Filtering =====
 
-    // ===== Album Tracks Filtering =====
-
-    val minTracksPerAlbumFlow: Flow<Int> =
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.MIN_TRACKS_PER_ALBUM] ?: 1
-        }
-
-    suspend fun setMinTracksPerAlbum(minTracks: Int) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.MIN_TRACKS_PER_ALBUM] = minTracks
-        }
-    }
-
-    // ===== End Album Tracks Filtering =====
-
     // ===== ReplayGain =====
 
     val replayGainEnabledFlow: Flow<Boolean> =
@@ -790,12 +770,12 @@ constructor(
     val allowedDirectoriesFlow: Flow<Set<String>> =
             dataStore.data.map { preferences ->
                 preferences[PreferencesKeys.ALLOWED_DIRECTORIES] ?: emptySet()
-            }.distinctUntilChanged()
+            }
 
     val blockedDirectoriesFlow: Flow<Set<String>> =
             dataStore.data.map { preferences ->
                 preferences[PreferencesKeys.BLOCKED_DIRECTORIES] ?: emptySet()
-            }.distinctUntilChanged()
+            }
 
     val initialSetupDoneFlow: Flow<Boolean> =
             dataStore.data.map { preferences ->
@@ -1218,7 +1198,6 @@ constructor(
         val DEFAULT_ARTIST_DELIMITERS = listOf("/", ";", ",", "+", "&")
         /** Default word-based delimiters (matched case-insensitively with whitespace boundaries) */
         val DEFAULT_ARTIST_WORD_DELIMITERS = listOf("featuring", "feat.", "feat", "ft.", "ft", "vs.", "vs", "versus", "with", "prod.", "prod")
-        const val DEFAULT_ALBUM_ART_CACHE_LIMIT_MB = 200
     }
 
     val navBarCornerRadiusFlow: Flow<Int> =
@@ -1478,7 +1457,7 @@ constructor(
     val hideLocalMediaFlow: Flow<Boolean> = dataStore.data
         .map { preferences ->
             preferences[PreferencesKeys.HIDE_LOCAL_MEDIA] ?: false
-        }.distinctUntilChanged()
+        }
 
     val telegramTopicDisplayModeFlow: Flow<TelegramTopicDisplayMode> = dataStore.data
         .map { preferences ->
@@ -1562,17 +1541,6 @@ constructor(
     suspend fun setAlbumArtQuality(quality: AlbumArtQuality) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ALBUM_ART_QUALITY] = quality.name
-        }
-    }
-
-    val albumArtCacheLimitMbFlow: Flow<Int> =
-        dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.ALBUM_ART_CACHE_LIMIT_MB] ?: DEFAULT_ALBUM_ART_CACHE_LIMIT_MB
-        }
-
-    suspend fun setAlbumArtCacheLimitMb(limitMb: Int) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.ALBUM_ART_CACHE_LIMIT_MB] = limitMb.coerceIn(50, 1500)
         }
     }
 

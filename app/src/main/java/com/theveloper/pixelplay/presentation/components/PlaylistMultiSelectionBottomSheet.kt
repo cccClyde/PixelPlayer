@@ -51,17 +51,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Playlist
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import com.theveloper.pixelplay.utils.resolvePlaylistCoverContentColor
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 
 /**
  * Bottom sheet for batch operations on multiple selected playlists.
@@ -136,7 +136,7 @@ fun PlaylistMultiSelectionBottomSheet(
                     // Playlist count and label
                     Column {
                         Text(
-                            text = stringResource(R.string.multi_selection_playlists_count_upper, selectedPlaylists.size),
+                            text = stringResource(R.string.multi_selection_playlists_title, selectedPlaylists.size),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             fontFamily = GoogleSansRounded,
@@ -144,7 +144,7 @@ fun PlaylistMultiSelectionBottomSheet(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = stringResource(R.string.multi_selection_selected),
+                            text = stringResource(R.string.multi_selection_selected_label),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontFamily = GoogleSansRounded
@@ -185,10 +185,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Delete,
-                                    contentDescription = stringResource(R.string.cd_delete_all_songs)
+                                    contentDescription = stringResource(R.string.multi_selection_delete_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.delete_action))
+                                Text(stringResource(R.string.common_delete))
                             }
 
                             FilledTonalButton(
@@ -207,10 +207,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.FileDownload,
-                                    contentDescription = stringResource(R.string.cd_export_all)
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_export_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.action_export))
+                                Text(stringResource(R.string.common_export))
                             }
                         }
                     }
@@ -240,10 +240,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Merge,
-                                    contentDescription = stringResource(R.string.cd_merge_all)
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_merge_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.action_merge))
+                                Text(stringResource(R.string.library_merge_playlists_action))
                             }
 
                             FilledTonalButton(
@@ -262,10 +262,10 @@ fun PlaylistMultiSelectionBottomSheet(
                             ) {
                                 Icon(
                                     Icons.Rounded.Share,
-                                    contentDescription = stringResource(R.string.cd_share_all)
+                                    contentDescription = stringResource(R.string.playlist_multi_selection_share_all_cd)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.action_share))
+                                Text(stringResource(R.string.common_share))
                             }
                         }
                     }

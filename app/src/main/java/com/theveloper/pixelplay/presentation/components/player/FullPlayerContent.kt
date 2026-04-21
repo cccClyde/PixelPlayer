@@ -696,7 +696,7 @@ fun FullPlayerContent(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         modifier = Modifier.padding(start = 18.dp),
-                                        text = stringResource(R.string.setcat_now_playing),
+                                        text = "Now Playing",
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelLargeEmphasized,
@@ -706,7 +706,7 @@ fun FullPlayerContent(
                                     if (currentSong != null && (currentSong.telegramChatId != null || currentSong.contentUriString.startsWith("telegram:"))) {
                                         Icon(
                                             imageVector = androidx.compose.material.icons.Icons.Rounded.Cloud,
-                                            contentDescription = stringResource(R.string.presentation_batch_g_player_cd_cloud_stream),
+                                            contentDescription = "Cloud Stream",
                                             tint = LocalMaterialTheme.current.onPrimaryContainer.copy(alpha = 0.6f),
                                             modifier = Modifier.padding(start = 8.dp).size(16.dp)
                                         )
@@ -735,7 +735,7 @@ fun FullPlayerContent(
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.rounded_keyboard_arrow_down_24),
-                                    contentDescription = stringResource(R.string.presentation_batch_g_player_cd_collapse),
+                                    contentDescription = "Colapsar",
                                     tint = playerAccentColor
                                 )
                             }
@@ -804,9 +804,9 @@ fun FullPlayerContent(
                                     Icon(
                                         painter = castIconPainter,
                                         contentDescription = when {
-                                            isCastConnecting || isRemotePlaybackActive -> stringResource(R.string.presentation_batch_g_player_cd_cast)
-                                            isBluetoothActive -> stringResource(R.string.presentation_batch_g_player_cd_bluetooth)
-                                            else -> stringResource(R.string.presentation_batch_g_player_cd_local_playback)
+                                            isCastConnecting || isRemotePlaybackActive -> "Cast"
+                                            isBluetoothActive -> "Bluetooth"
+                                            else -> "Local playback"
                                         },
                                         tint = playerAccentColor
                                     )
@@ -815,7 +815,7 @@ fun FullPlayerContent(
                                             Spacer(Modifier.width(8.dp))
                                             AnimatedContent(
                                                 targetState = when {
-                                                    isCastConnecting -> stringResource(R.string.presentation_batch_g_player_connecting)
+                                                    isCastConnecting -> "Connecting…"
                                                     isRemotePlaybackActive && selectedRouteName != null -> selectedRouteName ?: ""
                                                     else -> ""
                                                 },
@@ -881,7 +881,7 @@ fun FullPlayerContent(
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.rounded_queue_music_24),
-                                    contentDescription = stringResource(R.string.presentation_batch_g_player_cd_queue),
+                                    contentDescription = "Song options",
                                     tint = playerAccentColor
                                 )
                             }
@@ -1530,7 +1530,7 @@ private fun SongMetadataDisplaySection(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_lyrics_24),
-                        contentDescription = stringResource(R.string.presentation_batch_g_player_cd_lyrics),
+                        contentDescription = "Lyrics",
                         tint = chipContentColor
                     )
                 }
@@ -1551,7 +1551,7 @@ private fun SongMetadataDisplaySection(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_queue_music_24),
-                        contentDescription = stringResource(R.string.presentation_batch_g_player_cd_queue),
+                        contentDescription = "Queue",
                         tint = chipContentColor
                     )
                 }
@@ -1569,7 +1569,7 @@ private fun SongMetadataDisplaySection(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_lyrics_24),
-                    contentDescription = stringResource(R.string.presentation_batch_g_player_cd_lyrics)
+                    contentDescription = "Lyrics"
                 )
             }
         }

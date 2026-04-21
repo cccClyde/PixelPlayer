@@ -2,7 +2,6 @@ package com.theveloper.pixelplay.presentation.viewmodel
 
 import android.app.Activity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.model.Song
 import com.theveloper.pixelplay.data.preferences.PlaylistPreferencesRepository
 import com.theveloper.pixelplay.data.repository.MusicRepository
@@ -28,18 +27,19 @@ class SongRemovalStateHolder @Inject constructor(
 
                 val userChoice = CompletableDeferred<Boolean>()
                 val dialog = MaterialAlertDialogBuilder(activity)
-                    .setTitle(activity.getString(R.string.dialog_delete_song_title))
+                    .setTitle("Delete song?")
                     .setMessage(
-                        activity.getString(
-                            R.string.dialog_delete_song_message,
-                            song.title,
-                            song.displayArtist
-                        )
+                        """
+                    "${song.title}" by ${song.displayArtist}
+
+                    This song will be permanently deleted from your device and cannot be recovered.
+                """
+                            .trimIndent()
                     )
-                    .setPositiveButton(activity.getString(R.string.delete_action)) { _, _ ->
+                    .setPositiveButton("Delete") { _, _ ->
                         userChoice.complete(true)
                     }
-                    .setNegativeButton(activity.getString(R.string.cancel)) { _, _ ->
+                    .setNegativeButton("Cancel") { _, _ ->
                         userChoice.complete(false)
                     }
                     .setOnCancelListener {

@@ -17,9 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.theveloper.pixelplay.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,19 +39,19 @@ fun DailyMixMenu(
                 .padding(16.dp)
         ) {
             Text(
-                text = stringResource(R.string.presentation_batch_e_daily_mix_how_title),
+                text = "Como se crea tu Daily Mix",
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.presentation_batch_e_daily_mix_how_body),
+                text = "Tu Daily Mix se crea a partir de tus canciones favoritas y las que más escuchas. También añadimos canciones de artistas y géneros que te gustan para que descubras nueva música.",
             )
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = prompt,
                 onValueChange = { prompt = it },
-                label = { Text(stringResource(R.string.presentation_batch_e_daily_mix_prompt_label)) },
+                label = { Text("Dile a la IA qué quieres escuchar hoy") },
                 modifier = Modifier.fillMaxWidth(),
-                supportingText = { Text(stringResource(R.string.presentation_batch_e_daily_mix_cost_hint)) }
+                supportingText = { Text("Usamos una muestra pequeña para mantener los costos bajos") }
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
@@ -63,13 +61,7 @@ fun DailyMixMenu(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = prompt.isNotBlank() && !isLoading
             ) {
-                Text(
-                    if (isLoading) {
-                        stringResource(R.string.presentation_batch_e_daily_mix_updating)
-                    } else {
-                        stringResource(R.string.presentation_batch_e_daily_mix_update)
-                    }
-                )
+                Text(if (isLoading) "Actualizando..." else "Actualizar Daily Mix")
             }
         }
     }

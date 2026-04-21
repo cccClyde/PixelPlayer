@@ -34,7 +34,6 @@ import android.os.Build
 import android.provider.MediaStore
 import com.theveloper.pixelplay.data.preferences.TelegramTopicDisplayMode
 import com.theveloper.pixelplay.data.ai.AiPlaylistGenerator
-import com.theveloper.pixelplay.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileOutputStream
@@ -958,9 +957,9 @@ class PlaylistViewModel @Inject constructor(
                     _playlistCreationEvent.emit(true)
                 }.onFailure { e ->
                     val errorMessage = if (e.message?.contains("API Key") == true) {
-                        context.getString(R.string.ai_playlist_gemini_key_required)
+                        "Please configure your Gemini API Key in Settings."
                     } else {
-                        e.message ?: context.getString(R.string.error_unknown)
+                        e.message ?: "Unknown error"
                     }
                     _uiState.update { it.copy(isAiGenerating = false, aiGenerationError = errorMessage) }
                 }
@@ -1048,7 +1047,7 @@ class PlaylistViewModel @Inject constructor(
 
                 if (playlistsWithSongs.isEmpty()) {
                     Log.w("PlaylistViewModel", "No playlists found to share")
-                    Toast.makeText(context, context.getString(R.string.playlist_none_to_share), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No playlists to share", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
@@ -1100,14 +1099,12 @@ class PlaylistViewModel @Inject constructor(
                 }
 
                 Log.d("PlaylistViewModel", "Launching share intent for: $shareFileName")
-                activity.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.playlist_share_chooser_title)))
-                val n = playlistsWithSongs.size
-                val sharingMsg = context.resources.getQuantityString(R.plurals.sharing_playlists_message, n, n)
-                Toast.makeText(context, sharingMsg, Toast.LENGTH_SHORT).show()
+                activity.startActivity(Intent.createChooser(shareIntent, "Share Playlists"))
+                Toast.makeText(context, "Sharing ${playlistsWithSongs.size} playlist(s)", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Error sharing playlists", e)
-                Toast.makeText(context, context.getString(R.string.playlist_share_failed, e.message ?: ""), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Share failed: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -1182,7 +1179,7 @@ class PlaylistViewModel @Inject constructor(
                 val playlistsWithSongs = getPlaylistsWithSongs(playlistIds)
                 if (playlistsWithSongs.isEmpty()) {
                     Log.w("PlaylistViewModel", "No playlists found to export")
-                    Toast.makeText(context, context.getString(R.string.playlist_none_to_export), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No playlists to export", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
@@ -1194,14 +1191,11 @@ class PlaylistViewModel @Inject constructor(
                 }
 
                 Log.d("PlaylistViewModel", "Successfully exported ${playlistIds.size} playlists to $exportDir")
-                val count = playlistsWithSongs.size
-                val folderLabel = context.getString(R.string.playlist_export_folder_display)
-                val exportedMsg = context.resources.getQuantityString(R.plurals.exported_playlists_message, count, count, folderLabel)
-                Toast.makeText(context, exportedMsg, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Exported ${playlistsWithSongs.size} playlist(s) to Music/PixelPlayer Exports", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Error exporting playlists", e)
-                Toast.makeText(context, context.getString(R.string.playlist_export_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Export failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

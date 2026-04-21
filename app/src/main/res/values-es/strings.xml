@@ -119,26 +119,4 @@
     <string name="widget_control_4x2_desc">Controles completos con aleatorio y repetición</string>
     <string name="widget_grid_2x2_desc">Reproductor cuadrado minimalista</string>
     <string name="service_processing_action">Procesando acción de reproducción…</string>
-
-    <string name="sleep_timer_n_minutes_format">%1$d minutos</string>
-    <string name="sleep_timer_display_eot">Fin de pista</string>
-    <string name="sleep_timer_set_for_minutes_toast">Temporizador configurado para %1$d minutos.</string>
-    <string name="sleep_timer_cancelled_toast">Temporizador cancelado.</string>
-    <string name="sleep_timer_eot_no_song_toast">No se puede activar fin de pista: no hay canción activa.</string>
-    <string name="sleep_timer_eot_song_changed_toast">Temporizador de fin de pista desactivado: la canción cambió de %1$s a %2$s.</string>
-    <string name="sleep_timer_eot_stop_at_end_toast">La reproducción se detendrá al final de la pista.</string>
-    <string name="sleep_timer_label_previous_track">Pista anterior</string>
-    <string name="sleep_timer_label_current_track">Pista actual</string>
-    <string name="sleep_timer_ui_title">Temporizador de apagado</string>
-    <string name="sleep_timer_ui_slider_label_timer">Temporizador</string>
-    <string name="sleep_timer_ui_end_of_current_track">Al final de la pista actual</string>
-    <string name="sleep_timer_ui_custom_time">Tiempo personalizado</string>
-    <string name="sleep_timer_ui_cancel_timer">Cancelar temporizador</string>
-    <string name="sleep_timer_ui_set_custom_duration">Establecer duración personalizada</string>
-    <string name="sleep_timer_ui_play_count_label">Número de reproducciones: %1$s</string>
-    <string name="sleep_timer_ui_play_count_one_time">1 vez</string>
-    <string name="cd_switch_on">Interruptor activado</string>
-    <string name="ui_format_percent_d">%1$d%%</string>
-    <string name="backup_manifest_schema_v">v%1$d</string>
-    <string name="backup_manifest_device_line">%1$s %2$s</string>
 </resources>

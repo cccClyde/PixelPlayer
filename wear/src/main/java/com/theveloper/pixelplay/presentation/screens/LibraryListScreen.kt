@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +29,6 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.horologist.compose.layout.ScalingLazyColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.presentation.components.AlwaysOnScalingPositionIndicator
 import com.theveloper.pixelplay.presentation.components.WearTopTimeText
 import com.theveloper.pixelplay.presentation.viewmodel.BrowseUiState
@@ -127,11 +125,11 @@ fun LibraryListScreen(
                     }
                     item {
                         Chip(
-                            label = { Text(stringResource(R.string.wear_retry), color = palette.textPrimary) },
+                            label = { Text("Retry", color = palette.textPrimary) },
                             icon = {
                                 Icon(
                                     Icons.Rounded.Refresh,
-                                    contentDescription = stringResource(R.string.wear_cd_retry),
+                                    contentDescription = "Retry",
                                     tint = palette.textSecondary,
                                     modifier = Modifier.size(18.dp),
                                 )
@@ -193,7 +191,7 @@ fun LibraryListScreen(
                     if (state.items.isEmpty()) {
                         item {
                             Text(
-                                text = stringResource(R.string.wear_no_items),
+                                text = "No items",
                                 style = MaterialTheme.typography.body2,
                                 color = palette.textSecondary.copy(alpha = 0.7f),
                                 textAlign = TextAlign.Center,

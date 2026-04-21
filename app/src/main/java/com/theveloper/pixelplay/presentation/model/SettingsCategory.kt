@@ -1,6 +1,5 @@
 package com.theveloper.pixelplay.presentation.model
 
-import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DeveloperMode
@@ -14,8 +13,8 @@ import com.theveloper.pixelplay.R
 
 enum class SettingsCategory(
     val id: String,
-    @StringRes val titleRes: Int,
-    @StringRes val subtitleRes: Int,
+    val titleRes: Int,
+    val subtitleRes: Int,
     val icon: ImageVector? = null,
     val iconRes: Int? = null
 ) {

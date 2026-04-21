@@ -38,8 +38,6 @@ import com.theveloper.pixelplay.presentation.gdrive.auth.GDriveLoginActivity
 import com.theveloper.pixelplay.ui.theme.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.res.stringResource
-import com.theveloper.pixelplay.R
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -64,14 +62,14 @@ fun GDriveDashboardScreen(
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.auth_gdrive_title),
+                        "Google Drive",
                         fontFamily = GoogleSansRounded,
                         fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.auth_cd_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -81,7 +79,7 @@ fun GDriveDashboardScreen(
                     }) {
                         Icon(
                             Icons.Rounded.Add,
-                            contentDescription = stringResource(R.string.cd_add_drive_folder),
+                            contentDescription = "Add Folder",
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
@@ -92,7 +90,7 @@ fun GDriveDashboardScreen(
                     ) {
                         Icon(
                             Icons.Rounded.CloudSync,
-                            contentDescription = stringResource(R.string.cd_sync_all),
+                            contentDescription = "Sync All",
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
@@ -103,7 +101,7 @@ fun GDriveDashboardScreen(
                     }) {
                         Icon(
                             Icons.AutoMirrored.Rounded.Logout,
-                            contentDescription = stringResource(R.string.cd_logout)
+                            contentDescription = "Logout"
                         )
                     }
                 }
@@ -198,7 +196,7 @@ fun GDriveDashboardScreen(
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = stringResource(R.string.dash_folders_synced_count, folders.size),
+                                text = "${folders.size} folders synced",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = GoogleSansRounded,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -219,7 +217,7 @@ fun GDriveDashboardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.dash_music_folders),
+                    text = "Music Folders",
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = GoogleSansRounded,
                     fontWeight = FontWeight.Bold
@@ -232,7 +230,7 @@ fun GDriveDashboardScreen(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text(stringResource(R.string.dash_action_sync), fontFamily = GoogleSansRounded)
+                        Text("Sync", fontFamily = GoogleSansRounded)
                     }
                 }
             }
@@ -256,14 +254,14 @@ fun GDriveDashboardScreen(
                         )
                         Spacer(Modifier.height(16.dp))
                         Text(
-                            text = stringResource(R.string.dash_no_folders_yet),
+                            text = "No folders added yet",
                             style = MaterialTheme.typography.bodyLarge,
                             fontFamily = GoogleSansRounded,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = stringResource(R.string.dash_tap_plus_add_drive_folder),
+                            text = "Tap + to add a Drive folder",
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = GoogleSansRounded,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
@@ -341,7 +339,7 @@ private fun GDriveFolderCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = stringResource(R.string.dash_song_count, folder.songCount),
+                    text = "${folder.songCount} songs",
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = GoogleSansRounded,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -355,7 +353,7 @@ private fun GDriveFolderCard(
             ) {
                 Icon(
                     Icons.Rounded.Sync,
-                    contentDescription = stringResource(R.string.cd_sync),
+                    contentDescription = "Sync",
                     tint = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -365,7 +363,7 @@ private fun GDriveFolderCard(
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Rounded.Delete,
-                    contentDescription = stringResource(R.string.cd_remove),
+                    contentDescription = "Remove",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
                     modifier = Modifier.size(20.dp)
                 )

@@ -79,7 +79,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import kotlin.math.roundToInt
-import androidx.compose.ui.res.stringResource
 
 // --- Data Models & Helpers ---
 
@@ -214,7 +213,7 @@ fun GenreDetailScreen(
             }
     }
     val genreDisplayName = themeGenre?.name ?: uiState.genre?.name ?: initialDisplayName
-    val genreShuffleLabel = stringResource(R.string.presentation_batch_b_genre_shuffle_label, genreDisplayName)
+    val genreShuffleLabel = "$genreDisplayName Shuffle"
     val genreFastScrollLabelProvider = remember(uiState.flattenedItems, uiState.sortOption) {
         { index: Int ->
             genreFastScrollLabel(
@@ -225,9 +224,6 @@ fun GenreDetailScreen(
         }
     }
     
-    val toastAddedToQueue = stringResource(R.string.toast_added_to_queue)
-    val toastPlayingNext = stringResource(R.string.toast_playing_next)
-
     // FAB Logic
     var showSortSheet by remember { mutableStateOf(false) }
     var showSongOptionsSheet by remember { mutableStateOf<Song?>(null) }
@@ -390,7 +386,7 @@ fun GenreDetailScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = stringResource(R.string.cd_options),
+                        contentDescription = "Options",
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -428,7 +424,7 @@ fun GenreDetailScreen(
                                 Icon(Icons.Rounded.AutoFixHigh, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = stringResource(R.string.genre_quick_fill),
+                                    text = "Quick Fill Genre",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -480,12 +476,12 @@ fun GenreDetailScreen(
                         onAddToQueue = {
                             playerViewModel.addSongToQueue(song)
                             showSongOptionsSheet = null
-                            playerViewModel.sendToast(toastAddedToQueue)
+                            playerViewModel.sendToast("Added to the queue")
                         },
                         onAddNextToQueue = {
                             playerViewModel.addSongNextToQueue(song)
                             showSongOptionsSheet = null
-                            playerViewModel.sendToast(toastPlayingNext)
+                            playerViewModel.sendToast("Will play next")
                         },
                         onAddToPlayList = {
                             showPlaylistBottomSheet = true
@@ -657,7 +653,7 @@ fun GenreCollapsibleTopBar(
                     contentColor = animatedContentColor
                 )
             ) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.auth_cd_back), tint = animatedContentColor)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = animatedContentColor)
             }
 
             ExpressiveTopBarContent(
@@ -732,7 +728,7 @@ fun GenreArtistHeader(
                     } else {
                         Icon(
                             imageVector = Icons.Rounded.Person,
-                            contentDescription = stringResource(R.string.cd_generic_artist),
+                            contentDescription = "Generic Artist",
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
                                 .padding(10.dp)
@@ -829,7 +825,7 @@ fun GenreAlbumHeader(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.cd_play_album))
+                Icon(Icons.Rounded.PlayArrow, contentDescription = "Play Album")
             }
         }
     }

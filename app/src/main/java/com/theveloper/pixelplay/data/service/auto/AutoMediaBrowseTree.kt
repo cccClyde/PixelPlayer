@@ -160,7 +160,7 @@ class AutoMediaBrowseTree @Inject constructor(
     }
 
     private suspend fun getAlbums(offset: Int, limit: Int): List<MediaItem> {
-        val albums = musicRepository.getAlbumsPage(limit = limit, offset = offset, minTracks = 1)
+        val albums = musicRepository.getAlbumsPage(limit = limit, offset = offset)
         return albums
             .map { buildBrowsableAlbumItem(it) }
     }

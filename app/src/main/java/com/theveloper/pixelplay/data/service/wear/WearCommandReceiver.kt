@@ -317,7 +317,7 @@ class WearCommandReceiver : WearableListenerService() {
             )
 
             WearBrowseRequest.ALBUMS -> {
-                musicRepository.getAlbumsPage(limit = MAX_ALBUMS, offset = 0, minTracks = 1)
+                musicRepository.getAlbumsPage(limit = MAX_ALBUMS, offset = 0)
                     .map { album ->
                         WearLibraryItem(
                             id = album.id.toString(),

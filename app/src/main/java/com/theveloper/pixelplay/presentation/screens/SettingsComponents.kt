@@ -59,7 +59,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -340,7 +339,7 @@ fun ThemeSelectorItem(
                                 if (isSelected) {
                                     Icon(
                                         imageVector = Icons.Rounded.Check,
-                                        contentDescription = stringResource(R.string.presentation_batch_f_cd_selected),
+                                        contentDescription = stringResource(R.string.selected),
                                         tint = contentColor
                                     )
                                 }
@@ -443,12 +442,12 @@ fun RefreshLibraryItem(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                            text = stringResource(R.string.presentation_batch_f_refresh_library_title),
+                            text = stringResource(R.string.refresh_library),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                            text = stringResource(R.string.presentation_batch_f_refresh_library_subtitle),
+                            text = stringResource(R.string.refresh_library_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -469,7 +468,7 @@ fun RefreshLibraryItem(
                         modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.presentation_batch_f_full_rescan))
+                Text(stringResource(R.string.full_rescan))
             }
              
             Spacer(modifier = Modifier.height(8.dp))
@@ -490,7 +489,7 @@ fun RefreshLibraryItem(
                         modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.presentation_batch_f_rebuild_database))
+                Text(stringResource(R.string.rebuild_database))
             }
 
             if (isSyncing) {
@@ -503,13 +502,8 @@ fun RefreshLibraryItem(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                            text = stringResource(
-                                R.string.presentation_batch_f_sync_progress_detailed,
-                                phaseLabel,
-                                (syncProgress.progress * 100).toInt(),
-                                syncProgress.currentCount,
-                                syncProgress.totalCount
-                            ),
+                            text =
+                                    "$phaseLabel • ${(syncProgress.progress * 100).toInt()}% (${syncProgress.currentCount}/${syncProgress.totalCount})",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -517,10 +511,7 @@ fun RefreshLibraryItem(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                            text = stringResource(
-                                R.string.presentation_batch_f_sync_progress_indeterminate,
-                                phaseLabel
-                            ),
+                            text = "$phaseLabel…",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -532,19 +523,14 @@ fun RefreshLibraryItem(
 
 @Composable
 private fun syncPhaseLabel(phase: SyncProgress.SyncPhase): String =
-        stringResource(
-                when (phase) {
-                    SyncProgress.SyncPhase.IDLE -> R.string.presentation_batch_f_sync_phase_preparing
-                    SyncProgress.SyncPhase.FETCHING_MEDIASTORE ->
-                            R.string.presentation_batch_f_sync_phase_reading_mediastore
-                    SyncProgress.SyncPhase.PROCESSING_FILES ->
-                            R.string.presentation_batch_f_sync_phase_processing_tracks
-                    SyncProgress.SyncPhase.SAVING_TO_DATABASE ->
-                            R.string.presentation_batch_f_sync_phase_saving_db
-                    SyncProgress.SyncPhase.SCANNING_LRC -> R.string.presentation_batch_f_sync_phase_scanning_lrc
-                    SyncProgress.SyncPhase.COMPLETING -> R.string.presentation_batch_f_sync_phase_completing
-                }
-        )
+        when (phase) {
+            SyncProgress.SyncPhase.IDLE -> stringResource(R.string.sync_phase_preparing)
+            SyncProgress.SyncPhase.FETCHING_MEDIASTORE -> stringResource(R.string.sync_phase_reading_mediastore)
+            SyncProgress.SyncPhase.PROCESSING_FILES -> stringResource(R.string.sync_phase_processing_tracks)
+            SyncProgress.SyncPhase.SAVING_TO_DATABASE -> stringResource(R.string.sync_phase_saving_database)
+            SyncProgress.SyncPhase.SCANNING_LRC -> stringResource(R.string.sync_phase_scanning_lyrics)
+            SyncProgress.SyncPhase.COMPLETING -> stringResource(R.string.sync_phase_completing)
+        }
 
 @Composable
 fun RefreshLyricsItem(
@@ -577,12 +563,12 @@ fun RefreshLyricsItem(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                            text = stringResource(R.string.presentation_batch_f_refresh_lyrics_title),
+                            text = stringResource(R.string.refresh_lyrics),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                            text = stringResource(R.string.presentation_batch_f_refresh_lyrics_subtitle),
+                            text = stringResource(R.string.refresh_lyrics_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -598,7 +584,7 @@ fun RefreshLyricsItem(
                 ) {
                     Icon(
                             imageVector = Icons.Outlined.Sync,
-                            contentDescription = stringResource(R.string.presentation_batch_f_cd_refresh_lyrics),
+                            contentDescription = stringResource(R.string.refresh_lyrics),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
@@ -612,11 +598,8 @@ fun RefreshLyricsItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                        text = stringResource(
-                            R.string.presentation_batch_f_refresh_lyrics_processing,
-                            progress.currentCount,
-                            progress.totalSongs
-                        ),
+                        text =
+                                stringResource(R.string.processing_songs_progress, progress.currentCount, progress.totalSongs),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -733,7 +716,7 @@ fun AiApiKeyItem(
                 value = localApiKey,
                 onValueChange = { localApiKey = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.presentation_batch_f_enter_api_key)) },
+                placeholder = { Text(stringResource(R.string.enter_api_key)) },
                 singleLine = true,
                 visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
             )
@@ -750,11 +733,11 @@ fun AiApiKeyItem(
                     },
                     enabled = hasChanges
                 ) {
-                    Text(stringResource(R.string.presentation_batch_f_save))
+                    Text(stringResource(R.string.save))
                 }
                 if (showSaved) {
                     Text(
-                        text = stringResource(R.string.presentation_batch_f_saved),
+                        text = stringResource(R.string.saved_exclamation),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
@@ -779,18 +762,12 @@ fun AiSystemPromptItem(
     val isDefault = systemPrompt == defaultPrompt
     var showSaved by remember { mutableStateOf(false) }
     val presets = listOf(
-        stringResource(R.string.presentation_batch_f_ai_preset_professional_curator_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_professional_curator_prompt),
-        stringResource(R.string.presentation_batch_f_ai_preset_creative_maverick_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_creative_maverick_prompt),
-        stringResource(R.string.presentation_batch_f_ai_preset_strict_librarian_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_strict_librarian_prompt),
-        stringResource(R.string.presentation_batch_f_ai_preset_atmospheric_guide_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_atmospheric_guide_prompt),
-        stringResource(R.string.presentation_batch_f_ai_preset_sonic_enthusiast_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_sonic_enthusiast_prompt),
-        stringResource(R.string.presentation_batch_f_ai_preset_energy_catalyst_name) to
-            stringResource(R.string.presentation_batch_f_ai_preset_energy_catalyst_prompt)
+        stringResource(R.string.ai_persona_professional_curator) to stringResource(R.string.ai_prompt_professional_curator),
+        stringResource(R.string.ai_persona_creative_maverick) to stringResource(R.string.ai_prompt_creative_maverick),
+        stringResource(R.string.ai_persona_strict_librarian) to stringResource(R.string.ai_prompt_strict_librarian),
+        stringResource(R.string.ai_persona_atmospheric_guide) to stringResource(R.string.ai_prompt_atmospheric_guide),
+        stringResource(R.string.ai_persona_sonic_enthusiast) to stringResource(R.string.ai_prompt_sonic_enthusiast),
+        stringResource(R.string.ai_persona_energy_catalyst) to stringResource(R.string.ai_prompt_energy_catalyst)
     )
 
     LaunchedEffect(showSaved) {
@@ -817,7 +794,7 @@ fun AiSystemPromptItem(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(R.string.presentation_batch_f_preset_prompts),
+                text = stringResource(R.string.preset_prompts),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -842,7 +819,7 @@ fun AiSystemPromptItem(
                 value = localPrompt,
                 onValueChange = { localPrompt = it },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp, max = 200.dp),
-                placeholder = { Text(stringResource(R.string.presentation_batch_f_enter_system_prompt_placeholder)) },
+                placeholder = { Text(stringResource(R.string.enter_system_prompt)) },
                 minLines = 3,
                 maxLines = 6
             )
@@ -859,18 +836,18 @@ fun AiSystemPromptItem(
                     },
                     enabled = hasChanges
                 ) {
-                    Text(stringResource(R.string.presentation_batch_f_save))
+                    Text(stringResource(R.string.save))
                 }
                 if (!isDefault) {
                     OutlinedButton(onClick = {
                         onReset()
                     }) {
-                        Text(stringResource(R.string.presentation_batch_f_reset))
+                        Text(stringResource(R.string.reset))
                     }
                 }
                 if (showSaved) {
                     Text(
-                        text = stringResource(R.string.presentation_batch_f_saved),
+                        text = stringResource(R.string.saved_exclamation),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold

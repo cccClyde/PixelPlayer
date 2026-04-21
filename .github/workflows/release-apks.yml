@@ -1,0 +1,66 @@
+name: Build and Release APKs
+
+on:
+  push:
+    tags:
+      - '0.6.0-beta-clyde.*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Existing tag to publish (optional for manual reruns)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name || github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Validate release tag
+        run: |
+          if [ -z "${RELEASE_TAG}" ]; then
+            echo "RELEASE_TAG is empty"
+            exit 1
+          fi
+
+          if ! git rev-parse "refs/tags/${RELEASE_TAG}" >/dev/null 2>&1; then
+            echo "Tag ${RELEASE_TAG} does not exist in the repository"
+            exit 1
+          fi
+
+      - name: Check out tagged commit
+        run: git checkout "refs/tags/${RELEASE_TAG}"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build release APKs
+        run: ./gradlew :app:assembleRelease :wear:assembleRelease --console=plain
+
+      - name: Create or update prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_TAG }}
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            wear/build/outputs/apk/release/wear-release.apk

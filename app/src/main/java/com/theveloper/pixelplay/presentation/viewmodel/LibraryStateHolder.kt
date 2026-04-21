@@ -124,14 +124,10 @@ class LibraryStateHolder @Inject constructor(
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val albumsPagingFlow: kotlinx.coroutines.flow.Flow<androidx.paging.PagingData<Album>> =
-        kotlinx.coroutines.flow.combine(
-            _currentAlbumSortOption,
-            effectiveStorageFilter,
-            userPreferencesRepository.minTracksPerAlbumFlow
-        ) { sort, filter, minTracks ->
-            Triple(sort, filter, minTracks)
-        }.flatMapLatest { (sortOption, filter, minTracks) ->
-            musicRepository.getPaginatedAlbums(sortOption, filter, minTracks)
+        kotlinx.coroutines.flow.combine(_currentAlbumSortOption, effectiveStorageFilter) { sort, filter ->
+            sort to filter
+        }.flatMapLatest { (sortOption, filter) ->
+            musicRepository.getPaginatedAlbums(sortOption, filter)
         }
         .flowOn(Dispatchers.IO)
 
@@ -269,13 +265,8 @@ class LibraryStateHolder @Inject constructor(
         albumsJob = scope?.launch {
             _isLoadingCategories.value = true
             @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-            kotlinx.coroutines.flow.combine(
-                effectiveStorageFilter,
-                userPreferencesRepository.minTracksPerAlbumFlow
-            ) { filter, minTracks ->
-                filter to minTracks
-            }.flatMapLatest { (filter, minTracks) ->
-                musicRepository.getAlbums(filter, minTracks)
+            effectiveStorageFilter.flatMapLatest { filter ->
+                musicRepository.getAlbums(filter)
             }.conflate().collect { albums ->
                 val sortedAlbums = withContext(Dispatchers.Default) {
                     sortAlbumsList(albums, _currentAlbumSortOption.value).toImmutableList()

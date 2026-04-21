@@ -8,7 +8,6 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.theveloper.pixelplay.R
 import com.theveloper.pixelplay.data.backup.BackupManager
 import com.theveloper.pixelplay.data.backup.model.BackupTransferProgressUpdate
 import com.theveloper.pixelplay.data.backup.model.BackupOperationType
@@ -298,10 +297,7 @@ class SetupViewModel @Inject constructor(
                     _uiState.update { it.copy(isInspectingBackup = false) }
                     _events.emit(
                         SetupEvent.Message(
-                            context.getString(
-                                R.string.backup_invalid_format,
-                                error.localizedMessage ?: context.getString(R.string.error_unknown),
-                            )
+                            "Invalid backup: ${error.localizedMessage ?: "Unknown error"}"
                         )
                     )
                 }
@@ -340,8 +336,8 @@ class SetupViewModel @Inject constructor(
                         operation = BackupOperationType.IMPORT,
                         step = 0,
                         totalSteps = 1,
-                        title = context.getString(R.string.backup_progress_preparing_restore),
-                        detail = context.getString(R.string.backup_progress_starting_task),
+                        title = "Preparing restore",
+                        detail = "Starting restore task."
                     )
                 )
             }
@@ -352,29 +348,26 @@ class SetupViewModel @Inject constructor(
 
             when (result) {
                 is RestoreResult.Success -> {
-                    _events.emit(SetupEvent.RestoreCompleted(context.getString(R.string.restore_completed_success)))
+                    _events.emit(SetupEvent.RestoreCompleted("Backup restored successfully"))
                 }
                 is RestoreResult.PartialFailure -> {
                     val canFinishSetup = result.succeeded.isNotEmpty() || !result.rolledBack
                     if (canFinishSetup) {
                         _events.emit(
                             SetupEvent.RestoreCompleted(
-                                context.getString(R.string.restore_completed_partial_issues),
+                                "Restore completed with some unresolved issues."
                             )
                         )
                     } else {
                         _events.emit(
                             SetupEvent.Message(
-                                context.getString(
-                                    R.string.restore_could_not_complete,
-                                    result.failed.values.joinToString(),
-                                ),
+                                "Restore could not be completed: ${result.failed.values.joinToString()}"
                             )
                         )
                     }
                 }
                 is RestoreResult.TotalFailure -> {
-                    _events.emit(SetupEvent.Message(context.getString(R.string.restore_failed_format, result.error)))
+                    _events.emit(SetupEvent.Message("Restore failed: ${result.error}"))
                 }
             }
 

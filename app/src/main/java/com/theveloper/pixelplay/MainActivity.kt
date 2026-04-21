@@ -6,7 +6,6 @@ import com.theveloper.pixelplay.presentation.navigation.navigateSafely
 // import androidx.core.view.WindowInsetsCompat // No longer needed for this
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
@@ -21,7 +20,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
-import androidx.annotation.CallSuper
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -73,7 +71,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
@@ -125,7 +122,6 @@ import com.theveloper.pixelplay.presentation.viewmodel.MainViewModel
 import com.theveloper.pixelplay.presentation.viewmodel.PlayerViewModel
 import com.theveloper.pixelplay.ui.theme.PixelPlayTheme
 import com.theveloper.pixelplay.utils.CrashHandler
-import com.theveloper.pixelplay.utils.AppLocaleManager
 import com.theveloper.pixelplay.utils.LogUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.collections.immutable.persistentListOf
@@ -174,11 +170,6 @@ class MainActivity : ComponentActivity() {
 
     private val requestAllFilesAccessLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
         // Handle the result in onResume
-    }
-
-    @CallSuper
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(AppLocaleManager.wrapContext(newBase))
     }
 
     @OptIn(ExperimentalPermissionsApi::class)
@@ -430,8 +421,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun PlayStoreAnnouncementRemoteConfig.toUiModel(context: Context): PlayStoreAnnouncementUiModel {
-        val fallback = PlayStoreAnnouncementDefaults.localizedTemplate(context)
+    private fun PlayStoreAnnouncementRemoteConfig.toUiModel(): PlayStoreAnnouncementUiModel {
+        val fallback = PlayStoreAnnouncementDefaults.Template
         return fallback.copy(
             enabled = enabled,
             playStoreUrl = playStoreUrl ?: fallback.playStoreUrl,
@@ -685,22 +676,19 @@ class MainActivity : ComponentActivity() {
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         val announcementService = remember { GitHubAnnouncementPropertiesService() }
-        val context = LocalContext.current
-        var playStoreAnnouncement by remember {
-            mutableStateOf(PlayStoreAnnouncementDefaults.localizedTemplate(context))
-        }
+        var playStoreAnnouncement by remember { mutableStateOf(PlayStoreAnnouncementDefaults.Template) }
         var showPlayStoreAnnouncement by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             if (PlayStoreAnnouncementDefaults.LOCAL_PREVIEW_ENABLED) {
-                playStoreAnnouncement = PlayStoreAnnouncementDefaults.hardcodedPreview(this@MainActivity)
+                playStoreAnnouncement = PlayStoreAnnouncementDefaults.HardcodedPreview
                 showPlayStoreAnnouncement = true
                 return@LaunchedEffect
             }
 
             announcementService.fetchPlayStoreAnnouncement()
                 .onSuccess { remoteConfig ->
-                    val resolvedAnnouncement = remoteConfig.toUiModel(this@MainActivity)
+                    val resolvedAnnouncement = remoteConfig.toUiModel()
                     playStoreAnnouncement = resolvedAnnouncement
                     showPlayStoreAnnouncement = resolvedAnnouncement.enabled
                 }

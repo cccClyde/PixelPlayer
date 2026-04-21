@@ -69,7 +69,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -517,7 +516,7 @@ fun PlaylistItem(
                 ) {
                     if (selectionIndex >= 0) {
                         Text(
-                            text = (selectionIndex + 1).toString(),
+                            text = "${selectionIndex + 1}",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
@@ -525,7 +524,7 @@ fun PlaylistItem(
                     } else {
                         Icon(
                             imageVector = Icons.Rounded.CheckCircle,
-                            contentDescription = stringResource(R.string.presentation_batch_g_cd_selected),
+                            contentDescription = "Selected",
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(16.dp)
                         )
@@ -568,7 +567,7 @@ fun CreatePlaylistDialogRedesigned(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.create_playlist_dialog_title),
+                    text = "New playlist",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     fontFamily = GoogleSansRounded,
@@ -578,8 +577,8 @@ fun CreatePlaylistDialogRedesigned(
                 OutlinedTextField(
                     value = playlistName,
                     onValueChange = { playlistName = it },
-                    label = { Text(stringResource(R.string.create_playlist_name_label)) },
-                    placeholder = { Text(stringResource(R.string.create_playlist_name_placeholder)) },
+                    label = { Text("Playlist Name") },
+                    placeholder = { Text("My playlist") },
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -600,7 +599,7 @@ fun CreatePlaylistDialogRedesigned(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(stringResource(R.string.cancel), fontWeight = FontWeight.SemiBold)
+                        Text("Cancel", fontWeight = FontWeight.SemiBold)
                     }
 
                     Button(
@@ -613,7 +612,7 @@ fun CreatePlaylistDialogRedesigned(
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
-                        Text(stringResource(R.string.action_create), fontWeight = FontWeight.Bold)
+                        Text("Create", fontWeight = FontWeight.Bold)
                     }
                 }
             }

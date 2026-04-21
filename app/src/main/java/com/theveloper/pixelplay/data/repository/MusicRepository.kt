@@ -32,8 +32,7 @@ interface MusicRepository {
      */
     fun getPaginatedAlbums(
         sortOption: com.theveloper.pixelplay.data.model.SortOption,
-        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL,
-        minTracks: Int = 1
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
     ): Flow<PagingData<Album>>
 
     /**
@@ -108,8 +107,7 @@ interface MusicRepository {
         limit: Int,
         offset: Int,
         sortOption: com.theveloper.pixelplay.data.model.SortOption = com.theveloper.pixelplay.data.model.SortOption.AlbumTitleAZ,
-        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL,
-        minTracks: Int = 1
+        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL
     ): List<Album>
 
     /**
@@ -132,10 +130,7 @@ interface MusicRepository {
      * Obtiene la lista de álbumes filtrada.
      * @return Flow que emite una lista completa de objetos Album.
      */
-    fun getAlbums(
-        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL,
-        minTracks: Int = 1
-    ): Flow<List<Album>> // Existing Flow for reactive updates
+    fun getAlbums(storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL): Flow<List<Album>> // Existing Flow for reactive updates
 
     /**
      * Obtiene la lista de artistas filtrada.
@@ -166,10 +161,7 @@ interface MusicRepository {
      * Obtiene la lista completa de álbumes una sola vez.
      * @return Lista de objetos Album.
      */
-    suspend fun getAllAlbumsOnce(
-        storageFilter: com.theveloper.pixelplay.data.model.StorageFilter = com.theveloper.pixelplay.data.model.StorageFilter.ALL,
-        minTracks: Int = 1
-    ): List<Album>
+    suspend fun getAllAlbumsOnce(): List<Album>
 
     /**
      * Obtiene la lista completa de artistas una sola vez.
@@ -231,7 +223,7 @@ interface MusicRepository {
     suspend fun invalidateCachesDependentOnAllowedDirectories() // Nuevo para precarga de temas
 
     fun searchSongs(query: String): Flow<List<Song>>
-    fun searchAlbums(query: String, minTracks: Int = 1): Flow<List<Album>>
+    fun searchAlbums(query: String): Flow<List<Album>>
     fun searchArtists(query: String): Flow<List<Artist>>
     suspend fun searchPlaylists(query: String): List<Playlist> // Mantener suspend, ya que no hay Flow aún
     fun searchAll(query: String, filterType: SearchFilterType): Flow<List<SearchResultItem>>

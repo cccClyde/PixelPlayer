@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.ksp) 
+    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.kotlin.serialization)
+    kotlin("plugin.serialization") version "2.1.0"
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.baselineprofile)
     // id("com.google.protobuf") version "0.9.5" // Eliminado plugin de Protobuf
