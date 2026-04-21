@@ -101,6 +101,7 @@ import com.theveloper.pixelplay.utils.formatSongCount
 import com.theveloper.pixelplay.utils.shapes.RoundedStarShape
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import androidx.compose.ui.res.stringResource
 
 private const val UseSharedCollapsibleTopBarProbe = true
 
@@ -514,7 +515,7 @@ private fun SharedAlbumTopBarProbe(
         if (expandedContentAlpha > 0.01f) {
             SmartImage(
                 model = album.albumArtUriString,
-                contentDescription = stringResource(R.string.album_cover_cd, album.title),
+                contentDescription = stringResource(R.string.album_cover_for, album.title),
                 contentScale = ContentScale.Crop,
                 targetSize = headerImageRequestSize,
                 allowHardware = true,
@@ -579,7 +580,7 @@ private fun SharedAlbumTopBarProbe(
                     alpha = expandedContentAlpha
                 }
         ) {
-            Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.album_shuffle_play_cd))
+            Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.cd_shuffle_play_album))
         }
     }
 }
@@ -660,7 +661,7 @@ private fun CollapsingAlbumTopBar(
             if (showExpandedArtwork) {
                 SmartImage(
                     model = album.albumArtUriString,
-                    contentDescription = stringResource(R.string.album_cover_cd, album.title),
+                    contentDescription = stringResource(R.string.album_cover_for, album.title),
                     contentScale = ContentScale.Crop,
                     targetSize = headerImageRequestSize,
                     allowHardware = true,
@@ -696,7 +697,7 @@ private fun CollapsingAlbumTopBar(
                     onClick = onBackPressed,
                     colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                 ) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.auth_cd_back))
                 }
 
                 Box(
@@ -728,7 +729,11 @@ private fun CollapsingAlbumTopBar(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "${album.artist} • ${formatSongCount(songsCount)}",
+                            text = stringResource(
+                                R.string.album_detail_meta_line,
+                                album.artist,
+                                formatSongCount(songsCount)
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -749,7 +754,7 @@ private fun CollapsingAlbumTopBar(
                             alpha = fabScale
                         }
                 ) {
-                    Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.album_shuffle_play_cd))
+                    Icon(Icons.Rounded.Shuffle, contentDescription = stringResource(R.string.cd_shuffle_play_album))
                 }
             }
         }

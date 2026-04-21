@@ -53,6 +53,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
@@ -91,6 +92,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
+import androidx.compose.ui.res.stringResource
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -102,6 +104,9 @@ fun RecentlyPlayedScreen(
 ) {
     Trace.beginSection("RecentlyPlayedScreen.Composition")
 
+    val context = LocalContext.current
+    val queueRecentlyPlayed = stringResource(R.string.presentation_batch_b_queue_recently_played)
+    val shuffleLabel = stringResource(R.string.shortcut_shuffle_short)
     val playbackHistory by playerViewModel.playbackHistory.collectAsStateWithLifecycle()
     val currentSongId by remember(playerViewModel.stablePlayerState) {
         playerViewModel.stablePlayerState.map { it.currentSong?.id }.distinctUntilChanged()
@@ -143,12 +148,11 @@ fun RecentlyPlayedScreen(
             maxItems = Int.MAX_VALUE
         )
     }
-    val groupedSongs = remember(recentlyPlayedSongs, selectedRange) {
+    val groupedSongs = remember(recentlyPlayedSongs, selectedRange, context) {
         groupRecentlyPlayedSongs(
+            context = context,
             songs = recentlyPlayedSongs,
-            range = selectedRange,
-            todayLabel = context.getString(R.string.recently_played_today),
-            yesterdayLabel = context.getString(R.string.recently_played_yesterday)
+            range = selectedRange
         )
     }
     val queueSongs = remember(recentlyPlayedSongs) {
@@ -191,6 +195,7 @@ fun RecentlyPlayedScreen(
             ) {
                 item(key = "recently_played_header") {
                     ExpressiveRecentlyPlayedHeader(
+                        title = stringResource(R.string.presentation_batch_b_recently_played_title),
                         songs = recentlyPlayedSongs,
                         selectedRange = selectedRange,
                         scrollState = lazyListState
@@ -210,15 +215,16 @@ fun RecentlyPlayedScreen(
                         RecentlyPlayedActions(
                             onPlay = {
                                 val firstSong = queueSongs.firstOrNull() ?: return@RecentlyPlayedActions
-                                playerViewModel.playSongs(queueSongs, firstSong, stringResource(R.string.recently_played_queue_name))
+                                playerViewModel.playSongs(queueSongs, firstSong, queueRecentlyPlayed)
                             },
                             onShuffle = {
                                 playerViewModel.playSongsShuffled(
                                     songsToPlay = queueSongs,
-                                    queueName = stringResource(R.string.recently_played_queue_name),
+                                    queueName = queueRecentlyPlayed,
                                     startAtZero = true,
                                 )
                             },
+                            shuffleLabel = shuffleLabel,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
@@ -250,7 +256,7 @@ fun RecentlyPlayedScreen(
                                     playerViewModel.playSongs(
                                         songsToPlay = queueSongs,
                                         startSong = item.song,
-                                        queueName = stringResource(R.string.recently_played_queue_name)
+                                        queueName = queueRecentlyPlayed
                                     )
                                 },
                                 onMoreOptionsClick = { song ->
@@ -278,7 +284,7 @@ fun RecentlyPlayedScreen(
                 },
                 onPlaySong = {
                     if (queueSongs.isNotEmpty()) {
-                        playerViewModel.playSongs(queueSongs, song, stringResource(R.string.recently_played_queue_name))
+                        playerViewModel.playSongs(queueSongs, song, queueRecentlyPlayed)
                     }
                     showSongInfoBottomSheet = false
                 },
@@ -353,7 +359,7 @@ fun RecentlyPlayedScreen(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = stringResource(R.string.common_back)
+                contentDescription = stringResource(R.string.auth_cd_back)
             )
         }
     }
@@ -363,6 +369,7 @@ fun RecentlyPlayedScreen(
 
 @Composable
 private fun ExpressiveRecentlyPlayedHeader(
+    title: String,
     songs: List<RecentlyPlayedSongUiModel>,
     selectedRange: StatsTimeRange,
     scrollState: LazyListState
@@ -432,7 +439,7 @@ private fun ExpressiveRecentlyPlayedHeader(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = stringResource(R.string.recently_played_title),
+                text = title,
                 style = titleStyle,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -471,6 +478,7 @@ private fun rememberRecentlyPlayedTitleStyle(): TextStyle {
 private fun RecentlyPlayedActions(
     onPlay: () -> Unit,
     onShuffle: () -> Unit,
+    shuffleLabel: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -497,7 +505,7 @@ private fun RecentlyPlayedActions(
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(stringResource(R.string.recently_played_play_latest))
+            Text(stringResource(R.string.presentation_batch_b_play_latest))
         }
 
         FilledTonalButton(
@@ -518,7 +526,7 @@ private fun RecentlyPlayedActions(
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(stringResource(R.string.recently_played_shuffle))
+            Text(shuffleLabel)
         }
     }
 }
@@ -634,12 +642,15 @@ private fun RecentlyPlayedEmptyState(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = stringResource(R.string.recently_played_empty_title, range.displayName.lowercase()),
+                text = stringResource(
+                    R.string.presentation_batch_b_recent_empty_title,
+                    range.displayName.lowercase()
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = stringResource(R.string.recently_played_empty_subtitle),
+                text = stringResource(R.string.presentation_batch_b_recent_empty_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -655,10 +666,9 @@ private data class TimestampGroup(
 )
 
 private fun groupRecentlyPlayedSongs(
+    context: android.content.Context,
     songs: List<RecentlyPlayedSongUiModel>,
-    range: StatsTimeRange,
-    todayLabel: String,
-    yesterdayLabel: String
+    range: StatsTimeRange
 ): List<TimestampGroup> {
     if (songs.isEmpty()) return emptyList()
     val zoneId = ZoneId.systemDefault()
@@ -672,11 +682,10 @@ private fun groupRecentlyPlayedSongs(
 
     sorted.forEach { item ->
         val timeBucket = resolveTimestampBucket(
+            context = context,
             timestamp = item.lastPlayedTimestamp,
             range = range,
-            zoneId = zoneId,
-            todayLabel = todayLabel,
-            yesterdayLabel = yesterdayLabel
+            zoneId = zoneId
         )
         if (currentBucketKey == null || currentBucketKey == timeBucket.key) {
             currentBucketKey = timeBucket.key
@@ -716,11 +725,10 @@ private data class TimestampBucket(
 )
 
 private fun resolveTimestampBucket(
+    context: android.content.Context,
     timestamp: Long,
     range: StatsTimeRange,
-    zoneId: ZoneId,
-    todayLabel: String,
-    yesterdayLabel: String
+    zoneId: ZoneId
 ): TimestampBucket {
     val safeTimestamp = timestamp.coerceAtLeast(0L)
     val safeNow = System.currentTimeMillis().coerceAtLeast(0L)
@@ -744,14 +752,14 @@ private fun resolveTimestampBucket(
         date == nowDate -> {
             TimestampBucket(
                 key = date.toString(),
-                label = todayLabel,
+                label = context.getString(R.string.presentation_batch_b_date_today),
                 isHourBucket = false
             )
         }
         date == nowDate.minusDays(1) -> {
             TimestampBucket(
                 key = date.toString(),
-                label = yesterdayLabel,
+                label = context.getString(R.string.presentation_batch_b_date_yesterday),
                 isHourBucket = false
             )
         }

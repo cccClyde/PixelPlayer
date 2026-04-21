@@ -105,6 +105,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
+import androidx.compose.ui.res.stringResource
 
 // Modern HomeScreen with collapsible top bar and staggered grid layout
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -509,7 +510,7 @@ fun YourMixHeader(
         ) {
             // Your Mix Title
             Text(
-                text = stringResource(R.string.home_your_mix),
+                text = stringResource(R.string.home_your_mix_title),
                 style = titleStyle,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -544,7 +545,7 @@ fun YourMixHeader(
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_shuffle_24),
-                contentDescription = "Shuffle Play",
+                contentDescription = stringResource(R.string.cd_shuffle_play),
                 modifier = Modifier.size(36.dp)
             )
         }
@@ -590,7 +591,7 @@ fun SongListItemFavs(
             ) {
                 SmartImage(
                     model = albumArtUrl,
-                    contentDescription = stringResource(R.string.home_album_art_cd, title),
+                    contentDescription = stringResource(R.string.cd_album_art_for_title, title),
                     contentScale = ContentScale.Crop,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(48.dp)
