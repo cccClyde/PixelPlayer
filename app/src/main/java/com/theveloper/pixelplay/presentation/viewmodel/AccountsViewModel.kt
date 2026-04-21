@@ -1,5 +1,6 @@
 package com.theveloper.pixelplay.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.theveloper.pixelplay.data.gdrive.GDriveRepository
@@ -9,7 +10,9 @@ import com.theveloper.pixelplay.data.netease.NeteaseRepository
 import com.theveloper.pixelplay.data.qqmusic.QqMusicRepository
 import com.theveloper.pixelplay.data.repository.MusicRepository
 import com.theveloper.pixelplay.data.telegram.TelegramRepository
+import com.theveloper.pixelplay.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,6 +49,7 @@ data class AccountsUiState(
 
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val telegramRepository: TelegramRepository,
     private val musicRepository: MusicRepository,
     private val gDriveRepository: GDriveRepository,
@@ -126,13 +130,9 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.TELEGRAM,
-                        title = "Telegram",
-                        accountLabel = "Active Telegram session",
-                        syncedContentLabel = formatCount(
-                            count = telegramChannelCount,
-                            singular = "synced channel",
-                            plural = "synced channels"
-                        ),
+                        title = serviceTitle(ExternalServiceAccount.TELEGRAM),
+                        accountLabel = appContext.getString(R.string.accounts_telegram_active_session),
+                        syncedContentLabel = formatCount(telegramChannelCount, R.plurals.accounts_synced_channel_count),
                         isLoggingOut = ExternalServiceAccount.TELEGRAM in activeLogouts
                     )
                 )
@@ -141,17 +141,13 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.GOOGLE_DRIVE,
-                        title = "Google Drive",
+                        title = serviceTitle(ExternalServiceAccount.GOOGLE_DRIVE),
                         accountLabel = gDriveRepository.userDisplayName
                             ?.takeIf { it.isNotBlank() }
                             ?: gDriveRepository.userEmail
                                 ?.takeIf { it.isNotBlank() }
-                            ?: "Google account connected",
-                        syncedContentLabel = formatCount(
-                            count = gDriveFolderCount,
-                            singular = "synced folder",
-                            plural = "synced folders"
-                        ),
+                            ?: appContext.getString(R.string.accounts_google_connected),
+                        syncedContentLabel = formatCount(gDriveFolderCount, R.plurals.accounts_synced_folder_count),
                         isLoggingOut = ExternalServiceAccount.GOOGLE_DRIVE in activeLogouts
                     )
                 )
@@ -160,15 +156,11 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.NETEASE,
-                        title = "Netease Cloud Music",
+                        title = serviceTitle(ExternalServiceAccount.NETEASE),
                         accountLabel = neteaseRepository.userNickname
                             ?.takeIf { it.isNotBlank() }
-                            ?: "Netease account connected",
-                        syncedContentLabel = formatCount(
-                            count = neteasePlaylistCount,
-                            singular = "synced playlist",
-                            plural = "synced playlists"
-                        ),
+                            ?: appContext.getString(R.string.accounts_netease_connected),
+                        syncedContentLabel = formatCount(neteasePlaylistCount, R.plurals.accounts_synced_playlist_count),
                         isLoggingOut = ExternalServiceAccount.NETEASE in activeLogouts
                     )
                 )
@@ -177,15 +169,11 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.QQ_MUSIC,
-                        title = "QQ Music",
+                        title = serviceTitle(ExternalServiceAccount.QQ_MUSIC),
                         accountLabel = qqMusicRepository.userNickname
                             ?.takeIf { it.isNotBlank() }
-                            ?: "QQ Music account connected",
-                        syncedContentLabel = formatCount(
-                            count = qqPlaylistCount,
-                            singular = "synced playlist",
-                            plural = "synced playlists"
-                        ),
+                            ?: appContext.getString(R.string.accounts_qq_music_connected),
+                        syncedContentLabel = formatCount(qqPlaylistCount, R.plurals.accounts_synced_playlist_count),
                         isLoggingOut = ExternalServiceAccount.QQ_MUSIC in activeLogouts
                     )
                 )
@@ -194,15 +182,11 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.NAVIDROME,
-                        title = "Subsonic",
+                        title = serviceTitle(ExternalServiceAccount.NAVIDROME),
                         accountLabel = navidromeRepository.username
                             ?.takeIf { it.isNotBlank() }
-                            ?: "Subsonic account connected",
-                        syncedContentLabel = formatCount(
-                            count = navidromePlaylistCount,
-                            singular = "synced playlist",
-                            plural = "synced playlists"
-                        ),
+                            ?: appContext.getString(R.string.accounts_subsonic_connected),
+                        syncedContentLabel = formatCount(navidromePlaylistCount, R.plurals.accounts_synced_playlist_count),
                         isLoggingOut = ExternalServiceAccount.NAVIDROME in activeLogouts
                     )
                 )
@@ -211,15 +195,11 @@ class AccountsViewModel @Inject constructor(
                 add(
                     ExternalAccountUiModel(
                         service = ExternalServiceAccount.JELLYFIN,
-                        title = "Jellyfin",
+                        title = serviceTitle(ExternalServiceAccount.JELLYFIN),
                         accountLabel = jellyfinRepository.username
                             ?.takeIf { it.isNotBlank() }
-                            ?: "Jellyfin account connected",
-                        syncedContentLabel = formatCount(
-                            count = jellyfinPlaylistCount,
-                            singular = "synced playlist",
-                            plural = "synced playlists"
-                        ),
+                            ?: appContext.getString(R.string.accounts_jellyfin_connected),
+                        syncedContentLabel = formatCount(jellyfinPlaylistCount, R.plurals.accounts_synced_playlist_count),
                         isLoggingOut = ExternalServiceAccount.JELLYFIN in activeLogouts
                     )
                 )
@@ -267,11 +247,19 @@ class AccountsViewModel @Inject constructor(
         }
     }
 
-    private fun formatCount(count: Int, singular: String, plural: String): String {
-        return if (count == 1) {
-            "1 $singular"
-        } else {
-            "$count $plural"
+    private fun serviceTitle(service: ExternalServiceAccount): String {
+        val resId = when (service) {
+            ExternalServiceAccount.TELEGRAM -> R.string.accounts_service_telegram
+            ExternalServiceAccount.GOOGLE_DRIVE -> R.string.accounts_service_google_drive
+            ExternalServiceAccount.NETEASE -> R.string.accounts_service_netease
+            ExternalServiceAccount.QQ_MUSIC -> R.string.accounts_service_qq_music
+            ExternalServiceAccount.NAVIDROME -> R.string.accounts_service_subsonic
+            ExternalServiceAccount.JELLYFIN -> R.string.accounts_service_jellyfin
         }
+        return appContext.getString(resId)
+    }
+
+    private fun formatCount(count: Int, pluralsRes: Int): String {
+        return appContext.resources.getQuantityString(pluralsRes, count, count)
     }
 }

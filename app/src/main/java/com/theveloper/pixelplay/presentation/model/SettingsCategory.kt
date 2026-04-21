@@ -13,69 +13,69 @@ import com.theveloper.pixelplay.R
 
 enum class SettingsCategory(
     val id: String,
-    val title: String,
-    val subtitle: String,
+    val titleRes: Int,
+    val subtitleRes: Int,
     val icon: ImageVector? = null,
     val iconRes: Int? = null
 ) {
     LIBRARY(
         id = "library",
-        title = "Music Management",
-        subtitle = "Manage folders, refresh library, parsing options",
+        titleRes = R.string.settings_category_library_title,
+        subtitleRes = R.string.settings_category_library_subtitle,
         icon = Icons.Rounded.LibraryMusic
     ),
     APPEARANCE(
         id = "appearance",
-        title = "Appearance",
-        subtitle = "Themes, layout, and visual styles",
+        titleRes = R.string.settings_category_appearance_title,
+        subtitleRes = R.string.settings_category_appearance_subtitle,
         icon = Icons.Rounded.Palette
     ),
     PLAYBACK(
         id = "playback",
-        title = "Playback",
-        subtitle = "Audio behavior, crossfade, and background play",
+        titleRes = R.string.settings_category_playback_title,
+        subtitleRes = R.string.settings_category_playback_subtitle,
         icon = Icons.Rounded.MusicNote // Using MusicNote again or maybe PlayCircle if available
     ),
     BEHAVIOR(
         id = "behavior",
-        title = "Behavior",
-        subtitle = "Gestures, haptics, and navigation behavior",
+        titleRes = R.string.settings_category_behavior_title,
+        subtitleRes = R.string.settings_category_behavior_subtitle,
         iconRes = R.drawable.rounded_touch_app_24
     ),
     AI_INTEGRATION(
         id = "ai",
-        title = "AI Integration (β)",
-        subtitle = "AI providers, API keys, and model settings",
+        titleRes = R.string.settings_category_ai_title,
+        subtitleRes = R.string.settings_category_ai_subtitle,
         iconRes = R.drawable.gemini_ai
     ),
     BACKUP_RESTORE(
         id = "backup_restore",
-        title = "Backup & Restore",
-        subtitle = "Export and recover your personal app data",
+        titleRes = R.string.settings_category_backup_title,
+        subtitleRes = R.string.settings_category_backup_subtitle,
         iconRes = R.drawable.rounded_upload_file_24
     ),
     DEVELOPER(
         id = "developer",
-        title = "Developer Options",
-        subtitle = "Experimental features and debugging",
+        titleRes = R.string.settings_category_developer_title,
+        subtitleRes = R.string.settings_category_developer_subtitle,
         icon = Icons.Rounded.DeveloperMode
     ),
     EQUALIZER(
         id = "equalizer",
-        title = "Equalizer",
-        subtitle = "Adjust audio frequencies and presets",
+        titleRes = R.string.settings_category_equalizer_title,
+        subtitleRes = R.string.settings_category_equalizer_subtitle,
         icon = Icons.Rounded.GraphicEq
     ),
     DEVICE_CAPABILITIES(
         id = "device_capabilities",
-        title = "Device Capabilities",
-        subtitle = "Audio specs, codecs, and decoder info",
+        titleRes = R.string.settings_category_device_capabilities_title,
+        subtitleRes = R.string.settings_category_device_capabilities_subtitle,
         icon = Icons.Rounded.DeveloperBoard // Placeholder, maybe Memory or SettingsInputComponent
     ),
     ABOUT(
         id = "about",
-        title = "About",
-        subtitle = "App info, version, and credits",
+        titleRes = R.string.settings_category_about_title,
+        subtitleRes = R.string.settings_category_about_subtitle,
         icon = Icons.Rounded.Info
     );
 

@@ -66,6 +66,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -261,8 +262,8 @@ fun SettingsScreen(
                     itemIndex++
 
                     ExpressiveNavigationItem(
-                        title = "Accounts",
-                        subtitle = "Manage Telegram, Google Drive, Netease, and more services",
+                        title = stringResource(R.string.settings_accounts_title),
+                        subtitle = stringResource(R.string.settings_accounts_subtitle),
                         icon = Icons.Rounded.AccountCircle,
                         colors = getAccountsColors(isDark),
                         onClick = { navController.navigateSafely(Screen.Accounts.route) },
@@ -286,7 +287,7 @@ fun SettingsScreen(
             }
         }
         CollapsibleCommonTopBar(
-                title = "Settings",
+                title = stringResource(R.string.settings_title),
                 collapseFraction = collapseFraction,
                 headerHeight = currentTopBarHeightDp,
                 onBackClick = onNavigationIconClick
@@ -378,6 +379,8 @@ fun ExpressiveCategoryItem(
     shape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(24.dp),
     customColors: Pair<Color, Color>? = null
 ) {
+    val categoryTitle = stringResource(category.titleRes)
+    val categorySubtitle = stringResource(category.subtitleRes)
     Surface(
         onClick = onClick,
         shape = shape,
@@ -417,7 +420,7 @@ fun ExpressiveCategoryItem(
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = category.title,
+                    text = categoryTitle,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
@@ -425,7 +428,7 @@ fun ExpressiveCategoryItem(
                     maxLines = 1
                 )
                 Text(
-                    text = category.subtitle,
+                    text = categorySubtitle,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
