@@ -186,6 +186,7 @@ fun SettingsCategoryScreen(
     val category = SettingsCategory.fromId(categoryId) ?: return
     val context = LocalContext.current
     val categoryTitle = stringResource(category.titleRes)
+    val fullRescanRunningLabel = stringResource(R.string.settings_full_rescan_running)
 
     // State Collection (Duplicated from SettingsScreen for now to ensure functionality)
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -434,7 +435,7 @@ fun SettingsCategoryScreen(
                                         if (isSyncing) return@RefreshLibraryItem
                                         refreshRequested = true
                                         syncRequestObservedRunning = false
-                                        syncIndicatorLabel = stringResource(R.string.settings_full_rescan_running)
+                                        syncIndicatorLabel = fullRescanRunningLabel
                                         Toast.makeText(context, context.getString(R.string.settings_full_rescan_started), Toast.LENGTH_SHORT).show()
                                         settingsViewModel.fullSyncLibrary()
                                     },
@@ -1298,7 +1299,7 @@ fun SettingsCategoryScreen(
             },
             title = {
                 Text(
-                    if (isPaletteBulkRegenerateRunning) {
+                    text = if (isPaletteBulkRegenerateRunning) {
                         "Regenerating album palettes..."
                     } else {
                         "Regenerate all album palettes?"
@@ -1333,17 +1334,16 @@ fun SettingsCategoryScreen(
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
-                        if (isPaletteBulkRegenerateRunning) {
-                            Text(
-                                text = stringResource(
-                                    R.string.settings_palette_bulk_completed_count,
-                                    paletteBulkCompletedCount,
-                                    paletteBulkTotalCount
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        Text(
+                            text = stringResource(
+                                R.string.settings_palette_bulk_completed_count,
+                                paletteBulkCompletedCount,
+                                paletteBulkTotalCount
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             },
             onDismissRequest = {

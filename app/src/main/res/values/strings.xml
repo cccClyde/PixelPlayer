@@ -741,7 +741,6 @@ Prompt: %2$s | Output: %3$s | Thought: %4$s</string>
     <string name="playlist_creation_dialog_ai_disabled_subtitle">Requires Gemini API key configured in settings.</string>
     <string name="playlist_creation_dialog_setup_api_key">Setup API Key</string>
     <string name="playlist_ai_level_value">%1$d/5</string>
-    <string name="common_delete">Delete</string>
     <string name="common_export">Export</string>
     <string name="common_share">Share</string>
     <string name="multi_selection_selected_label">selected</string>

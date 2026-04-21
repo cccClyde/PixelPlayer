@@ -748,7 +748,6 @@
     <string name="playlist_creation_dialog_ai_disabled_subtitle">需要先在设置中配置 Gemini API Key。</string>
     <string name="playlist_creation_dialog_setup_api_key">设置 API Key</string>
     <string name="playlist_ai_level_value">%1$d/5</string>
-    <string name="common_delete">删除</string>
     <string name="common_export">导出</string>
     <string name="common_share">分享</string>
     <string name="multi_selection_selected_label">已选择</string>

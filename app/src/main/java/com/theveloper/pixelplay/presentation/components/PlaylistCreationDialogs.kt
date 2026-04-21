@@ -419,17 +419,20 @@ private fun CreateAiPlaylistContent(
         smoothTransitionsText = stringResource(R.string.playlist_ai_prompt_smooth_transitions)
     )
 
+    val missingInstructionError = stringResource(R.string.playlist_ai_error_missing_instruction)
+    val invalidSongRangeError = stringResource(R.string.playlist_ai_error_invalid_song_range)
+
     val triggerGeneration: () -> Unit = generation@{
         val minSongs = minSongsInput.toIntOrNull()
         val maxSongs = maxSongsInput.toIntOrNull()
 
         if (generatedPromptPreview.isBlank()) {
-            localError = stringResource(R.string.playlist_ai_error_missing_instruction)
+            localError = missingInstructionError
             return@generation
         }
 
         if (minSongs == null || maxSongs == null) {
-            localError = stringResource(R.string.playlist_ai_error_invalid_song_range)
+            localError = invalidSongRangeError
             return@generation
         }
 
