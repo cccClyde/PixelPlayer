@@ -129,4 +129,22 @@
     <string-array name="changelog_070_added">
         <item>本地化：西班牙语、法语、俄语、简体中文、印度尼西亚语、意大利语</item>
     </string-array>
+        <string-array name="changelog_075_whats_new">
+        <item>包含播放器生命周期管理的 Google 云端硬盘集成。</item>
+        <item>媒体元信息批量编辑（标签与专辑封面）。</item>
+        <item>支持 WearOS 偏好自定义的 AI 歌词翻译。</item>
+        <item>运行卡顿诊断工具以及搜索洁面多选功能。</item>
+        <item>阿拉伯与土耳其语言支持，http URL 本地网络选项本地化。</item>
+    </string-array>
+    <string-array name="changelog_075_improvements">
+        <item>大幅改善耗电情况（音频卸载和 UI 轮询优化）。</item>
+        <item>改进队列管理（更快的插入性能与显式索引)。</item>
+        <item>采用 Material 3 Expressive 转场动画。</item>
+        <item>采用保守扫描的方式重新构建媒体库同步。</item>
+    </string-array>
+    <string-array name="changelog_075_fixes">
+        <item>解决了播放过程中的卡顿、跳跃和缓存问题。</item>
+        <item>修复了外部曲目删除同步和元数据连续性问题。</item>
+        <item>修复了内存、闪退和 WearOS、移动设备上的布局异常问题。</item>
+    </string-array>
 </resources>
